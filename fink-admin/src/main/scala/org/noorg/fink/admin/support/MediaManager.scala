@@ -7,7 +7,6 @@ import java.io.IOException
 import java.util.regex.Pattern
 import org.apache.commons.fileupload.FileItem
 import org.noorg.fink.data.entities.Image
-import org.noorg.fink.data.entities.Media
 import org.noorg.fink.data.repository.ImageRepository
 import org.noorg.fink.data.repository.MediaRepository
 import scala.collection.JavaConversions._
@@ -18,15 +17,24 @@ object MediaManager {
   val dirImagesFull = base + "/images"
   val dirImagesThumb = base + "/thumbs"
   val dirImagesMedium = base + "/medium"
-  val imageRepository = new ImageRepository
-  val mediaRepository = new MediaRepository
+
+  var inited = false 
+  var imageRepository : ImageRepository = null
+	var mediaRepository : MediaRepository = null
   
   // setup the folder structure in the filesystem
+	// also set repositories, later remove this
   protected def sanitizeEnv = {
     checkDirectory(base)
     checkDirectory(dirImagesFull)
     checkDirectory(dirImagesMedium)
     checkDirectory(dirImagesThumb)
+    
+    if (!inited) {
+    	imageRepository = ApplicationContextProvider.getContext().getBean(classOf[ImageRepository])
+    	mediaRepository = ApplicationContextProvider.getContext().getBean(classOf[MediaRepository])
+      inited = true
+    }
   }
 
   protected def checkDirectory(dir: String) = {
@@ -38,6 +46,7 @@ object MediaManager {
   protected def isImage(item: FileItem, name: String, ext: String): Boolean = true
 
   def getImagesList: List[Image] = {
+    sanitizeEnv
     imageRepository.findAll().toList
   }
 

@@ -17,7 +17,7 @@
       'auto'      : true,
       'multi'     : true,
       'method'    : 'POST',
-      'debug'     : true,
+      'debug'     : false,
       'uploader'  : '/admin/collections/edit/#{collection.getUuid}/add',
       'checkExisting' : false,
       'fileObjName'   : 'file',
@@ -99,7 +99,7 @@
       %img(type="text" src={uri("/images/noimage.png")})
     -else
       %img(type="text" src={uri("/uploads/thumbs/")+collection.getCover().getThumb})
-  Collection1 "#{collection.getTitle}"
+  Collection "#{collection.getTitle}"
 
 #collection-navi
   %a(href={"#uuid="+collection.getUuid+"&tab=meta"} id="btn-edit-meta") meta
