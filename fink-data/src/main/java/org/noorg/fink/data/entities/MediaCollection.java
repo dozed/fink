@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 @NodeEntity
-public class MediaCollection implements Media {
+public class MediaCollection {
 	
 	/**
 	 * workaround for inheritance bug:

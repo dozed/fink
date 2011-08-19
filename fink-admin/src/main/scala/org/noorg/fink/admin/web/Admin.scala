@@ -1,24 +1,20 @@
 package org.noorg.fink.admin.web
 
 import com.codahale.jerkson.Json._
-import java.util.TreeSet
 import org.apache.commons.fileupload.FileItem
+import org.noorg.fink.admin.support.ApplicationContextProvider
+import org.noorg.fink.admin.support.MediaManager
+import org.noorg.fink.data.entities.Page
+import org.noorg.fink.data.entities.Tag
+import org.noorg.fink.data.repository.ImageRepository
+import org.noorg.fink.data.repository.MediaRepository
+import org.noorg.fink.data.repository.PageRepository
+import org.noorg.fink.data.repository.PostRepository
+import org.noorg.fink.data.repository.TagRepository
 import org.scalatra.ScalatraServlet
 import org.scalatra.fileupload.FileUploadSupport
 import org.scalatra.scalate.ScalateSupport
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Controller
 import scala.collection.JavaConversions._
-import org.noorg.fink.data.repository.PostRepository
-import org.noorg.fink.admin.support.MediaManager
-import org.noorg.fink.data.repository.TagRepository
-import org.noorg.fink.data.repository.ImageRepository
-import org.noorg.fink.data.repository.MediaRepository
-import org.noorg.fink.data.entities.Page
-import org.noorg.fink.data.entities.Tag
-import org.springframework.stereotype.Repository
-import org.noorg.fink.admin.support.ApplicationContextProvider
-import org.noorg.fink.data.repository.PageRepository
 
 //cant use controller here, since the servlet is added via web.xml
 //@Controller
@@ -50,6 +46,10 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	
 	def ensureRepositories() = {
 		if (!inited) {
+		  MediaManager.base = servletContext.getRealPath("/uploads")
+		  	
+		  println(MediaManager.base)
+		  
 			postRepository = ApplicationContextProvider.getContext().getBean(classOf[PostRepository])
 			mediaRepository = ApplicationContextProvider.getContext().getBean(classOf[MediaRepository])
 			imageRepository = ApplicationContextProvider.getContext().getBean(classOf[ImageRepository])
@@ -85,7 +85,6 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 //		println(test.getParentPage().getParentPage())
 //		test.getParentPage().getSubPages().foreach { p => println(p) }
 		//pageRepository.find("title", "People").getSubPages().foreach { p => println(p) }
-
 		val root = pageRepository.find("title", "Website")
 		goDown(root)
 		println(generate(root))

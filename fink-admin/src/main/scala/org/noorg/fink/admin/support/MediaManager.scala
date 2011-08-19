@@ -13,10 +13,11 @@ import scala.collection.JavaConversions._
 
 object MediaManager {
 
-  val base = "src/main/webapp/uploads"
-  val dirImagesFull = base + "/images"
-  val dirImagesThumb = base + "/thumbs"
-  val dirImagesMedium = base + "/medium"
+  var base = "./uploads"
+  def getBase() = base
+  def dirImagesFull = getBase() + "/images"
+  def dirImagesThumb = getBase() + "/thumbs"
+  def dirImagesMedium = getBase() + "/medium"
 
   var inited = false 
   var imageRepository : ImageRepository = null

@@ -3,6 +3,7 @@
 
 :!javascript
   $(document).ready(function() {
+    /*
     $('#file_upload').uploadify({
       'uploader'  : '/uploadify-2.1.4/uploadify.swf',
       'cancelImg' : '/uploadify-2.1.4/cancel.png',
@@ -16,6 +17,26 @@
         location.href = location.href;
       }
     });
+    */
+    
+     $('#file_upload').uploadify({
+      'swf' : '/assets/uploadify-3.0.0-beta/uploadify.swf',
+      'cancelImage'   : '/assets/uploadify-3.0.0-beta/uploadify-cancel.png',
+      'folder'    : '/uploads',
+      'auto'      : true,
+      'multi'     : true,
+      'method'    : 'POST',
+      'debug'     : false,
+      'uploader'  : '/admin/images/upload',
+      'checkExisting' : false,
+      'fileObjName'   : 'file',
+      'fileTypeExts'  : '*.jpg;*.jpeg;*.gif;*.png',
+      'fileTypeDesc'  : 'Image Files (.JPG, .GIF, .PNG)',
+      'onQueueComplete' : function() {
+        location.href = location.href;
+      },
+    });
+    
     
     $(".media-image").lightBox({
       fixedNavigation:true,

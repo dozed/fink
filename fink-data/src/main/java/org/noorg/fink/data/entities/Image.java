@@ -12,7 +12,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 import com.google.common.collect.ImmutableSet;
 
 @NodeEntity
-public class Image implements Media {
+public class Image {
 	
 	/**
 	 * workaround for inheritance bug:
