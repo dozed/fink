@@ -53,4 +53,8 @@ public class PostRepository {
 		return null;
 	}
 	
+	public Post findPostByUuid(String uuid) {
+		return repository.findByPropertyValue("uuid", uuid);
+	}
+	
 }

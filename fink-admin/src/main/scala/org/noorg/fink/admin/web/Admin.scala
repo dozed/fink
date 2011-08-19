@@ -75,12 +75,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		layout("admin.index", Map("content" -> "Hello World"))
 	}
 
-	get("/setup") {
-		//SetupTool.setupDatabase();
-		<h1>Overview</h1><ul><li>Setup Database</li></ul>
-	}
-
-	get("/init") {
+	get("/config") {
 		//SetupTool.initDatabase();
 	}
 
@@ -147,7 +142,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		
 		pageRepository.save(page)
 		pageRepository.save(parent)
-
+  
 		redirect(uri("/admin/pages"))
 	}
 
@@ -161,6 +156,17 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	post("/posts/create") {
 		postRepository.createPost(params("title"), params("text"), params("author"), params("category"), params("tags"))
+		redirect(uri("/admin/posts"))
+	}
+
+	get("/posts/edit/:uuid") {
+		val post = postRepository.findPostByUuid(params("uuid"))
+		println(post)
+		layout("posts.edit", Map("post" -> post))
+	}
+
+	post("/posts/edit/:uuid") {
+		val post = postRepository.findPostByUuid(params("uuid"))
 		redirect(uri("/admin/posts"))
 	}
 

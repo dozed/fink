@@ -44,23 +44,19 @@
 		<New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
 			<Set name="handlers">
 				<Array type="org.eclipse.jetty.server.Handler">
-					<!-- <Item> <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection" /> </Item> 
-						<Item> <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler" /> </Item> -->
 					<Item>
 						<New class="org.eclipse.jetty.webapp.WebAppContext">
 							<Set name="contextPath">/</Set>
-							<!-- <Set name="war">/home/stefan/Desktop/fink/fink-sample/target/fink-sample-0.0.1-SNAPSHOT</Set> -->
 							<Set name="baseResource">
 								<New class="org.eclipse.jetty.util.resource.ResourceCollection">
 									<Arg>
 										<Array type="java.lang.String">
 										<!-- 
-											<Item>/home/stefan/Desktop/fink/fink-admin/src/main/webapp</Item>
-											<Item>/home/stefan/Desktop/fink/fink-sample/src/main/webapp</Item>
+											<Item><SystemProperty name="fink.home" default="."/>/fink-admin/src/main/webapp</Item>
+											<Item><SystemProperty name="fink.home" default="."/>/fink/fink-sample/src/main/webapp</Item>
 											-->
 											<Item><SystemProperty name="fink.home" default="."/>/fink-sample/target/fink-sample-0.0.1-SNAPSHOT</Item>
 											<Item><SystemProperty name="fink.home" default="."/>/fink-admin/target/fink-admin-0.0.1-SNAPSHOT</Item>
-											<!-- <Item><SystemProperty name="jetty.home" default="."/>/webapps/foo</Item> -->
 										</Array>
 									</Arg>
 								</New>
