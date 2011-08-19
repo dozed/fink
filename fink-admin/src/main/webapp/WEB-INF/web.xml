@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2009-2011 the original author or authors. See the notice.md 
+	file distributed with this work for additional information regarding copyright 
+	ownership. Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. You may 
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+
+	<display-name>MyWebApp</display-name>
+
+	<description>
+    My Web App
+  </description>
+
+	<servlet>
+		<servlet-name>Admin</servlet-name>
+		<servlet-class>org.noorg.fink.admin.web.Admin</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Admin</servlet-name>
+		<url-pattern>/admin/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+    <servlet-name>default</servlet-name>
+    <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
+    <init-param>
+      <param-name>acceptRanges</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>dirAllowed</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>redirectWelcome</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>maxCacheSize</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>maxCachedFileSize</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>maxCachedFiles</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>useFileMappedBuffer</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+
+ 	<servlet>
+		<servlet-name>Frontend</servlet-name>
+		<servlet-class>org.noorg.fink.admin.web.Frontend</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Frontend</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+ 
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>/images/*</url-pattern>
+		<url-pattern>/css/*</url-pattern>
+		<url-pattern>/js/*</url-pattern>
+    <url-pattern>/uploads/*</url-pattern>
+    <url-pattern>/assets/*</url-pattern>
+	</servlet-mapping>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring-config.xml</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+</web-app>

@@ -1,0 +1,153 @@
+
+-@val collection : org.noorg.fink.data.entities.MediaCollection
+
+:!javascript
+  $(document).ready(function() {
+    $("select, input:text, textarea, input:checkbox, input:radio").uniform();
+
+    $("#tags").tagsInput({
+      height: "100px",
+      width: "300px",
+    });
+
+    $('#file_upload').uploadify({
+      'swf' : '/assets/uploadify-3.0.0-beta/uploadify.swf',
+      'cancelImage'   : '/assets/uploadify-3.0.0-beta/uploadify-cancel.png',
+      'folder'    : '/uploads',
+      'auto'      : true,
+      'multi'     : true,
+      'method'    : 'POST',
+      'debug'     : true,
+      'uploader'  : '/admin/collections/edit/#{collection.getUuid}/add',
+      'checkExisting' : false,
+      'fileObjName'   : 'file',
+      'fileTypeExts'  : '*.jpg;*.jpeg;*.gif;*.png',
+      'fileTypeDesc'  : 'Image Files (.JPG, .GIF, .PNG)',
+      'onQueueComplete' : function() {
+        alert(1);
+        //reload_collection($('#collection-id').val());
+      },
+      /*
+      'queueSizeLimit' :  200,
+      'simUploadLimit' : 1,
+      'removeCompleted': true,
+      'onSelectOnce' : function(event,data) {
+        $('#status-message').text(data.filesSelected + ' files have been added to the queue.');
+      },
+      'onError'   : function(evt,key,image,error) { console.log(error); },
+      'onUploadComplete': function() {
+        console.log($(this));
+      },
+      */
+    });
+    $(".media-image").lightBox({
+      fixedNavigation:true,
+      txtImage:'Bild',
+      txtOf:'von',
+      imageLoading:"#{uri("/images/lightbox-ico-loading.gif")}",
+      imageBtnClose:"#{uri("/images/lightbox-btn-close.gif")}",
+      imageBtnNext:"#{uri("/images/lightbox-btn-next.gif")}",
+      imageBtnPrev:"#{uri("/images/lightbox-btn-prev.gif")}",
+      imageBlank:"#{uri("/images/lightbox-blank.gif")}"
+    });
+
+    var meta = $("#collection-meta");
+    var images = $("#collection-images");
+
+    $("#btn-edit-meta").click(function() {
+      images.hide();
+      meta.show();
+    });
+    
+    $("#btn-edit-images").click(function() {
+      meta.hide();
+      images.show();
+    });
+    
+    $("#btn-collection-save").click(function() {
+      var title = $("#title").val();
+      var author = $("#author").val();
+      var tags = $("#tags").val();
+      $.post("#{uri("/admin/collections/edit/"+collection.getUuid+"/update")}", {
+        title: title,
+        author: author,
+        tags: tags
+      }, function() {
+        reload_collection("#{collection.getUuid}");
+      });
+    });
+
+    $("#btn-edit-cover").click(function(event) {
+      event.preventDefault();
+      
+      $("<div></div>").load("#{uri("/admin/collections/edit/"+collection.getUuid+"/images")}", function() {
+        var dialog = $(this).modal(); 
+        $(this).find(".media-image").click(function() {
+          var mediaid = $(this).attr("rel");
+          $.post("#{uri("/admin/collections/edit/"+collection.getUuid+"/setcover")}", {mediaid: mediaid}, function() {
+            dialog.close();
+            reload_collection("#{collection.getUuid}");
+          });
+        });
+      });
+    });
+  });
+
+%h1
+  %a(href={"#uuid="+collection.getUuid+"&tab=meta"} id="btn-edit-cover")
+    -if (collection.getCover == null)
+      %img(type="text" src={uri("/images/noimage.png")})
+    -else
+      %img(type="text" src={uri("/uploads/thumbs/")+collection.getCover().getThumb})
+  Collection1 "#{collection.getTitle}"
+
+#collection-navi
+  %a(href={"#uuid="+collection.getUuid+"&tab=meta"} id="btn-edit-meta") meta
+  %a(href={"#uuid="+collection.getUuid+"&tab=images"} id="btn-edit-images") images
+
+#collection-meta
+  %p
+    Title:
+    %input(type="text" id="title" value={collection.getTitle})
+
+  %p
+    Author:
+    %input(type="text" id="author" value={collection.getAuthor})
+
+  %p
+    Tags:
+    %input(type="text" id="tags" value={collection.getTags().map(t => t.getName)mkString(",")})
+
+    #box-cover-select
+
+  %p
+    %a(href="#" id="btn-collection-save") save
+
+#collection-images(style="display:none")
+  %input(type="hidden" id="collection-id" value="#{collection.getUuid}")
+  
+  .upload-box
+    %input(id="file_upload" name="file" type="file")
+    %br
+    
+    #status-message
+    #custom-queue.uploadifyQueue
+  
+  -if(collection.getItems.size > 0)
+    .images-list
+      -for(media <- collection.getItems )
+        -# hack
+        -val image : org.noorg.fink.data.entities.Image = media.asInstanceOf[org.noorg.fink.data.entities.Image]
+        .image
+          %a(class="media-image" href={uri("/uploads/medium/"+image.getImage)} rel={uri("/uploads/medium/"+image.getImage)} title={image.getTitle})
+            %img(src={uri("/uploads/thumbs/"+image.getThumb)} title={image.getTitle})
+          %span
+            -if (image.getTitle.length > 18)
+              =image.getTitle.substring(0,18)
+            -else
+              =image.getTitle
+  
+  -else
+    %p
+      There are no items yet, please upload some first.  
+

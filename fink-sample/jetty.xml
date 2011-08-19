@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+	<!-- =========================================================== -->
+	<!-- Server Thread Pool -->
+	<!-- =========================================================== -->
+	<Set name="ThreadPool">
+		<!-- Default queued blocking threadpool -->
+		<New class="org.eclipse.jetty.util.thread.QueuedThreadPool">
+			<Set name="minThreads">1</Set>
+			<Set name="maxThreads">10</Set>
+			<Set name="detailedDump">true</Set>
+		</New>
+	</Set>
+
+	<!-- =========================================================== -->
+	<!-- Set connectors -->
+	<!-- =========================================================== -->
+	<Call name="addConnector">
+		<Arg>
+			<New class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+				<Set name="host">
+					<Property name="jetty.host" />
+				</Set>
+				<Set name="port">
+					<Property name="jetty.port" default="8080" />
+				</Set>
+				<Set name="maxIdleTime">300000</Set>
+				<Set name="Acceptors">2</Set>
+				<Set name="statsOn">false</Set>
+				<Set name="confidentialPort">8443</Set>
+				<Set name="lowResourcesConnections">20000</Set>
+				<Set name="lowResourcesMaxIdleTime">5000</Set>
+			</New>
+		</Arg>
+	</Call>
+
+	<!-- =========================================================== -->
+	<!-- Set handler Collection Structure -->
+	<!-- =========================================================== -->
+	<Set name="handler">
+		<New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
+			<Set name="handlers">
+				<Array type="org.eclipse.jetty.server.Handler">
+					<!-- <Item> <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection" /> </Item> 
+						<Item> <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler" /> </Item> -->
+					<Item>
+						<New class="org.eclipse.jetty.webapp.WebAppContext">
+							<Set name="contextPath">/</Set>
+							<!-- <Set name="war">/home/stefan/Desktop/fink/fink-sample/target/fink-sample-0.0.1-SNAPSHOT</Set> -->
+							<Set name="baseResource">
+								<New class="org.eclipse.jetty.util.resource.ResourceCollection">
+									<Arg>
+										<Array type="java.lang.String">
+										<!-- 
+											<Item>/home/stefan/Desktop/fink/fink-admin/src/main/webapp</Item>
+											<Item>/home/stefan/Desktop/fink/fink-sample/src/main/webapp</Item>
+											-->
+											<Item><SystemProperty name="fink.home" default="."/>/fink-sample/target/fink-sample-0.0.1-SNAPSHOT</Item>
+											<Item><SystemProperty name="fink.home" default="."/>/fink-admin/target/fink-admin-0.0.1-SNAPSHOT</Item>
+											<!-- <Item><SystemProperty name="jetty.home" default="."/>/webapps/foo</Item> -->
+										</Array>
+									</Arg>
+								</New>
+							</Set>
+						</New>
+					</Item>
+				</Array>
+			</Set>
+		</New>
+	</Set>
+
+	<!-- =========================================================== -->
+	<!-- extra options -->
+	<!-- =========================================================== -->
+	<Set name="stopAtShutdown">true</Set>
+	<Set name="sendServerVersion">true</Set>
+	<Set name="sendDateHeader">true</Set>
+	<Set name="gracefulShutdown">1000</Set>
+	<Set name="dumpAfterStart">false</Set>
+	<Set name="dumpBeforeStop">false</Set>
+
+</Configure>

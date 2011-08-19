@@ -1,0 +1,9 @@
+-@ val rootPage : org.noorg.fink.data.entities.Page
+-@ val selected : org.noorg.fink.data.entities.Page
+- val level : java.lang.Integer = 0
+
+%select(name="parent")
+  - attributes("level") = 0
+  - attributes("tmpPage") = rootPage
+  - render("/WEB-INF/pages.selectItem.scaml")
+

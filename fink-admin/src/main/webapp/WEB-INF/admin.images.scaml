@@ -1,0 +1,32 @@
+
+-@val images : List[org.noorg.fink.data.entities.Image]
+
+:!javascript
+  $(document).ready(function() {
+    $('#file_upload').uploadify({
+      'uploader'  : '/uploadify-2.1.4/uploadify.swf',
+      'cancelImg' : '/uploadify-2.1.4/cancel.png',
+      'folder'    : '/uploads',
+      'auto'      : true,
+      'method'		: 'POST',
+      'fileDataName': 'file',
+      'script'		: '/admin/images/upload',
+      'onError'		: function(evt,key,image,error) { console.log(error); },
+      'onComplete': function(event, ID, fileObj, response, data) {
+        location.href = location.href;
+      }
+    });
+    
+    $(".media-image").lightBox({
+      fixedNavigation:true,
+      txtImage:'Bild',
+      txtOf:'von',
+      imageLoading:"#{uri("/images/lightbox-ico-loading.gif")}",
+      imageBtnClose:"#{uri("/images/lightbox-btn-close.gif")}",
+      imageBtnNext:"#{uri("/images/lightbox-btn-next.gif")}",
+      imageBtnPrev:"#{uri("/images/lightbox-btn-prev.gif")}",
+      imageBlank:"#{uri("/images/lightbox-blank.gif")}"
+    });
+  });
+
+=include("/WEB-INF/images.scaml")

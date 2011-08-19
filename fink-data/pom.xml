@@ -1,0 +1,119 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.noorg.fink</groupId>
+    <artifactId>fink-project</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+
+	<groupId>org.noorg.fink</groupId>
+	<artifactId>fink-data</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>fink-data</name>
+	<url>http://maven.apache.org</url>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-neo4j</artifactId>
+			<version>1.1.0.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.6.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${aspectj-version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>r09</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.0.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+    <dependency>
+      <groupId>com.codahale</groupId>
+      <artifactId>jerkson_${scala-version}</artifactId>
+      <version>0.4.0</version>
+    </dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- maven-compiler-plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+
+      <!-- aspectj-maven-plugin -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>aspectj-maven-plugin</artifactId>
+        <version>1.2</version>
+        <dependencies>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjrt</artifactId>
+                <version>${aspectj-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjtools</artifactId>
+                <version>${aspectj-version}</version>
+            </dependency>
+        </dependencies>
+        <executions>
+            <execution>
+                <goals>
+                    <goal>compile</goal>
+                    <goal>test-compile</goal>
+                </goals>
+            </execution>
+        </executions>
+        <configuration>
+            <outxml>true</outxml>
+            <aspectLibraries>
+                <aspectLibrary>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aspects</artifactId>
+                </aspectLibrary>
+                <aspectLibrary>
+                    <groupId>org.springframework.data</groupId>
+                    <artifactId>spring-data-neo4j</artifactId>
+                </aspectLibrary>
+            </aspectLibraries>
+            <source>1.6</source>
+            <target>1.6</target>
+        </configuration>
+      </plugin>
+		</plugins>
+	</build>
+</project>

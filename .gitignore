@@ -1,0 +1,11 @@
+.settings
+.project
+.classpath
+target
+
+fink-*/.settings
+fink-*/.project
+fink-*/.classpath
+fink-*/target
+
+fink-*/.scala_dependencies

@@ -1,0 +1,8 @@
+
+-@val posts : java.util.List[org.noorg.fink.data.entities.Post]
+
+%a(href={uri("/admin/posts/create")}) create a new post
+
+-for(val post <- posts)
+  %p
+    %a(href={uri("/admin/posts/edit/"+post.getUuid)}) #{post.getTitle}

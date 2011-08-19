@@ -1,0 +1,44 @@
+
+-@val rootPage : org.noorg.fink.data.entities.Page
+-@val page : org.noorg.fink.data.entities.Page
+
+:!javascript
+  $(document).ready(function() {
+    $(this).find("select, input:text, textarea, input:checkbox, input:radio, input:file").uniform();
+
+    $("#tags").tagsInput({
+      height: "100px",
+      width: "300px",
+    });
+
+    $("input#save").click(function() {
+      $("form#pages-form").submit();
+    });
+  });
+
+%form(id="pages-form" method="post")
+  %p(style="margin-bottom: 1em; font-size: 13px")
+    Titel:
+    %input(type="text" id="title" name="title" size="50" value={page.getTitle})
+    
+  %p(style="margin-bottom: 1em; font-size: 13px")
+    Autor:
+    %input(type="text" size="50" name="author" value={page.getAuthor})
+  
+  %p(style="margin-bottom: 1em; font-size: 13px")
+    Parent:
+
+    -attributes("rootPage") = rootPage
+    -attributes("selected") = page.getParentPage
+    -render("/WEB-INF/pages.select.scaml")
+  
+  %p(style="margin-bottom: 1em; font-size: 13px")
+    Tags:
+    %input(type="text" id="tags" name="tags" size="50" value={page.getTags().map(t => t.getName)mkString(",")})
+
+  %textarea(style="width:100%" rows="15" name="text") #{page.getText}
+
+
+.controls
+  %a(rel="cancel" class="btn" href={uri("/admin/pages")}) Cancel
+  %input(type="button" id="save" value="Save")
