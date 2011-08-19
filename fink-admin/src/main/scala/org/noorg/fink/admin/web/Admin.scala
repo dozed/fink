@@ -75,8 +75,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		layout("admin.index", Map("content" -> "Hello World"))
 	}
 
-	get("/config") {
-		//SetupTool.initDatabase();
+	get("/configuration") {
+		layout("admin.config")
 	}
 
 	get("/pages") {
