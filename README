@@ -1,0 +1,12 @@
+
+Running the sample app:
+
+$ git clone git@github.com:dozed/fink.git
+$ cd fink
+$ mvn clean package
+$ mvn -P jetty compile
+
+The sample application is running on: http://localhost:8080/
+The admin panel is reachable under: http://localhost:8080/admin/ (<- note the extra / at the end)
+
+
