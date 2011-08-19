@@ -198,11 +198,6 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.fusesource.scalate</groupId>
-				<artifactId>maven-scalate-plugin</artifactId>
-			</plugin>
-
-			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
 				<executions>
@@ -318,5 +313,17 @@
 				</plugins>
 			</build>
 		</profile>
-	</profiles>
+
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.fusesource.scalate</groupId>
+            <artifactId>maven-scalate-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+ 	</profiles>
 </project>

@@ -185,19 +185,13 @@
 				<version>${surefire-plugin-version}</version>
 				<configuration>
 					<forkMode>once</forkMode>
-					<!-- these settings are mandatory to avoid SureFire giving a bogus system 
-						property to the web container -->
+					<!-- these settings are mandatory to avoid SureFire giving a bogus system property to the web container -->
 					<useSystemClassLoader>false</useSystemClassLoader>
 					<useManifestOnlyJar>false</useManifestOnlyJar>
 					<includes>
 						<include>**/*Test.*</include>
 					</includes>
 				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.fusesource.scalate</groupId>
-				<artifactId>maven-scalate-plugin</artifactId>
 			</plugin>
 
 			<plugin>
@@ -226,4 +220,18 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+		  <id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.fusesource.scalate</groupId>
+						<artifactId>maven-scalate-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

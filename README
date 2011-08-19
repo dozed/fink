@@ -15,10 +15,6 @@ Rapid development:
 Here are some tipps to make development more productive. Basically they allow you to work on your codebase
 without having to redeploy the web application each time.
 
-- Remove pre-compiled scalate classes (enables template reloading)
-  $ rm -rf fink-admin/target/fink-admin-0.0.1-SNAPSHOT/WEB-INF/classes/scalate 
-  $ rm -rf fink-admin/target/fink-admin-0.0.1-SNAPSHOT/WEB-INF/classes/WEB_INF
-
 - After a change in a template run:
   $ mvn war:exploded
 
