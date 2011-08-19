@@ -9,3 +9,4 @@ fink-*/.classpath
 fink-*/target
 
 fink-*/.scala_dependencies
+fink-sample/src/main/webapp/WEB-INF/classes/rebel.xml

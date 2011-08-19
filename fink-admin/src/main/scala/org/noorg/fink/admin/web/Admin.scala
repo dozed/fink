@@ -129,6 +129,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 			pageRepository.save(oldParent)
 		}
 
+		page.clearTags
+		
 		for (t <- params("tags").split(",")) {
 			var tag = tagRepository.findTag(t)
 			if (tag == null) {
@@ -138,6 +140,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		}
 
 		page.setTitle(params("title"))
+		page.setAuthor(params("author"))
 		page.setText(params("text"))
 		
 		pageRepository.save(page)
@@ -161,12 +164,28 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	get("/posts/edit/:uuid") {
 		val post = postRepository.findPostByUuid(params("uuid"))
-		println(post)
 		layout("posts.edit", Map("post" -> post))
 	}
 
 	post("/posts/edit/:uuid") {
 		val post = postRepository.findPostByUuid(params("uuid"))
+
+		post.clearTags
+		
+		for (t <- params("tags").split(",")) {
+			var tag = tagRepository.findTag(t)
+			if (tag == null) {
+				tag = tagRepository.createTag(t)
+			}
+			post.addTag(tag)
+		}
+
+		post.setTitle(params("title"))
+		post.setAuthor(params("title"))
+		post.setText(params("text"))
+		
+		postRepository.save(post)
+		
 		redirect(uri("/admin/posts"))
 	}
 

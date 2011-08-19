@@ -40,6 +40,10 @@ public class PostRepository {
 		return repository.save(new Post(title, text, author, null, tagSet));
 	}
 	
+	public void save(Post post) {
+		repository.save(post);
+	}
+	
 	public Post findPost(int year, int month, int day, String title) {
 		DateTime dt = new DateTime(year, month, day, 0, 0, 0, 0);
 		DateTime dtNext = new DateTime(year, month, day+1, 0, 0, 0, 0);

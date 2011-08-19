@@ -85,6 +85,10 @@ public class Post {
 		this.tags.add(tag);
 	}
 
+	public void clearTags() {
+		this.tags.clear();
+	}
+	
 	protected void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
