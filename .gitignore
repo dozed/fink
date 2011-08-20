@@ -2,6 +2,7 @@
 .project
 .classpath
 target
+db
 
 fink-*/.settings
 fink-*/.project
