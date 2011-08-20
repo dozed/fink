@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.noorg.fink.data.entities.Image;
 import org.noorg.fink.data.entities.MediaCollection;
-import org.noorg.fink.data.entities.Page;
 import org.noorg.fink.data.entities.Tag;
 import org.noorg.fink.data.repository.MediaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +61,13 @@ public class CollectionTest {
 		assertNotNull(c);
 	}
 
+	@Test
+	public void shouldIndexShortlink() {
+		createSomeCollections();
+		MediaCollection c = mediaRepository.findCollectionByShortlink("test");
+		assertNotNull(c);
+	}
+	
 	@Test
 	public void shouldContainSubPages() {
 		createSomeCollections();

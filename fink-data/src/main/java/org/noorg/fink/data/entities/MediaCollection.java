@@ -35,6 +35,9 @@ public class MediaCollection {
 	@RelatedTo(elementClass = Image.class, type="PART_OF")
 	private Set<Image> items = new HashSet<Image>();
 	
+	// this entity is accessible via a shortlink
+	@Indexed private String shortlink;
+	
 	private Image cover;
 	
 	public MediaCollection(Node n) {
@@ -47,6 +50,7 @@ public class MediaCollection {
 		setDate(new DateTime());
 		setUuid(UUID.randomUUID().toString());
 		setTitle(title);
+		setShortlink(title);
 	}
 
 	public void addItem(Image item) {
@@ -63,6 +67,14 @@ public class MediaCollection {
 	
 	public Image getCover() {
 		return cover;
+	}
+	
+	public String getShortlink() {
+		return shortlink;
+	}
+
+	public void setShortlink(String shortlink) {
+		this.shortlink = shortlink;
 	}
 
 	/**

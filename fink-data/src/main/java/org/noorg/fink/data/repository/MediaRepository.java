@@ -38,6 +38,10 @@ public class MediaRepository {
 		return repository.findByPropertyValue("title", title);
 	}
 
+	public MediaCollection findCollectionByShortlink(String shortlink) {
+		return repository.findByPropertyValue("shortlink", shortlink);
+	}
+
 	public long countCollections() {
 		return repository.count();
 	}
