@@ -21,7 +21,7 @@ public class MediaRepository {
 		repository = graphRepositoryFactory.createGraphRepository(MediaCollection.class);		
 	}
 
-	public List<MediaCollection> getCollections() {
+	public List<MediaCollection> findAll() {
 		return ImmutableList.copyOf(repository.findAll());
 	}
 	
