@@ -34,6 +34,14 @@ public class MediaRepository {
 		return repository.findByPropertyValue("uuid", uuid);
 	}
 	
+	public MediaCollection findCollectionByTitle(String title) {
+		return repository.findByPropertyValue("title", title);
+	}
+
+	public long countCollections() {
+		return repository.count();
+	}
+	
 	public void save(MediaCollection media) {
 		repository.save(media);
 	}
