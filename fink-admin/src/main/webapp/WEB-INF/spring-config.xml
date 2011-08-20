@@ -15,7 +15,7 @@
 	<context:annotation-config />
 	<context:spring-configured />
 
-	<datagraph:config storeDirectory="target/db"/>
+	<datagraph:config storeDirectory="db"/>
 
 	<!-- <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"> 
 		<property name="locations"> <list> <value>classpath:jdbc.properties</value> 

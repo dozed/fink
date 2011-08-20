@@ -48,8 +48,6 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		if (!inited) {
 		  MediaManager.base = servletContext.getRealPath("/uploads")
 		  	
-		  println(MediaManager.base)
-		  
 			postRepository = ApplicationContextProvider.getContext().getBean(classOf[PostRepository])
 			mediaRepository = ApplicationContextProvider.getContext().getBean(classOf[MediaRepository])
 			imageRepository = ApplicationContextProvider.getContext().getBean(classOf[ImageRepository])
@@ -80,11 +78,6 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	get("/pages") {
-		//pageRepository.findAll().foreach { p => println(p) }
-//		val test = pageRepository.find("title", "Test")
-//		println(test.getParentPage().getParentPage())
-//		test.getParentPage().getSubPages().foreach { p => println(p) }
-		//pageRepository.find("title", "People").getSubPages().foreach { p => println(p) }
 		val root = pageRepository.find("title", "Website")
 		goDown(root)
 		println(generate(root))
@@ -189,7 +182,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	get("/collections") {
-		layout("collections.index", Map("collections" -> mediaRepository.getCollections))
+		layout("collections.index", Map("collections" -> mediaRepository.findAll))
 	}
 
 	get("/collections/create") {
@@ -202,7 +195,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	post("/collections/create") {
 		val c = mediaRepository.createCollection(params("title"))
-		//redirect(uri("/admin/collections/edit/" + c.getUuid))
+		c.setShortlink(params("shortlink"))
+		mediaRepository.save(c)
 		c.getUuid
 	}
 
@@ -220,7 +214,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		val title = params("title")
 		val author = params("author")
 		val tags = params("tags")
-
+		val shortlink = params("shortlink")
+		
 		val c = mediaRepository.findCollection(params("id"))
 
 		for (t <- tags.split(",")) {
@@ -233,6 +228,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 		c.setTitle(title)
 		c.setAuthor(author)
+		c.setShortlink(shortlink)
 		mediaRepository.save(c)
 		println("updated")
 	}

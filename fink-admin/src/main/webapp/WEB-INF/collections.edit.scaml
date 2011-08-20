@@ -67,10 +67,12 @@
       var title = $("#title").val();
       var author = $("#author").val();
       var tags = $("#tags").val();
+      var shortlink = $("#shortlink").val();
       $.post("#{uri("/admin/collections/edit/"+collection.getUuid+"/update")}", {
         title: title,
         author: author,
-        tags: tags
+        tags: tags,
+        shortlink: shortlink
       }, function() {
         reload_collection("#{collection.getUuid}");
       });
@@ -108,6 +110,10 @@
   %p
     Title:
     %input(type="text" id="title" value={collection.getTitle})
+
+  %p
+    Shortlink:
+    %input(type="text" id="shortlink" value={collection.getShortlink})
 
   %p
     Author:

@@ -8,10 +8,21 @@
       height: "100px",
       width: "300px",
     });
+    
+    $("input:text").each(function () {
+      $(this).keypress(function(e) {
+        if(e.which == 13) {
+          $(this).blur();
+          $("form#pages-form").submit();
+        }
+      });
+    });
 
     $("input#save").click(function() {
       $("form#pages-form").submit();
     });
+    
+    $("input#title").focus();
   });
 
 %form(id="pages-form" method="post")
