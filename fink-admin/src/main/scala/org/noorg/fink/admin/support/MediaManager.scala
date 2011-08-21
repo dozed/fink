@@ -36,7 +36,9 @@ object MediaManager {
 	val specs = Array(
 		FullImageSpec("full"),
 		KeepRatioImageSpec("medium", 400),
-		SquareImageSpec("thumb", 100))
+		SquareImageSpec("thumb", 100),
+		KeepRatioImageSpec("big", 700)
+	)
 
 	var inited = false
 	var imageRepository: ImageRepository = null
@@ -105,7 +107,7 @@ object MediaManager {
 
 	protected def processImage(item: FileItem, name: String, ext: String): Image = {
 		var m = Map[String, File]()
-		specs.foreach(spec => m.put(spec.name, processImage(spec, item.getInputStream, name, ext)))
+		specs.foreach(spec => m += (spec.name -> processImage(spec, item.getInputStream, name, ext)))
 		return imageRepository.addImage(m("full").getName(), m("full").getName(), m("medium").getName(), m("thumb").getName())
 	}
 
