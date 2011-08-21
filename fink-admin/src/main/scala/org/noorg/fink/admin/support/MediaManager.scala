@@ -88,33 +88,25 @@ object MediaManager {
 		if (!m.matches) return null
 
 		val (name, ext) = (m.group(1), m.group(2))
-
-		if (isImage(item, name, ext)) {
-			return processImage(item, name, ext)
-		}
-
-		return null
-	}
-
-	protected def processImage(item: FileItem, name: String, ext: String): Image = {
-		var m = Map[String, File]()
-		//specs.foreach(spec => m.put(spec.name, processImage(spec, item, name, ext)))
-
 		var img : Image = null
 		
 		try {
-			println(1)
-			specs.foreach(spec => m += (spec.name -> processImage(spec, item.getInputStream(), name, ext)) )
-			println(2)
-			img = imageRepository.addImage(m("full").getName(), m("full").getName(), m("medium").getName(), m("thumb").getName())
+			if (isImage(item, name, ext)) {
+				img = processImage(item, name, ext)
+			}
 		} catch {
 			case e: Exception => {
 				e.printStackTrace()
 			}
 		}
-		println(3)
-
+		
 		return img
+	}
+
+	protected def processImage(item: FileItem, name: String, ext: String): Image = {
+		var m = Map[String, File]()
+		specs.foreach(spec => m.put(spec.name, processImage(spec, item.getInputStream, name, ext)))
+		return imageRepository.addImage(m("full").getName(), m("full").getName(), m("medium").getName(), m("thumb").getName())
 	}
 
 	protected def processImage(spec: ImageSpec, upload: InputStream, fileBaseName: String, ext: String): File = {
