@@ -1,4 +1,3 @@
-
 -@val images : List[org.noorg.fink.data.entities.Image]
 
 %input(id="file_upload" name="file" type="file")
@@ -7,10 +6,9 @@
   -for( val image <- images )
     .image
       %a(class="media-image" href={uri("/uploads/medium/"+image.getImage)} rel={uri("/uploads/medium/"+image.getImage)} title={image.getTitle})
-        %img(src={uri("/uploads/thumbs/"+image.getThumb)} title={image.getTitle})
+        %img(src={uri("/uploads/thumb/"+image.getThumb)} title={image.getTitle})
       %span
         -if (image.getTitle.length > 18)
           =image.getTitle.substring(0,18)
         -else
           =image.getTitle
-

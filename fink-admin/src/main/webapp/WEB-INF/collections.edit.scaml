@@ -99,7 +99,7 @@
     -if (collection.getCover == null)
       %img(type="text" src={uri("/images/noimage.png")})
     -else
-      %img(type="text" src={uri("/uploads/thumbs/")+collection.getCover().getThumb})
+      %img(type="text" src={uri("/uploads/thumb/")+collection.getCover().getThumb})
   Collection "#{collection.getTitle}"
 
 #collection-navi
@@ -145,7 +145,7 @@
         -val image : org.noorg.fink.data.entities.Image = media.asInstanceOf[org.noorg.fink.data.entities.Image]
         .image
           %a(class="media-image" href={uri("/uploads/medium/"+image.getImage)} rel={uri("/uploads/medium/"+image.getImage)} title={image.getTitle})
-            %img(src={uri("/uploads/thumbs/"+image.getThumb)} title={image.getTitle})
+            %img(src={uri("/uploads/thumb/"+image.getThumb)} title={image.getTitle})
           %span
             -if (image.getTitle.length > 18)
               =image.getTitle.substring(0,18)

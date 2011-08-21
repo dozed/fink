@@ -3,157 +3,199 @@ package org.noorg.fink.admin.support
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.util.regex.Pattern
 import org.apache.commons.fileupload.FileItem
+import org.apache.commons.io.IOUtils
 import org.noorg.fink.data.entities.Image
 import org.noorg.fink.data.repository.ImageRepository
 import org.noorg.fink.data.repository.MediaRepository
 import scala.collection.JavaConversions._
 
+// Image specifications
+sealed abstract case class ImageSpec(name: String)
+case class FullImageSpec(override val name: String) extends ImageSpec(name)
+case class KeepRatioImageSpec(override val name: String, max: Int) extends ImageSpec(name)
+case class SquareImageSpec(override val name: String, width: Int) extends ImageSpec(name)
+
 object MediaManager {
 
-  var base = "./uploads"
-  def getBase() = base
-  def dirImagesFull = getBase() + "/images"
-  def dirImagesThumb = getBase() + "/thumbs"
-  def dirImagesMedium = getBase() + "/medium"
+	var base = "./uploads"
+	def getBase() = base
+	def relativeDirectory(sub: String) = getBase() + "/" + sub
+	def tmpDirectory = getBase() + "/tmp"
 
-  var inited = false 
-  var imageRepository : ImageRepository = null
-	var mediaRepository : MediaRepository = null
-  
-  // setup the folder structure in the filesystem
+	// todo refactor this
+	def dirImagesFull = getBase + "/full"
+	def dirImagesThumb = getBase + "/thumbs"
+	def dirImagesMedium = getBase + "/medium"
+
+	val specs = Array(
+		FullImageSpec("full"),
+		KeepRatioImageSpec("medium", 400),
+		SquareImageSpec("thumb", 100))
+
+	var inited = false
+	var imageRepository: ImageRepository = null
+	var mediaRepository: MediaRepository = null
+
+	// setup the folder structure in the filesystem
 	// also set repositories, later remove this
-  protected def sanitizeEnv = {
-    checkDirectory(base)
-    checkDirectory(dirImagesFull)
-    checkDirectory(dirImagesMedium)
-    checkDirectory(dirImagesThumb)
-    
-    if (!inited) {
-    	imageRepository = ApplicationContextProvider.getContext().getBean(classOf[ImageRepository])
-    	mediaRepository = ApplicationContextProvider.getContext().getBean(classOf[MediaRepository])
-      inited = true
-    }
-  }
+	protected def sanitizeEnv = {
+		checkDirectory(base)
+		specs.foreach(spec => checkDirectory(relativeDirectory(spec.name)))
 
-  protected def checkDirectory(dir: String) = {
-    val target = new File(dir)
-    if (!target.exists) target.mkdirs
-  }
+		if (!inited) {
+			imageRepository = ApplicationContextProvider.getContext().getBean(classOf[ImageRepository])
+			mediaRepository = ApplicationContextProvider.getContext().getBean(classOf[MediaRepository])
+			inited = true
+		}
+	}
 
-  // TODO use a more sophisticated method to check for an image
-  protected def isImage(item: FileItem, name: String, ext: String): Boolean = true
+	protected def checkDirectory(dir: String) = {
+		val target = new File(dir)
+		if (!target.exists) target.mkdirs
+	}
 
-  def getImagesList: List[Image] = {
-    sanitizeEnv
-    imageRepository.findAll().toList
-  }
+	// TODO use a more sophisticated method to check for an image
+	protected def isImage(item: FileItem, name: String, ext: String): Boolean = true
 
-  def getImages: List[String] = {
-    sanitizeEnv
-    new File(dirImagesFull).listFiles().filter({ f =>
-      """.*\.(jpg|jpeg|gif|png)$""".r.findFirstIn(f.getName).isDefined
-    }).map(f => f.getName).toList
-  }
+	def getImagesList: List[Image] = {
+		sanitizeEnv
+		imageRepository.findAll().toList
+	}
 
-  def getThumbnails: List[String] = {
-    sanitizeEnv
-    new File(dirImagesThumb).listFiles().filter({ f =>
-      """.*\.(jpg|jpeg|gif|png)$""".r.findFirstIn(f.getName).isDefined
-    }).map(f => f.getName).toList
-  }
+	def getImages: List[String] = {
 
-  def processUpload(item: FileItem): Image = {
-    sanitizeEnv
-    val m = Pattern.compile("(.*)\\.(.*)$").matcher(item.getName)
-    if (!m.matches) return null
+		new File(dirImagesFull).listFiles().filter({ f =>
+			""".*\.(jpg|jpeg|gif|png)$""".r.findFirstIn(f.getName).isDefined
+		}).map(f => f.getName).toList
+	}
 
-    val (name, ext) = (m.group(1), m.group(2))
+	def getThumbnails: List[String] = {
+		sanitizeEnv
+		new File(dirImagesThumb).listFiles().filter({ f =>
+			""".*\.(jpg|jpeg|gif|png)$""".r.findFirstIn(f.getName).isDefined
+		}).map(f => f.getName).toList
+	}
 
-    if (isImage(item, name, ext)) {
-      return processImage(item, name, ext)
-    }
+	def processUpload(item: FileItem): Image = {
+		sanitizeEnv
+		val m = Pattern.compile("(.*)\\.(.*)$").matcher(item.getName)
+		if (!m.matches) return null
 
-    return null
-  }
+		val (name, ext) = (m.group(1), m.group(2))
 
-  protected def processImage(item: FileItem, name: String, ext: String): Image = {
-    val full = getFileResource(dirImagesFull, name, ext)
-    item.write(full)
+		if (isImage(item, name, ext)) {
+			return processImage(item, name, ext)
+		}
 
-    //?
-    //val t = new Thumbnail()
+		return null
+	}
 
-    val thumb = new File(dirImagesThumb + "/" + full.getName)
-    var status = resizeImage(full, thumb, 100)
+	protected def processImage(item: FileItem, name: String, ext: String): Image = {
+		var m = Map[String, File]()
+		//specs.foreach(spec => m.put(spec.name, processImage(spec, item, name, ext)))
 
-    val medium = new File(dirImagesMedium + "/" + full.getName)
-    scaleImage(full, medium, 500)
+		var img : Image = null
+		
+		try {
+			println(1)
+			specs.foreach(spec => m += (spec.name -> processImage(spec, item.getInputStream(), name, ext)) )
+			println(2)
+			img = imageRepository.addImage(m("full").getName(), m("full").getName(), m("medium").getName(), m("thumb").getName())
+		} catch {
+			case e: Exception => {
+				e.printStackTrace()
+			}
+		}
+		println(3)
 
-    return imageRepository.addImage(full.getName, full.getName, medium.getName, thumb.getName)
-  }
+		return img
+	}
 
-  /**
-   * Returns a file instance for the choosen absolute filename. Modifies that name by adding digits if there exists already
-   * a file with that name.
-   */
-  protected def getFileResource(base: String, name: String, ext: String): File = {
-    val fill = ""
-    var temp = new File(base + "/" + name + "." + ext)
-    var count = 1
-    while (temp.exists) {
-      temp = new File(base + "/" + name + "-" + count.formatted("%03d") + "." + ext)
-      count += 1
+	protected def processImage(spec: ImageSpec, upload: InputStream, fileBaseName: String, ext: String): File = {
+		spec match {
+			case FullImageSpec(n) => {
+				val target = getFileResource(relativeDirectory(n), fileBaseName, ext)
+				IOUtils.copy(upload, new FileOutputStream(target))
+				return target
+			}
+			case KeepRatioImageSpec(n, max) => {
+				val target = getFileResource(relativeDirectory(n), fileBaseName, ext)
+				scaleImage(upload, new FileOutputStream(target), max)
+				return target
+			}
+			case SquareImageSpec(n, width) => {
+				val target = getFileResource(relativeDirectory(n), fileBaseName, ext)
+				createSquareImage(upload, new FileOutputStream(target), width)
+				return target
+			}
+		}
+	}
 
-      // safety first =)
-      if (count == 1000) return null
-    }
-    return temp
-  }
+	/**
+	 * Returns a file instance for the choosen absolute filename. Modifies that name by adding digits if there exists already
+	 * a file with that name.
+	 */
+	protected def getFileResource(base: String, name: String, ext: String): File = {
+		val fill = ""
+		var temp = new File(base + "/" + name + "." + ext)
+		var count = 1
+		while (temp.exists) {
+			temp = new File(base + "/" + name + "-" + count.formatted("%03d") + "." + ext)
+			count += 1
 
-  protected def scaleImage(inFile: File, outFile: File, largestDimension: Int): Boolean = {
-    try {
-      val inImage = ImageIO.read(inFile)
-      var width = inImage.getWidth().toFloat
-      var height = inImage.getHeight().toFloat
+			// safety first =)
+			if (count == 1000) return null
+		}
+		return temp
+	}
 
-      if (inImage.getWidth > largestDimension && inImage.getWidth > inImage.getHeight) {
-        val ratio = largestDimension.toFloat / inImage.getWidth().toFloat
-        width *= ratio
-        height *= ratio
-      } else if (inImage.getHeight > largestDimension && inImage.getHeight > inImage.getWidth) {
-        val ratio = largestDimension.toFloat / inImage.getHeight().toFloat
-        width *= ratio
-        height *= ratio
-      }
+	protected def scaleImage(in: InputStream, out: OutputStream, largestDimension: Int): Boolean = {
+		try {
+			val inImage = ImageIO.read(in)
+			var width = inImage.getWidth().toFloat
+			var height = inImage.getHeight().toFloat
 
-      val img = new BufferedImage(width.toInt, height.toInt, BufferedImage.TYPE_INT_RGB);
-      img.createGraphics().drawImage(
-        ImageIO.read(inFile).getScaledInstance(width.toInt, height.toInt, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
-      ImageIO.write(img, "jpg", outFile);
-      return true;
-    } catch {
-      case e: IOException => {
-        e.printStackTrace();
-        return false;
-      }
-    }
-  }
+			if (inImage.getWidth > largestDimension && inImage.getWidth > inImage.getHeight) {
+				val ratio = largestDimension.toFloat / inImage.getWidth().toFloat
+				width *= ratio
+				height *= ratio
+			} else if (inImage.getHeight > largestDimension && inImage.getHeight > inImage.getWidth) {
+				val ratio = largestDimension.toFloat / inImage.getHeight().toFloat
+				width *= ratio
+				height *= ratio
+			}
 
-  protected def resizeImage(inFile: File, outFile: File, largestDimension: Int): Boolean = {
-    try {
-      val img = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
-      img.createGraphics().drawImage(
-        ImageIO.read(inFile).getScaledInstance(100, 100, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
-      ImageIO.write(img, "jpg", outFile);
-      return true;
-    } catch {
-      case e: IOException => {
-        e.printStackTrace();
-        return false;
-      }
-    }
-  }
+			val outImage = new BufferedImage(width.toInt, height.toInt, BufferedImage.TYPE_INT_RGB);
+			outImage.createGraphics().drawImage(
+				inImage.getScaledInstance(width.toInt, height.toInt, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
+			ImageIO.write(outImage, "jpg", out);
+			return true;
+		} catch {
+			case e: IOException => {
+				e.printStackTrace();
+				return false;
+			}
+		}
+	}
+
+	protected def createSquareImage(inFile: InputStream, outFile: OutputStream, width: Int): Boolean = {
+		try {
+			val img = new BufferedImage(width, width, BufferedImage.TYPE_INT_RGB);
+			img.createGraphics().drawImage(
+				ImageIO.read(inFile).getScaledInstance(width, width, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
+			ImageIO.write(img, "jpg", outFile);
+			return true;
+		} catch {
+			case e: IOException => {
+				e.printStackTrace();
+				return false;
+			}
+		}
+	}
 }
