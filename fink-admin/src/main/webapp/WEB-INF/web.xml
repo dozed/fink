@@ -78,6 +78,7 @@
 		<url-pattern>/js/*</url-pattern>
     <url-pattern>/uploads/*</url-pattern>
     <url-pattern>/assets/*</url-pattern>
+    <url-pattern>/templates/*</url-pattern>
 	</servlet-mapping>
 
 	<context-param>
