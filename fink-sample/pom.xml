@@ -275,15 +275,14 @@
 								</systemProperty>
 							</systemProperties>
          
-         			<!-- 
 							<webAppConfig>
 								<contextPath>/</contextPath>
 								<baseResource
 									implementation="org.eclipse.jetty.util.resource.ResourceCollection">
 									<resourcesAsCSV>${basedir}/src/main/webapp,${basedir}/foo,${basedir}/../fink-admin/src/main/webapp</resourcesAsCSV>
 								</baseResource>
+								<extraClasspath>${basedir}/target/fink-sample-0.0.1-SNAPSHOT/WEB-INF/classes,${basedir}/../fink-admin/target/fink-admin-0.0.1-SNAPSHOT/WEB-INF/classes</extraClasspath>
 							</webAppConfig>
-							-->
 							
 							<!-- trying to add admin as a separate webapp, that doesnt work since only 1 neo4j kernel is allowed to access a database -->
 							<!-- 
@@ -295,10 +294,12 @@
 							</contextHandlers>
 							 -->
 
+              <!-- 
 							<jettyConfig>${basedir}/jetty.xml</jettyConfig>
 							
 							<contextPath>/foo</contextPath>
 							<webAppSourceDirectory>${basedir}/foo</webAppSourceDirectory>
+               -->
 
 							<!-- 
 							<unpackOverlays>true</unpackOverlays>
