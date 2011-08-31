@@ -15,24 +15,36 @@ import org.noorg.fink.data.entities.Page
 
 class Frontend extends ScalatraServlet with ScalateSupport {
 
-	def layout(template: String, attributes: Map[String, Any]) = templateEngine.layout("/WEB-INF/" + template + ".scaml", attributes)
+	val themeName = "simple"
 
-	def layout(template: String) = templateEngine.layout("/WEB-INF/" + template + ".scaml")
+	def themeBase = "/WEB-INF/themes/" + themeName
+		
+	def layout(template: String, attributes: Map[String, Any]) = {
+		var attr = attributes
+		attr += ("pages" -> pageRepository.findAll)
+		attr += ("layout" -> (themeBase + "/layouts/default.scaml"))
+		templateEngine.layout(themeBase + "/" + template + ".scaml", attr)
+	}
 
-	var postRepository : PostRepository = null
-	var mediaRepository : MediaRepository = null
-	var imageRepository : ImageRepository = null
-	var tagRepository : TagRepository = null
-	var pageRepository : PageRepository = null
+	def layout(template: String) = {
+		var attr: Map[String, Any] = Map()
+		attr += ("pages" -> pageRepository.findAll)
+		attr += ("layout" -> (themeBase + "/layouts/default.scaml"))
+		templateEngine.layout(themeBase + "/" + template + ".scaml", attr)
+	}
+
+	var postRepository: PostRepository = null
+	var mediaRepository: MediaRepository = null
+	var imageRepository: ImageRepository = null
+	var tagRepository: TagRepository = null
+	var pageRepository: PageRepository = null
 
 	var inited = false
-	
+
 	def ensureRepositories() = {
 		if (!inited) {
-		  MediaManager.base = servletContext.getRealPath("/uploads")
-		  	
-		  println(MediaManager.base)
-		  
+			MediaManager.base = servletContext.getRealPath("/uploads")
+
 			postRepository = ApplicationContextProvider.getContext().getBean(classOf[PostRepository])
 			mediaRepository = ApplicationContextProvider.getContext().getBean(classOf[MediaRepository])
 			imageRepository = ApplicationContextProvider.getContext().getBean(classOf[ImageRepository])
@@ -42,13 +54,14 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 			inited = true
 		}
 	}
-	
+
 	before {
 		contentType = "text/html"
 		ensureRepositories()
 	}
+
 	get("/") {
-		templateEngine.layout("/WEB-INF/index.scaml", Map("content" -> "Hello World"))
+		layout("index", Map("content" -> "Hello World"))
 	}
 
 	get("/post/:year/:month/:day/:title") {
@@ -57,14 +70,14 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 		val day = params("day").toInt
 		val title = params("title")
 		val post = postRepository.findPost(year, month, day, title)
-		
+
 		val fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-		
+
 		layout("post", Map("post" -> post, "date" -> fmt.print(post.getDate())))
 	}
-	
+
 	get("/about") {
-		templateEngine.layout("/WEB-INF/about.scaml", Map("content" -> "Hello World"))
+		layout("about", Map("content" -> "Hello World"))
 	}
 
 	get("/posts") {
@@ -72,7 +85,7 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 	}
 
 	get("/dates") {
-		templateEngine.layout("/WEB-INF/dates.scaml", Map("content" -> postRepository.getEntries()))
+		layout("dates", Map("content" -> postRepository.getEntries()))
 	}
 
 	protected def contextPath = request.getContextPath

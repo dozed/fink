@@ -1,3 +1,4 @@
+- import org.noorg.fink.admin.support.Theming._
 
 -@val post : org.noorg.fink.data.entities.Post
 
@@ -125,12 +126,9 @@
 
 
   .controls
-    %a(rel="cancel" class="btn" href={uri("/admin/posts")}) Cancel
+    %a(rel="cancel" class="btn" href={adminBase("/posts")}) Cancel
     %input(type="button" id="save" value="Save")
 
-
--# modal content
-#basic-modal-content
 
 -#
   %h3 Basic Modal Dialog
@@ -139,6 +137,3 @@
   %p
     Examples:
 
--# preload the images
-%div(style="display:none")
-  %img(src="css/images/x.png" alt="")

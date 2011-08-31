@@ -1,0 +1,14 @@
+- import org.noorg.fink.admin.support.Theming._
+
+-@val pages : java.util.List[org.noorg.fink.data.entities.Page]
+-@val pagesJson : String
+
+%script(type="text/javascript" src={adminAssets("/js/pages.js")})
+
+:!javascript
+  var pages = #{pagesJson};
+
+%p
+  %a(href={adminBase("/pages/create")}) Create a new page
+
+.pages

@@ -1,7 +1,8 @@
+- implicit def javaIntToScala(n: java.lang.Integer) = n.intValue
+
 -@ val tmpPage : org.noorg.fink.data.entities.Page
 -@ val level : java.lang.Integer
 -@ val selected : org.noorg.fink.data.entities.Page
-- implicit def javaIntToScala(n: java.lang.Integer) = n.intValue
 
 %option(value={tmpPage.getUuid()} selected={tmpPage.equals(selected)})
   = "--" * level

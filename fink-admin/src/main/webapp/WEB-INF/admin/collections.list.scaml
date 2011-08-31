@@ -1,3 +1,4 @@
+- import org.noorg.fink.admin.support.Theming._
 
 :!javascript
   $(document).ready(function() {
@@ -16,7 +17,7 @@
   });
   
   function reload_collection(uuid) {
-    $(".right-inner").load("#{uri("/admin/collections/edit/")}"+uuid);
+    $(".right-inner").load("#{adminBase("/collections/edit/")}"+uuid);
   }
 
 -# why not List[_] ?
@@ -24,10 +25,10 @@
 
 %ul
   %li
-    %a(href="#" rel={uri("/admin/collections/create")} class="collection-create") Create a new collection
+    %a(href="#" rel={adminBase("/collections/create")} class="collection-create") Create a new collection
 
   -for(val collection <- collections)
     %li
-      %a(href="#" rel={uri("/admin/collections/edit/"+collection.getUuid)} class="collection-link")
+      %a(href="#" rel={adminBase("/collections/edit/"+collection.getUuid)} class="collection-link")
         #{collection.getTitle}
         

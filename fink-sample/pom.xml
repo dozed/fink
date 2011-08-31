@@ -279,7 +279,7 @@
 								<contextPath>/</contextPath>
 								<baseResource
 									implementation="org.eclipse.jetty.util.resource.ResourceCollection">
-									<resourcesAsCSV>${basedir}/src/main/webapp,${basedir}/foo,${basedir}/../fink-admin/src/main/webapp</resourcesAsCSV>
+									<resourcesAsCSV>${basedir}/src/main/webapp,${basedir}/../fink-admin/src/main/webapp</resourcesAsCSV>
 								</baseResource>
 								<extraClasspath>${basedir}/target/fink-sample-0.0.1-SNAPSHOT/WEB-INF/classes,${basedir}/../fink-admin/target/fink-admin-0.0.1-SNAPSHOT/WEB-INF/classes</extraClasspath>
 							</webAppConfig>

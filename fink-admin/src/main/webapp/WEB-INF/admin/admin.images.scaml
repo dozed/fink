@@ -1,0 +1,39 @@
+
+- import org.noorg.fink.admin.support.Theming._
+
+-@val images : List[org.noorg.fink.data.entities.Image]
+
+:!javascript
+  $(document).ready(function() {
+     $('#file_upload').uploadify({
+      'swf' : '#{adminAssets("/assets/uploadify-3.0.0-beta/uploadify.swf")}',
+      'cancelImage'   : '#{adminAssets("/assets/uploadify-3.0.0-beta/uploadify-cancel.png")}',
+      'folder'    : '/uploads',
+      'auto'      : true,
+      'multi'     : true,
+      'method'    : 'POST',
+      'debug'     : false,
+      'uploader'  : '#{adminAssets("/images/upload")}',
+      'checkExisting' : false,
+      'fileObjName'   : 'file',
+      'fileTypeExts'  : '*.jpg;*.jpeg;*.gif;*.png',
+      'fileTypeDesc'  : 'Image Files (.JPG, .GIF, .PNG)',
+      'onQueueComplete' : function() {
+        location.href = location.href;
+      },
+    });
+    
+    
+    $(".media-image").lightBox({
+      fixedNavigation:true,
+      txtImage:'Bild',
+      txtOf:'von',
+      imageLoading:"#{adminAssets("/images/lightbox-ico-loading.gif")}",
+      imageBtnClose:"#{adminAssets("/images/lightbox-btn-close.gif")}",
+      imageBtnNext:"#{adminAssets("/images/lightbox-btn-next.gif")}",
+      imageBtnPrev:"#{adminAssets("/images/lightbox-btn-prev.gif")}",
+      imageBlank:"#{adminAssets("/images/lightbox-blank.gif")}"
+    });
+  });
+
+=include("images.scaml")

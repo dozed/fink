@@ -1,4 +1,7 @@
+- import org.noorg.fink.admin.support.Theming._
+
 -@val rootPage : org.noorg.fink.data.entities.Page
+-@val page : org.noorg.fink.data.entities.Page
 
 :!javascript
   $(document).ready(function() {
@@ -8,44 +11,35 @@
       height: "100px",
       width: "300px",
     });
-    
-    $("input:text").each(function () {
-      $(this).keypress(function(e) {
-        if(e.which == 13) {
-          $(this).blur();
-          $("form#pages-form").submit();
-        }
-      });
-    });
 
     $("input#save").click(function() {
       $("form#pages-form").submit();
     });
-    
-    $("input#title").focus();
   });
 
 %form(id="pages-form" method="post")
   %p(style="margin-bottom: 1em; font-size: 13px")
     Titel:
-    %input(type="text" id="title" name="title" size="50")
+    %input(type="text" id="title" name="title" size="50" value={page.getTitle})
     
   %p(style="margin-bottom: 1em; font-size: 13px")
     Autor:
-    %input(type="text" size="50" name="author" value="whatsoever")
+    %input(type="text" size="50" name="author" value={page.getAuthor})
   
   %p(style="margin-bottom: 1em; font-size: 13px")
     Parent:
 
     -attributes("rootPage") = rootPage
-    -attributes("selected") = new org.noorg.fink.data.entities.Page("asd")
-    -render("/WEB-INF/pages.select.scaml")
+    -attributes("selected") = page.getParentPage
+    -render("pages.select.scaml")
   
   %p(style="margin-bottom: 1em; font-size: 13px")
     Tags:
-    %input(type="text" id="tags" size="50")
+    %input(type="text" id="tags" name="tags" size="50" value={page.getTags().map(t => t.getName)mkString(",")})
+
+  %textarea(style="width:100%" rows="15" name="text") #{page.getText}
 
 
 .controls
-  %a(rel="cancel" class="btn" href={uri("/admin/pages")}) Cancel
+  %a(rel="cancel" class="btn" href={adminBase("/pages")}) Cancel
   %input(type="button" id="save" value="Save")

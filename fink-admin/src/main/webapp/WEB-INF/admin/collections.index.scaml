@@ -1,3 +1,4 @@
+- import org.noorg.fink.admin.support.Theming._
 
 :!javascript
   $(document).ready(function() {
@@ -9,7 +10,7 @@
 
     $(".collection-create").each(function() {
       $(this).click(function() {
-        $(".right-inner").load("#{uri("/admin/collections/create")}");
+        $(".right-inner").load("#{adminBase("/collections/create")}");
       });
     });
     
@@ -20,7 +21,7 @@
   });
   
   function reload_collection(uuid) {
-    $(".right-inner").load("#{uri("/admin/collections/edit/")}"+uuid);
+    $(".right-inner").load("#{adminBase("/collections/edit/")}"+uuid);
   }
 
 -# why not List[_] ?

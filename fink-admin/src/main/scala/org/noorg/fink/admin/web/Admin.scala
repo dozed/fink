@@ -20,13 +20,27 @@ import scala.collection.JavaConversions._
 //@Controller
 class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
-	def layout(template: String, attributes: Map[String, Any]) = templateEngine.layout("/WEB-INF/" + template + ".scaml", attributes + ("layout" -> "/WEB-INF/scalate/layouts/admin.scaml"))
+	def adminTemplateBase = "/WEB-INF/admin"
+	
+	def layout(template: String, attributes: Map[String, Any]) = {
+		var attr = attributes
+		attr += ("layout" -> (adminTemplateBase + "/layouts/admin.scaml"))
+		templateEngine.layout(adminTemplateBase + "/" + template + ".scaml", attr)
+	}
 
-	def layout(template: String) = templateEngine.layout("/WEB-INF/" + template + ".scaml", Map("layout" -> "/WEB-INF/scalate/layouts/admin.scaml"))
+	def layout(template: String) = {
+		var attr: Map[String, Any] = Map()
+		attr += ("layout" -> (adminTemplateBase + "/layouts/admin.scaml"))
+		templateEngine.layout(adminTemplateBase + "/" + template + ".scaml", attr)
+	}
 
-	def render(template: String, attributes: Map[String, Any]) = createRenderContext.render("/WEB-INF/" + template + ".scaml", attributes)
+	def render(template: String, attributes: Map[String, Any]) = {
+		createRenderContext.render(adminTemplateBase + "/" + template + ".scaml", attributes)
+	}
 
-	def render(template: String) = renderTemplate("/WEB-INF/" + template + ".scaml")
+	def render(template: String) = {
+		renderTemplate(adminTemplateBase + "/" + template + ".scaml")
+	}
 
 	def uri(uri: String) = {
 		if (uri.startsWith("/")) {
@@ -36,34 +50,34 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		}
 	}
 
-	var postRepository : PostRepository = null
-	var mediaRepository : MediaRepository = null
-	var imageRepository : ImageRepository = null
-	var tagRepository : TagRepository = null
-	var pageRepository : PageRepository = null
+	var postRepository: PostRepository = null
+	var mediaRepository: MediaRepository = null
+	var imageRepository: ImageRepository = null
+	var tagRepository: TagRepository = null
+	var pageRepository: PageRepository = null
 
 	var inited = false
-	
+
 	def ensureRepositories() = {
 		if (!inited) {
-		  MediaManager.base = servletContext.getRealPath("/uploads")
-		  	
+			MediaManager.base = servletContext.getRealPath("/uploads")
+
 			postRepository = ApplicationContextProvider.getContext().getBean(classOf[PostRepository])
 			mediaRepository = ApplicationContextProvider.getContext().getBean(classOf[MediaRepository])
 			imageRepository = ApplicationContextProvider.getContext().getBean(classOf[ImageRepository])
 			tagRepository = ApplicationContextProvider.getContext().getBean(classOf[TagRepository])
 			pageRepository = ApplicationContextProvider.getContext().getBean(classOf[PageRepository])
-			
+
 			var page = pageRepository.find("title", "Website")
 			if (page == null) {
-			  page = new Page("Website")
-			  pageRepository.save(page)
+				page = new Page("Website")
+				pageRepository.save(page)
 			}
-			
+
 			inited = true
 		}
 	}
-	
+
 	before {
 		contentType = "text/html"
 		ensureRepositories()
@@ -101,7 +115,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		val page = new Page(params("title"), params("author"))
 		parent.addPage(page)
 		pageRepository.save(page)
-		redirect(uri("/admin/pages"))
+		redirect(uri("/admin-fink/pages"))
 		"ok"
 	}
 
@@ -122,7 +136,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		}
 
 		page.clearTags
-		
+
 		for (t <- params("tags").split(",")) {
 			var tag = tagRepository.findTag(t)
 			if (tag == null) {
@@ -134,11 +148,11 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		page.setTitle(params("title"))
 		page.setAuthor(params("author"))
 		page.setText(params("text"))
-		
+
 		pageRepository.save(page)
 		pageRepository.save(parent)
-  
-		redirect(uri("/admin/pages"))
+
+		redirect(uri("/admin-fink/pages"))
 	}
 
 	get("/posts") {
@@ -151,7 +165,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	post("/posts/create") {
 		postRepository.createPost(params("title"), params("text"), params("author"), params("category"), params("tags"))
-		redirect(uri("/admin/posts"))
+		redirect(uri("/admin-fink/posts"))
 	}
 
 	get("/posts/edit/:uuid") {
@@ -163,7 +177,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		val post = postRepository.findPostByUuid(params("uuid"))
 
 		post.clearTags
-		
+
 		for (t <- params("tags").split(",")) {
 			var tag = tagRepository.findTag(t)
 			if (tag == null) {
@@ -175,9 +189,9 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		post.setTitle(params("title"))
 		post.setAuthor(params("title"))
 		post.setText(params("text"))
-		
+
 		postRepository.save(post)
-		
+
 		redirect(uri("/admin/posts"))
 	}
 
@@ -215,7 +229,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		val author = params("author")
 		val tags = params("tags")
 		val shortlink = params("shortlink")
-		
+
 		val c = mediaRepository.findCollection(params("id"))
 
 		for (t <- tags.split(",")) {

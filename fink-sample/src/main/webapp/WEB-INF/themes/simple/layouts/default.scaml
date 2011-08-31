@@ -1,11 +1,8 @@
+- import org.noorg.fink.admin.support.Theming._
+- response.setContentType("text/html")
 
 -@ var body: String
 -@ var title : String = "fink Sample Page"
-- response.setContentType("text/html")
-
--# Only include the console if it"s available and the engine is in dev mode.
--# val include_console = engine.isDevelopmentMode && engine.resourceLoader.exists("/org/fusesource/scalate/console/console_head.scaml")
-- val include_console = false
 
 !!! Basic
 %html(lang="en")
@@ -16,11 +13,10 @@
     %meta(name="keywords" content="keywords,goes,here")
     %meta(name="author" content="Your Name")
 
-    %link(href={uri("/css/style.css")} rel="stylesheet" type="text/css")
+    %link(href={themeBase("/css/style.css")} rel="stylesheet" type="text/css")
     %link(href="http://fonts.googleapis.com/css?family=Mako|Anton|News+Cycle|Nobile&v2" rel="stylesheet" type="text/css")
-    %link(href="http://fonts.googleapis.com/css?family=Over+the+Rainbow&v2" rel="stylesheet" type="text/css")
     
-    %script(type="text/javascript" src={uri("/js/jquery-1.5.1.min.js")})
+    %script(type="text/javascript" src={themeBase("/js/jquery-1.5.1.min.js")})
 
     %title
       = title
@@ -28,7 +24,7 @@
   %body
     #navigation
       .wrapper
-        %img(src={uri("/css/images/fink.png")})
+        %img(src={themeBase("/images/fink.png")})
         .menu
           .up
             %ul
