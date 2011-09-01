@@ -109,7 +109,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		val page = new Page(params("title"), params("author"))
 		parent.addPage(page)
 		pageRepository.save(page)
-		redirect(uri("/admin-fink/pages"))
+		redirect(uri("/fink-admin/pages"))
 	}
 
 	get("/pages/edit/:uuid") {
@@ -145,7 +145,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		pageRepository.save(page)
 		pageRepository.save(parent)
 
-		redirect(uri("/admin-fink/pages"))
+		redirect(uri("/fink-admin/pages"))
 	}
 
 	get("/posts") {
@@ -158,7 +158,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	post("/posts/create") {
 		postRepository.createPost(params("title"), params("text"), params("author"), params("category"), params("tags"))
-		redirect(uri("/admin-fink/posts"))
+		redirect(uri("/fink-admin/posts"))
 	}
 
 	get("/posts/edit/:uuid") {
@@ -185,7 +185,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 		postRepository.save(post)
 
-		redirect(uri("/admin/posts"))
+		redirect(uri("/fink-admin/posts"))
 	}
 
 	get("/collections") {
@@ -251,7 +251,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		val image = MediaManager.processUpload(fileParams("file"))
 		collection.addItem(image)
 		mediaRepository.save(collection)
-		//redirect(uri("/admin/collections/edit/" + collection.getUuid))
+		//redirect(uri("/fink-admin/collections/edit/" + collection.getUuid))
 	}
 
 	post("/collections/edit/:id/delete") {
