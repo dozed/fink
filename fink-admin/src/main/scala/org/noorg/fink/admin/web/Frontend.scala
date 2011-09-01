@@ -55,9 +55,9 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 		}
 	}
 
-	before {
+	before() {
 		contentType = "text/html"
-		ensureRepositories()
+		ensureRepositories
 	}
 
 	get("/") {
@@ -86,6 +86,10 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 
 	get("/dates") {
 		layout("dates", Map("content" -> postRepository.getEntries()))
+	}
+
+	notFound {
+ 		<h1>Not found.  Bummer.</h1>
 	}
 
 	protected def contextPath = request.getContextPath
