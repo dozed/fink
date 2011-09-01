@@ -33,7 +33,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	def render(template: String) = {
-		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", ("layout" -> ""), ("layout", "/layouts/admin.scaml"))
+		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", ("layout" -> ""))
 	}
 
 	def uri(uri: String) = {
