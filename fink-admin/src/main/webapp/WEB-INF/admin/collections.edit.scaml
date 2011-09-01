@@ -100,7 +100,7 @@
     -if (collection.getCover == null)
       %img(type="text" src={adminAssets("/images/noimage.png")})
     -else
-      %img(type="text" src={adminBase("/uploads/thumb/")+collection.getCover().getThumb})
+      %img(type="text" src={uri("/uploads/thumb/")+collection.getCover().getThumb})
   Collection "#{collection.getTitle}"
 
 #collection-navi

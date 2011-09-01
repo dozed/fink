@@ -21,19 +21,19 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	def adminTemplateBase = "/WEB-INF/admin"
 	
 	def layout(template: String, attributes: (String, Any)*) = {
-		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", ("layout", adminTemplateBase + "/layouts/admin.scaml") :: attributes.toList : _*)
+		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> (adminTemplateBase + "/layouts/admin.scaml") :: attributes.toList : _*)
 	}
 
 	def layout(template: String) = {
-		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", ("layout", adminTemplateBase + "/layouts/admin.scaml"))
+		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> (adminTemplateBase + "/layouts/admin.scaml"))
 	}
 
 	def render(template: String, attributes: (String, Any)*) = {
-		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", ("layout" -> "") :: attributes.toList  : _*)
+		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> "" :: attributes.toList  : _*)
 	}
 
 	def render(template: String) = {
-		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", ("layout" -> ""))
+		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> "")
 	}
 
 	def uri(uri: String) = {
