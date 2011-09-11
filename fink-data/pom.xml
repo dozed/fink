@@ -2,15 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.noorg.fink</groupId>
-    <artifactId>fink-project</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
+	<parent>
+		<groupId>org.noorg.fink</groupId>
+		<artifactId>fink-project</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
 
-	<groupId>org.noorg.fink</groupId>
 	<artifactId>fink-data</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>fink-data</name>
@@ -29,12 +27,8 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-			<version>${aspectj-version}</version>
-			<scope>compile</scope>
-		</dependency>
+		<!-- <dependency> <groupId>org.aspectj</groupId> <artifactId>aspectjrt</artifactId> 
+			<version>${aspectj-version}</version> <scope>compile</scope> </dependency> -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
@@ -53,11 +47,26 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-    <dependency>
-      <groupId>com.codahale</groupId>
-      <artifactId>jerkson_${scala-version}</artifactId>
-      <version>0.4.0</version>
-    </dependency>
+		<dependency>
+			<groupId>com.codahale</groupId>
+			<artifactId>jerkson_${scala-version}</artifactId>
+			<version>0.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib-nodep</artifactId>
+			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${aspectj-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjtools</artifactId>
+			<version>${aspectj-version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -66,54 +75,69 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
 			</plugin>
 
-      <!-- aspectj-maven-plugin -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>aspectj-maven-plugin</artifactId>
-        <version>1.2</version>
-        <dependencies>
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjrt</artifactId>
-                <version>${aspectj-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjtools</artifactId>
-                <version>${aspectj-version}</version>
-            </dependency>
-        </dependencies>
-        <executions>
-            <execution>
-                <goals>
-                    <goal>compile</goal>
-                    <goal>test-compile</goal>
-                </goals>
-            </execution>
-        </executions>
-        <configuration>
-            <outxml>true</outxml>
-            <aspectLibraries>
-                <aspectLibrary>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-aspects</artifactId>
-                </aspectLibrary>
-                <aspectLibrary>
-                    <groupId>org.springframework.data</groupId>
-                    <artifactId>spring-data-neo4j</artifactId>
-                </aspectLibrary>
-            </aspectLibraries>
-            <source>1.6</source>
-            <target>1.6</target>
-        </configuration>
-      </plugin>
+			<!-- aspectj-maven-plugin -->
+			<plugin>
+				<!-- required to resolve aspectj-enhanced class features -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<version>1.4</version>
+				<configuration>
+					<outxml>true</outxml>
+					<aspectLibraries>
+						<aspectLibrary>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-aspects</artifactId>
+						</aspectLibrary>
+						<aspectLibrary>
+							<groupId>org.springframework.data</groupId>
+							<artifactId>spring-data-neo4j</artifactId>
+						</aspectLibrary>
+					</aspectLibraries>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.7</version>
+				<!-- Note 2.8 does not work with AspectJ aspect path -->
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>false</downloadJavadocs>
+					<wtpversion>2.0</wtpversion>
+					<additionalBuildcommands>
+						<buildCommand>
+							<name>org.eclipse.ajdt.core.ajbuilder</name>
+							<arguments>
+								<aspectPath>org.springframework.aspects</aspectPath>
+							</arguments>
+						</buildCommand>
+						<buildCommand>
+							<name>org.springframework.ide.eclipse.core.springbuilder</name>
+						</buildCommand>
+					</additionalBuildcommands>
+					<additionalProjectnatures>
+						<projectnature>org.eclipse.ajdt.ui.ajnature</projectnature>
+						<projectnature>com.springsource.sts.roo.core.nature</projectnature>
+						<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+					</additionalProjectnatures>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>

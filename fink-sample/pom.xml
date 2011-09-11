@@ -8,7 +8,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<groupId>org.noorg.fink</groupId>
 	<artifactId>fink-sample</artifactId>
 	<packaging>war</packaging>
 
@@ -198,7 +197,7 @@
 									<value>${basedir}/..</value>
 								</systemProperty>
 							</systemProperties>
-         
+
 							<webAppConfig>
 								<contextPath>/</contextPath>
 								<baseResource
@@ -207,29 +206,18 @@
 								</baseResource>
 								<extraClasspath>${basedir}/target/fink-sample-0.0.1-SNAPSHOT/WEB-INF/classes,${basedir}/../fink-admin/target/fink-admin-0.0.1-SNAPSHOT/WEB-INF/classes</extraClasspath>
 							</webAppConfig>
-							
-							<!-- trying to add admin as a separate webapp, that doesnt work since only 1 neo4j kernel is allowed to access a database -->
-							<!-- 
-							<contextHandlers>
-								<contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-									<war>${basedir}/../fink-admin/target/fink-admin-0.0.1-SNAPSHOT</war>
-									<contextPath>/admin</contextPath>
-								</contextHandler>
-							</contextHandlers>
-							 -->
 
-              <!-- 
-							<jettyConfig>${basedir}/jetty.xml</jettyConfig>
-							
-							<contextPath>/foo</contextPath>
-							<webAppSourceDirectory>${basedir}/foo</webAppSourceDirectory>
-               -->
+							<!-- trying to add admin as a separate webapp, that doesnt work since 
+								only 1 neo4j kernel is allowed to access a database -->
+							<!-- <contextHandlers> <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext"> 
+								<war>${basedir}/../fink-admin/target/fink-admin-0.0.1-SNAPSHOT</war> <contextPath>/admin</contextPath> 
+								</contextHandler> </contextHandlers> -->
 
-							<!-- 
-							<unpackOverlays>true</unpackOverlays>
-							<webXml>${basedir}/src/main/webapp/WEB-INF/web.xml</webXml>
-							 -->
-							 
+							<!-- <jettyConfig>${basedir}/jetty.xml</jettyConfig> <contextPath>/foo</contextPath> 
+								<webAppSourceDirectory>${basedir}/foo</webAppSourceDirectory> -->
+
+							<!-- <unpackOverlays>true</unpackOverlays> <webXml>${basedir}/src/main/webapp/WEB-INF/web.xml</webXml> -->
+
 							<scanIntervalSeconds>0</scanIntervalSeconds>
 							<reload>automatic</reload>
 
@@ -239,16 +227,16 @@
 			</build>
 		</profile>
 
-    <profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.fusesource.scalate</groupId>
-            <artifactId>maven-scalate-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
- 	</profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.fusesource.scalate</groupId>
+						<artifactId>maven-scalate-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
