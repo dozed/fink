@@ -7,7 +7,7 @@ $ mvn clean package
 $ mvn -P jetty compile
 
 The sample application is running on: http://localhost:8080/
-The admin panel is reachable under: http://localhost:8080/admin/ (<- note the extra / at the end)
+The admin panel is reachable under: http://localhost:8080/fink-admin/ (<- note the extra / at the end)
 
 
 Rapid development:
