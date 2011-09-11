@@ -21,11 +21,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.scala-lang</groupId>
-			<artifactId>scala-library</artifactId>
-			<version>${scala-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.scala-lang</groupId>
 			<artifactId>scala-compiler</artifactId>
 			<version>${scala-version}</version>
 		</dependency>
@@ -36,16 +31,10 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.fusesource.scalate</groupId>
-			<artifactId>scalate-core</artifactId>
-			<version>${scalate-version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-server</artifactId>
 			<version>${jersey-version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.fusesource.scalate</groupId>
 			<artifactId>scalate-test</artifactId>
@@ -54,10 +43,22 @@
 		</dependency>
 		<dependency>
 			<groupId>org.scalatra</groupId>
-			<artifactId>scalatra-scalate_2.8.1</artifactId>
-			<version>2.0.0.RC1</version>
+			<artifactId>scalatra-scalate_${scala-version}</artifactId>
+			<version>${scalatra-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.scalatra</groupId>
+			<artifactId>scalatra-fileupload_${scala-version}</artifactId>
+			<version>${scalatra-version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.codahale</groupId>
+			<artifactId>jerkson_${scala-version}</artifactId>
+			<version>0.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -67,21 +68,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>3.0.5.RELEASE</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aspects</artifactId>
-			<version>3.0.5.RELEASE</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-			<version>1.6.11</version>
+			<version>${spring-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -93,23 +80,11 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.scalatra</groupId>
-			<artifactId>scalatra-fileupload_2.8.1</artifactId>
-			<version>2.0.0.RC1</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.0.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.codahale</groupId>
-			<artifactId>jerkson_${scala-version}</artifactId>
-			<version>0.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
