@@ -54,6 +54,13 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<type>war</type>
 		</dependency>
+		<dependency>
+			<groupId>org.fusesource.scalate</groupId>
+			<artifactId>scalate-core</artifactId>
+			<version>1.5.2</version>
+			<type>pom</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

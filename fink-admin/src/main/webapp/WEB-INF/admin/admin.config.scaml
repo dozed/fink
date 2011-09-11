@@ -1,0 +1,30 @@
+
+-#
+  http://jashkenas.github.com/coffee-script
+  http://batmanjs.org/
+
+%label First Name
+%input(type="text" data-bind="person.firstName")
+
+%label Last Name
+%input(type="text" data-bind="person.lastName")
+
+%h2(data-showif="person.hasName" data-mixin="animation")
+  Hello,
+  %span(data-bind="person.fullName") 
+
+:coffeescript
+  class Hello extends Batman.App
+    @global yes
+
+  class Person extends Batman.Model
+    @accessor 'fullName', -> "#{@get('firstName')} #{@get('lastName')}"
+    @accessor 'hasName', -> @get('fullName').length > 1
+        
+  reset: =>
+    @set 'firstName', ''
+    @set 'lastName', ''
+
+  Hello.person = new Person
+  Hello.run()
+
