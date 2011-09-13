@@ -19,9 +19,9 @@ import scala.collection.JavaConversions._
 class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	def adminTemplateBase = "/WEB-INF/admin"
-	
+
 	def layout(template: String, attributes: (String, Any)*) = {
-		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> (adminTemplateBase + "/layouts/admin.scaml") :: attributes.toList : _*)
+		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> (adminTemplateBase + "/layouts/admin.scaml") :: attributes.toList: _*)
 	}
 
 	def layout(template: String) = {
@@ -29,7 +29,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	def render(template: String, attributes: (String, Any)*) = {
-		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> "" :: attributes.toList  : _*)
+		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> "" :: attributes.toList: _*)
 	}
 
 	def render(template: String) = {
@@ -66,7 +66,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 			if (page == null) {
 				page = new Page("Website")
 				pageRepository.save(page)
-			}
+			} 
 
 			inited = true
 		}
@@ -87,13 +87,14 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	get("/pages") {
 		val root = pageRepository.find("title", "Website")
-		goDown(root)
+//		goDown(root)
 		println(generate(root))
 
 		layout("pages.index", ("pages", pageRepository.findAll), ("pagesJson", generate(root)))
 	}
 
 	def goDown(page: Page) {
+		println(page)
 		println(page.getId + ": " + page.getTitle)
 		for (p <- page.getSubPages()) {
 			goDown(p)
@@ -106,7 +107,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	post("/pages/create") {
 		val parent = pageRepository.findPageByUuid(params("parent"))
-		val page = new Page(params("title"), params("author"))
+		val page = new Page(params("title"), params("shortlink"), params("author"))
 		parent.addPage(page)
 		pageRepository.save(page)
 		redirect(uri("/fink-admin/pages"))
@@ -139,6 +140,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		}
 
 		page.setTitle(params("title"))
+		page.setShortlink(params("shortlink"))
 		page.setAuthor(params("author"))
 		page.setText(params("text"))
 
@@ -277,7 +279,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	notFound {
- 		<h1>Not found.  Bummer.</h1>
+		<h1>Not found.  Bummer.</h1>
 	}
 
 	protected def contextPath = request.getContextPath

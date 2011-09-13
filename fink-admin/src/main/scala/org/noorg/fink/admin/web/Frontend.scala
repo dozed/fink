@@ -19,16 +19,10 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 
 	def themeBase = "/WEB-INF/themes/" + themeName
 		
-	def layout(template: String, attributes: Map[String, Any]) = {
+	def layout(template: String, attributes : Map[String, Any] = Map[String, Any]()) = {
 		var attr = attributes
-		attr += ("pages" -> pageRepository.findAll)
-		attr += ("layout" -> (themeBase + "/layouts/default.scaml"))
-		templateEngine.layout(themeBase + "/" + template + ".scaml", attr)
-	}
-
-	def layout(template: String) = {
-		var attr: Map[String, Any] = Map()
-		attr += ("pages" -> pageRepository.findAll)
+		attr += ("pages" -> pageRepository)
+		attr += ("rootPage" -> pageRepository.find("title", "Website"))
 		attr += ("layout" -> (themeBase + "/layouts/default.scaml"))
 		templateEngine.layout(themeBase + "/" + template + ".scaml", attr)
 	}
@@ -86,6 +80,12 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 
 	get("/dates") {
 		layout("dates", Map("content" -> postRepository.getEntries()))
+	}
+	
+	get("/pages/:shortlink") {
+		val shortlink = params("shortlink")
+		val page = pageRepository.findPageByShortlink(shortlink)
+		layout("page", Map("page" -> page))
 	}
 
 	notFound {

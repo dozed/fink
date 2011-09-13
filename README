@@ -44,3 +44,10 @@ Using JRebel:
 
   $ export MAVEN_OPTS="-javaagent:$JREBEL_HOME/jrebel.jar -Xmx1024m -XX:MaxPermSize=256m"
   
+
+Eclipse related:
+
+If you use Eclipse as IDE, it is suggested to run "mvn eclipse:eclipse" before importing the projects to eclipse.
+This is to prevent problems with AspectJ.
+
+

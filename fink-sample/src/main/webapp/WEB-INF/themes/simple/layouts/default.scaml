@@ -1,6 +1,9 @@
 - import org.noorg.fink.admin.support.Theming._
 - response.setContentType("text/html")
 
+-@ var pages : org.noorg.fink.data.repository.PageRepository
+-@ var rootPage : org.noorg.fink.data.entities.Page
+
 -@ var body: String
 -@ var title : String = "fink Sample Page"
 
@@ -27,6 +30,7 @@
         %img(src={themeBase("/images/fink.png")})
         .menu
           .up
+            =rootPage.getSubPages().size()
             %ul
               - if (requestUri.startsWith("/index."))
                 %li
@@ -44,10 +48,9 @@
                 %a(href={uri("/admin/")}) Admin
           .down
             %ul
-              %li
-                %a(href={uri("/contact")}) Contact
-              %li
-                %a(href={uri("/about")}) About
+              -for( page <- rootPage.getSubPages )
+                %li
+                  %a(href={uri("/pages/"+page.getShortlink)}) #{page.getTitle}
           %div(style="clear:both")
       
 

@@ -55,6 +55,10 @@ public class PageRepository {
 		return repository.findByPropertyValue("title", title);
 	}
 
+	public Page findPageByShortlink(String shortlink) {
+		return repository.findByPropertyValue("shortlink", shortlink);
+	}
+
 	public Page findPageByTitleManually(String title) {
 		Index<Node> index = context.getIndex(Page.class, "index_title");
 		IndexHits<Node> hits = index.get("title", title);

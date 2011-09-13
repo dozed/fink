@@ -40,6 +40,7 @@ public class Page {
 	private Set<Page> subPages = new HashSet<Page>();
 	
 	private String text;
+	@Indexed private String shortlink;
 	
 	public Page(Node n) {
 		setPersistentState(n);
@@ -48,13 +49,14 @@ public class Page {
 	Page() {}
 
 	public Page(String title) {
-		this(title, null);
+		this(title, title.toLowerCase(), null);
 	}
 
-	public Page(String title, String author) {
+	public Page(String title, String shortlink, String author) {
 		this.uuid = UUID.randomUUID().toString(); 
 		this.date = new DateTime();
 		this.title = title;
+		this.shortlink = shortlink;
 		this.author = author;
 	}
 	
@@ -136,4 +138,12 @@ public class Page {
 		this.author = author;
 	}
 
+	public String getShortlink() {
+		return shortlink;
+	}
+
+	public void setShortlink(String shortlink) {
+		this.shortlink = shortlink;
+	}
+	
 }

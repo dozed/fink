@@ -23,6 +23,10 @@
     %input(type="text" id="title" name="title" size="50" value={page.getTitle})
     
   %p(style="margin-bottom: 1em; font-size: 13px")
+    Shortlink:
+    %input(type="text" size="50" name="shortlink" value={page.getShortlink})
+
+  %p(style="margin-bottom: 1em; font-size: 13px")
     Autor:
     %input(type="text" size="50" name="author" value={page.getAuthor})
   
