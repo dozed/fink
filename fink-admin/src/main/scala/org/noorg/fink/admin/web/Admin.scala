@@ -87,10 +87,10 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	get("/pages") {
 		val root = pageRepository.find("title", "Website")
-		//		goDown(root)
-		println(generate(root))
+//		goDown(root)
+//		println(generate(root))
 
-		layout("pages.index", ("pages", pageRepository.findAll), ("pagesJson", generate(root)))
+		layout("pages.index", ("rootPage", root))
 	}
 
 	def goDown(page: Page) {

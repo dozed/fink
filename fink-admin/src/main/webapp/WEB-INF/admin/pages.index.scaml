@@ -1,12 +1,12 @@
-- import org.noorg.fink.admin.support.Theming._
+-import org.noorg.fink.admin.support.Theming._
+-import com.codahale.jerkson.Json._
 
--@val pages : java.util.List[org.noorg.fink.data.entities.Page]
--@val pagesJson : String
+-@val rootPage : org.noorg.fink.data.entities.Page
 
 %script(type="text/javascript" src={adminAssets("/js/pages.js")})
 
 :!javascript
-  var pages = #{pagesJson};
+  var pages = #{generate(rootPage)};
 
 :!coffeescript
 

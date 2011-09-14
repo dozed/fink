@@ -1,11 +1,11 @@
-- import org.noorg.fink.admin.support.Theming._
+-import org.noorg.fink.admin.support.Theming._
+-import com.codahale.jerkson.Json._
 
 -@val rootPage : org.noorg.fink.data.entities.Page
 -@val page : org.noorg.fink.data.entities.Page
--@val pageJson : java.lang.String
 
 :!javascript
-  var page = #{pageJson};
+  var page = #{generate(page)};
 
   $(document).ready(function() {
     $(this).find("select, input:text, textarea, input:checkbox, input:radio, input:file").uniform();
@@ -27,7 +27,7 @@
     
   %p(style="margin-bottom: 1em; font-size: 13px")
     Shortlink:
-    %input(type="text" size="50" name="shortlink"  data-bind="page.title")
+    %input(type="text" size="50" name="shortlink"  data-bind="page.shortlink")
 
   %p(style="margin-bottom: 1em; font-size: 13px")
     Autor:

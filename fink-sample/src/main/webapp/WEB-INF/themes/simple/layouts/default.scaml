@@ -30,7 +30,6 @@
         %img(src={themeBase("/images/fink.png")})
         .menu
           .up
-            =rootPage.getSubPages().size()
             %ul
               - if (requestUri.startsWith("/index."))
                 %li
