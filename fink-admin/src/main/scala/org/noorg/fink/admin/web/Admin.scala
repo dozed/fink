@@ -4,6 +4,7 @@ import com.codahale.jerkson.Json._
 import org.apache.commons.fileupload.FileItem
 import org.noorg.fink.admin.support.ApplicationContextProvider
 import org.noorg.fink.admin.support.MediaManager
+import org.noorg.fink.admin.support.Theming
 import org.noorg.fink.data.entities.Page
 import org.noorg.fink.data.entities.Tag
 import org.noorg.fink.data.repository.ImageRepository
@@ -87,8 +88,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	get("/pages") {
 		val root = pageRepository.find("title", "Website")
-//		goDown(root)
-//		println(generate(root))
+		//goDown(root)
+		//println(generate(root))
 
 		layout("pages.index", ("rootPage", root))
 	}
@@ -279,10 +280,10 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	get("/views/shared/:id") {
-		<div class="entry">
+		<div class="entry" data-mixin="pageTree">
 			<div class="info">
-				<span class="control"></span>
-				<span class="title"><a data-bind="page.title" href="#"></a></span>
+				<span class="control folder-open"></span>
+				<span class="title"><a data-bind="page.title" data-bind-href="page.uuid"></a></span>
 				<div class="clear"></div>
 			</div>
 			<div class="entries">

@@ -54,6 +54,8 @@
   
   %p(style="margin-bottom: 1em; font-size: 13px")
     Tags:
+    -# race condition?
+      %input(type="text" id="tags" name="tags" size="50" data-bind="page.tags | map 'name' | join ','")
     %input(type="text" id="tags" name="tags" size="50" value={page.getTags().map(t => t.getName)mkString(",")})
   -#
     %textarea(style="width:100%" rows="15" id="pageText-editor" name="text" data-bind="page.text")
