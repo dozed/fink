@@ -2,6 +2,8 @@
 -#
   http://jashkenas.github.com/coffee-script
   http://batmanjs.org/
+  https://github.com/jquery/jquery-datalink
+  http://documentcloud.github.com/backbone
 
 %label First Name
 %input(type="text" data-bind="person.firstName")
@@ -14,6 +16,7 @@
   %span(data-bind="person.fullName") 
 
 :coffeescript
+
   class Hello extends Batman.App
     @global yes
 
@@ -22,7 +25,7 @@
     @accessor 'hasName', -> @get('fullName').length > 1
         
   reset: =>
-    @set 'firstName', ''
+    @set 'firstName2', ''
     @set 'lastName', ''
 
   Hello.person = new Person

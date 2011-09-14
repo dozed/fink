@@ -66,7 +66,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 			if (page == null) {
 				page = new Page("Website")
 				pageRepository.save(page)
-			} 
+			}
 
 			inited = true
 		}
@@ -87,7 +87,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	get("/pages") {
 		val root = pageRepository.find("title", "Website")
-//		goDown(root)
+		//		goDown(root)
 		println(generate(root))
 
 		layout("pages.index", ("pages", pageRepository.findAll), ("pagesJson", generate(root)))
@@ -116,7 +116,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	get("/pages/edit/:uuid") {
 		val page = pageRepository.findPageByUuid(params("uuid"))
 		val rootPage = pageRepository.find("title", "Website")
-		layout("pages.edit", ("page", page), ("rootPage", rootPage))
+		layout("pages.edit", ("page", page), ("rootPage", rootPage), ("pageJson", generate(page)))
 	}
 
 	post("/pages/edit/:uuid") {
@@ -276,6 +276,22 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	get("/images/find") {
 		render("images", ("images", MediaManager.getImagesList))
+	}
+
+	get("/views/shared/:id") {
+		<div class="entry">
+			<div class="info">
+				<span class="control"></span>
+				<span class="title"><a data-bind="page.title" href="#"></a></span>
+				<div class="clear"></div>
+			</div>
+			<div class="entries">
+	  	<div data-foreach-page="page.subPages">
+				<div data-bind-page="page" />
+				<div data-partial="shared/pages-tree"></div>
+			</div>
+			</div>
+		</div>
 	}
 
 	notFound {

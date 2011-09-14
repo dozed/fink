@@ -8,6 +8,26 @@
 :!javascript
   var pages = #{pagesJson};
 
+:!coffeescript
+
+  class Page extends Batman.Model
+    @encode 'uuid', 'data', 'shortlink', 'title', 'author', 'subPages', 'tags'
+
+  class Pages extends Batman.App
+    @global yes
+
+  p = new Page
+  p.fromJSON(pages)
+  
+  Pages.run()
+  Pages.page = p
+  console.log(Pages.page)
+
+%div(style="border: 1px solid #000000")
+%h1 Pages
+
+%div(data-partial="shared/pages-tree")
+  
 %p
   %a(href={adminBase("/pages/create")}) Create a new page
 
