@@ -1,5 +1,6 @@
 package org.noorg.fink.data.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.neo4j.graphdb.Node;
@@ -57,6 +58,19 @@ public class PageRepository {
 
 	public Page findPageByShortlink(String shortlink) {
 		return repository.findByPropertyValue("shortlink", shortlink);
+	}
+	
+	// TODO do traversal here
+	public List<Page> findPagesByTag(String tag) {
+		List<Page> pages = new ArrayList<Page>();
+		for (Page p : repository.findAll()) {
+			for (Tag t : p.getTags()) {
+				if (t.getName().equalsIgnoreCase(tag)) {
+					pages.add(p);
+				}
+			}
+		}
+		return ImmutableList.copyOf(pages);
 	}
 
 	public Page findPageByTitleManually(String title) {

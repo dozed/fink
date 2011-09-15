@@ -47,7 +47,7 @@
                 %a(href={uri("/admin/")}) Admin
           .down
             %ul
-              -for( page <- rootPage.getSubPages )
+              -for( page <- pages.findPagesByTag("sub-menu") )
                 %li
                   %a(href={uri("/pages/"+page.getShortlink)}) #{page.getTitle}
           %div(style="clear:both")
