@@ -51,3 +51,15 @@ If you use Eclipse as IDE, it is suggested to run "mvn eclipse:eclipse" before i
 This is to prevent problems with AspectJ.
 
 
+Using the quickstart archetype:
+
+The following command creates a simple fink-based website. 
+
+$ mvn archetype:generate \
+  -DarchetypeGroupId=org.noorg.fink \
+  -DarchetypeArtifactId=website-quickstart \
+  -DarchetypeVersion=0.0.1-SNAPSHOT \
+  -DgroupId=org.fooorg \
+  -DartifactId=website
+
+
