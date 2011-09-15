@@ -2,10 +2,9 @@
 - response.setContentType("text/html")
 
 -@ var pages : org.noorg.fink.data.repository.PageRepository
--@ var rootPage : org.noorg.fink.data.entities.Page
 
 -@ var body: String
--@ var title : String = "fink Sample Page"
+-@ var title : String = "fink quickstart"
 
 !!! Basic
 %html(lang="en")
@@ -31,20 +30,10 @@
         .menu
           .up
             %ul
-              - if (requestUri.startsWith("/index."))
-                %li
-                  %span People
-              - else
-                %li
-                  %a(href={uri("/collections/nature")}) Nature
               %li
-                %a(href={uri("/collections/city")}) City
+                %a(href={uri("/")}) Index
               %li
-                %a(href={uri("/dates")}) Dates
-              %li
-                %a(href={uri("/posts")}) Posts
-              %li
-                %a(href={uri("/admin/")}) Admin
+                %a(href={uri("/fink-admin/")}) Admin
           .down
             %ul
               -for( page <- pages.findPagesByTag("sub-menu") )
