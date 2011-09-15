@@ -77,6 +77,7 @@
 		<module>fink-data</module>
 		<module>fink-admin</module>
 		<module>fink-sample</module>
+		<module>website-quickstart</module>
 	</modules>
 
 	<dependencyManagement>
