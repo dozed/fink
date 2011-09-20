@@ -22,6 +22,7 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 	def layout(template: String, attributes : Map[String, Any] = Map[String, Any]()) = {
 		var attr = attributes
 		attr += ("pages" -> pageRepository)
+		attr += ("media" -> mediaRepository)
 		attr += ("rootPage" -> pageRepository.find("title", "Website"))
 		attr += ("layout" -> (themeBase + "/layouts/default.scaml"))
 		templateEngine.layout(themeBase + "/" + template + ".scaml", attr)
@@ -88,6 +89,12 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 		layout("page", Map("page" -> page))
 	}
 
+	get("/collections/:shortlink") {
+		val shortlink = params("shortlink")
+		val collection = mediaRepository.findCollectionByShortlink(shortlink)
+		layout("collection", Map("collection" -> collection))
+	}
+	
 	notFound {
  		<h1>Not found.  Bummer.</h1>
 	}

@@ -25,6 +25,10 @@ public class MediaRepository {
 		return ImmutableList.copyOf(repository.findAll());
 	}
 	
+	public List<MediaCollection> findCollections() {
+		return ImmutableList.copyOf(repository.findAll());
+	}
+
 	@Transactional
 	public MediaCollection createCollection(String title) {
 		return repository.save(new MediaCollection(title));

@@ -2,6 +2,7 @@
 - response.setContentType("text/html")
 
 -@ var pages : org.noorg.fink.data.repository.PageRepository
+-@ var media : org.noorg.fink.data.repository.MediaRepository
 -@ var rootPage : org.noorg.fink.data.entities.Page
 
 -@ var body: String
@@ -27,24 +28,14 @@
   %body
     #navigation
       .wrapper
-        %img(src={themeBase("/images/fink.png")})
+        %a(href={uri("/")})
+          %img(src={themeBase("/images/fink.png")})
         .menu
           .up
             %ul
-              - if (requestUri.startsWith("/index."))
+              - for ( collection <- media.findCollections() )
                 %li
-                  %span People
-              - else
-                %li
-                  %a(href={uri("/collections/nature")}) Nature
-              %li
-                %a(href={uri("/collections/city")}) City
-              %li
-                %a(href={uri("/dates")}) Dates
-              %li
-                %a(href={uri("/posts")}) Posts
-              %li
-                %a(href={uri("/fink-admin/")}) Admin
+                  %a(href={uri("/collections/" + collection.getShortlink())}) #{collection.getTitle()}
           .down
             %ul
               -for( page <- pages.findPagesByTag("sub-menu") )
