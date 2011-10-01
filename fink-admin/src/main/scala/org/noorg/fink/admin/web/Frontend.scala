@@ -46,11 +46,18 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 			tagRepository = ApplicationContextProvider.getContext().getBean(classOf[TagRepository])
 			pageRepository = ApplicationContextProvider.getContext().getBean(classOf[PageRepository])
 
+			var page = pageRepository.find("title", "Website")
+			if (page == null) {
+				page = new Page("Website")
+				pageRepository.save(page)
+			}
+
 			inited = true
 		}
 	}
 
 	before() {
+
 		contentType = "text/html"
 		ensureRepositories
 	}
