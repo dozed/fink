@@ -13,3 +13,4 @@ fink-*/.externalToolBuilders
 fink-*/.scala_dependencies
 
 fink-sample/src/main/webapp/WEB-INF/classes/rebel.xml
+fink-sample/src/main/resources/fink.properties
