@@ -56,14 +56,18 @@
 		<dependency>
 			<groupId>org.fusesource.scalate</groupId>
 			<artifactId>scalate-core</artifactId>
-			<version>1.5.2</version>
-			<type>pom</type>
-			<scope>compile</scope>
+			<version>${scalate-version}</version>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.fusesource.scalamd</groupId>
 			<artifactId>scalamd</artifactId>
 			<version>1.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mozilla</groupId>
+			<artifactId>rhino</artifactId>
+			<version>1.7R3</version>
 		</dependency>
 	</dependencies>
 

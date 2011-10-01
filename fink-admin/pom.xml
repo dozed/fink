@@ -102,9 +102,8 @@
 		<dependency>
 			<groupId>org.fusesource.scalate</groupId>
 			<artifactId>scalate-core</artifactId>
-			<version>1.5.2</version>
+			<version>${scalate-version}</version>
 			<type>pom</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.fusesource.scalamd</groupId>

@@ -93,7 +93,12 @@
         });
       });
     });
+    
   });
+
+:!coffeescript
+  $(".image-list .image").hover ->
+    console.log 1
 
 %h1
   %a(href={"#uuid="+collection.getUuid+"&tab=meta"} id="btn-edit-cover")
