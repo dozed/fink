@@ -12,6 +12,10 @@
 	<packaging>war</packaging>
 
 	<name>${project.artifactId}</name>
+	
+	<properties>
+		<webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -74,6 +78,7 @@
 	<build>
 		<sourceDirectory>src/main/scala</sourceDirectory>
 		<testSourceDirectory>src/test/scala</testSourceDirectory>
+		<outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
 
 		<plugins>
 			<plugin>
