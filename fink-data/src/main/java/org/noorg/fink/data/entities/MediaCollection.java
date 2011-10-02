@@ -8,9 +8,13 @@ import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.neo4j.graphdb.Node;
+import org.neo4j.helpers.collection.MapUtil;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.support.node.Neo4jNodeBacking;
+import org.springframework.data.neo4j.support.query.GremlinExecutor;
+import org.springframework.data.neo4j.support.query.GremlinQueryEngine;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -51,6 +55,15 @@ public class MediaCollection {
 		setUuid(UUID.randomUUID().toString());
 		setTitle(title);
 		setShortlink(title);
+	}
+
+		
+	public List<Image> getSortedImages() {
+//		Iterable<Image> it = findAllByQuery("start collection=(%collection) match (person)-[:PART_OF]->(image) return image", Image.class, MapUtil.map("collection", this.getNodeId()));
+		//Iterable<Image> it = findAllByQuery("start collection=(%collection) match (person)-[:PART_OF]->(image) return image", Image.class, MapUtil.map("collection", this.getNodeId()));
+		GremlinQueryEngine engine = new GremlinQueryEngine(getPersistentState().getGraphDatabase());
+    Iterable<Image> it = engine.query("g.v(collection).", MapUtil.map("collection", getNodeId())).to(Image.class);
+		return ImmutableList.copyOf(it);
 	}
 
 	public void addItem(Image item) {

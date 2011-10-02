@@ -173,17 +173,25 @@ body p {
 	line-height: 1.4;
 }
 
-div.images-list div.image {
+ul.images-list {
+	margin: 0;
+	padding: 0;
+}
+
+ul.images-list li.image {
+	list-style-image: none;
+	display: block;
 	border: 1px solid #888888;
 	float: left;
 	margin: 5px;
+	background-color: #ffffff;
 }
 
-div.images-list div.image img {
+ul.images-list li.image img {
 	margin: 5px 5px 5px 5px;
 }
 
-div.images-list div.image span {
+ul.images-list li.image span {
 	font-family: 'Mako', sans-serif;
 	font-size: 10px;
 	width: 100%;

@@ -9,16 +9,17 @@
     });
     
     $("#wizard").submit(function(event) {
-      event.preventDefault();
+      event.preventDefault()
       
-      var form = $(this);
-      var url = form.attr("action");
-      var title = form.find('input[name="title"]').val();
+      var form = $(this)
+      var url = form.attr("action")
+      var title = form.find('input[name="title"]').val()
+      var shortlink = form.find('input[name="shortlink"]').val()
       
-      $.post(url, { title: title },
+      $.post(url, { title: title, shortlink: shortlink },
         function(data) {
-          reload_collection(data);
-        });
+          reload_collection(data)
+        })
     });
   });
 
