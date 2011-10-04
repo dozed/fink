@@ -1,7 +1,6 @@
 package org.noorg.fink.admin.web
 
 import scala.collection.JavaConversions.asScalaSet
-
 import org.noorg.fink.admin.support.ApplicationContextProvider
 import org.noorg.fink.admin.support.MediaManager
 import org.noorg.fink.data.entities.Page
@@ -13,8 +12,8 @@ import org.noorg.fink.data.repository.TagRepository
 import org.scalatra.fileupload.FileUploadSupport
 import org.scalatra.scalate.ScalateSupport
 import org.scalatra.ScalatraServlet
-
 import com.codahale.jerkson.Json.generate
+import org.noorg.fink.data.entities.MediaCollection
 
 class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
@@ -239,6 +238,20 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		c.setAuthor(author)
 		c.setShortlink(shortlink)
 		mediaRepository.save(c)
+	}
+
+	post("/collections/edit/:id/sort") {
+		params("order") match {
+			case s : String => {
+				val order = s.split(",")
+				mediaRepository.findCollection(params("id")) match {
+					case c : MediaCollection => {
+						c.sortImages(order)
+						mediaRepository.save(c)
+					}
+				}
+			}
+		}
 	}
 
 	post("/collections/edit/:id/setcover") {
