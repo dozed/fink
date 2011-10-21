@@ -7,8 +7,9 @@ import java.util.UUID;
 import org.joda.time.DateTime;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
-import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.data.neo4j.annotation.Indexed.Level;
+import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.transaction.annotation.Transactional;
 
 public abstract class ContentItem {
 
@@ -51,14 +52,17 @@ public abstract class ContentItem {
 		this.date = date;
 	}
 
+	@Transactional
 	public void setTags(Set<Tag> tags) {
 		this.tags = tags;
 	}
 	
+	@Transactional
 	public void addTag(Tag tag) {
 		tags.add(tag);
 	}
 	
+	@Transactional
 	public void clearTags() {
 		tags.clear();
 	}

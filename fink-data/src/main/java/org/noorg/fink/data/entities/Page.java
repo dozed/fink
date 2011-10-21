@@ -10,8 +10,6 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.ImmutableSet;
-
 @NodeEntity
 @JsonIgnoreProperties({"parentPage", "persistentState", "entityState"})
 public class Page extends ContentItem {
@@ -48,12 +46,14 @@ public class Page extends ContentItem {
 	
 	@Transactional
 	public void addPage(Page page) {
+		// subPages does contain the value returned by getSubPages()
 		if (!subPages.contains(page)) {
 			subPages.add(page);
 			page.setParentPage(this);
 		}
 	}
 	
+	@Transactional
 	protected void setParentPage(Page parentPage) {
 		this.parentPage = parentPage;
 	}
