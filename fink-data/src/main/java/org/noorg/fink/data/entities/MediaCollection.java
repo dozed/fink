@@ -57,12 +57,8 @@ public class MediaCollection {
 		setShortlink(title);
 	}
 
-		
 	public List<Image> getSortedImages() {
-//		Iterable<Image> it = findAllByQuery("start collection=(%collection) match (person)-[:PART_OF]->(image) return image", Image.class, MapUtil.map("collection", this.getNodeId()));
-		//Iterable<Image> it = findAllByQuery("start collection=(%collection) match (person)-[:PART_OF]->(image) return image", Image.class, MapUtil.map("collection", this.getNodeId()));
-		GremlinQueryEngine engine = new GremlinQueryEngine(getPersistentState().getGraphDatabase());
-    Iterable<Image> it = engine.query("g.v(collection).", MapUtil.map("collection", getNodeId())).to(Image.class);
+		Iterable<Image> it = findAllByQuery("start collection=(%collection) match (collection)-[:PART_OF]->(image) return image", Image.class, MapUtil.map("collection", this.getNodeId()));
 		return ImmutableList.copyOf(it);
 	}
 
