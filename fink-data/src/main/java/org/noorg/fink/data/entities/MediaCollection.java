@@ -8,13 +8,13 @@ import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.helpers.collection.MapUtil;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
-import org.springframework.data.neo4j.support.node.Neo4jNodeBacking;
-import org.springframework.data.neo4j.support.query.GremlinExecutor;
-import org.springframework.data.neo4j.support.query.GremlinQueryEngine;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -57,9 +57,44 @@ public class MediaCollection {
 		setShortlink(title);
 	}
 
+		
 	public List<Image> getSortedImages() {
-		Iterable<Image> it = findAllByQuery("start collection=(%collection) match (collection)-[:PART_OF]->(image) return image", Image.class, MapUtil.map("collection", this.getNodeId()));
-		return ImmutableList.copyOf(it);
+		return getItems();
+	}
+	
+	@Transactional
+	public void sortImages(String[] uuids) {
+		int valid = 0;
+		
+		// check if all items occur in the incoming array
+		for (String uuid : uuids) {
+			for (Image i : items) {
+				if (i.getUuid().equals(uuid)) {
+					valid++;
+					break;
+				}
+			}
+		}
+		
+		List<Image> items = getItems();
+		
+		if (valid == items.size()) {
+			int sorting = 0;
+			Transaction tx = getPersistentState().getGraphDatabase().beginTx();
+			try {
+				for (String uuid : uuids) {
+					for (Image img : items) {
+						if (img.getUuid().equals(uuid)) {
+							Relationship r = getRelationshipTo(img, "PART_OF");
+							r.setProperty("sorting", sorting++);
+						}
+					}
+				}
+				tx.success();
+			} finally {
+				tx.finish();
+			}
+		}
 	}
 
 	public void addItem(Image item) {
@@ -67,7 +102,8 @@ public class MediaCollection {
 	}
 	
 	public List<Image> getItems() {
-		return ImmutableList.copyOf(items);
+		Iterable<Image> it = findAllByQuery("start collection=(%collection) match (collection)-[p:PART_OF]->(image) return image order by p.sorting?", Image.class, MapUtil.map("collection", this.getNodeId()));
+		return ImmutableList.copyOf(it);
 	}
 
 	public void setCover(Image cover) {

@@ -2,6 +2,8 @@ package org.noorg.fink.data.repository;
 
 import java.util.List;
 
+import org.neo4j.graphdb.Relationship;
+import org.noorg.fink.data.entities.Image;
 import org.noorg.fink.data.entities.MediaCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.repository.DirectGraphRepositoryFactory;
@@ -53,5 +55,5 @@ public class MediaRepository {
 	public void save(MediaCollection media) {
 		repository.save(media);
 	}
-	
+
 }

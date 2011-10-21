@@ -53,7 +53,16 @@
     });
 
     
-    $("#images-list").sortable();
+    $("#images-list").sortable({
+      update: function(event, ui) {
+      	var order = $("#images-list").sortable('toArray').join(',');
+      	$.post("#{adminBase("/collections/edit/"+collection.getUuid+"/sort")}", {
+      		order: order
+      	}, function() {
+      		console.log("done");
+      	});
+      }
+    });
 
     var meta = $("#collection-meta");
     var images = $("#collection-images");
@@ -156,7 +165,7 @@
       -for(media <- collection.getSortedImages )
         -# hack
         -val image : org.noorg.fink.data.entities.Image = media.asInstanceOf[org.noorg.fink.data.entities.Image]
-        %li.image
+        %li.image(id={image.getUuid})
           %a(class="media-image" href={uri("/uploads/medium/"+image.getImage)} rel={uri("/uploads/medium/"+image.getImage)} title={image.getTitle})
             %img(src={uri("/uploads/thumb/"+image.getThumb)} title={image.getTitle})
           %span
