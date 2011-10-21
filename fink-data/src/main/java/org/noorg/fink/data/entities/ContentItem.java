@@ -58,6 +58,10 @@ public abstract class ContentItem {
 	public void addTag(Tag tag) {
 		tags.add(tag);
 	}
+	
+	public void clearTags() {
+		tags.clear();
+	}
 
 	protected void setUuid(String uuid) {
 		this.uuid = uuid;

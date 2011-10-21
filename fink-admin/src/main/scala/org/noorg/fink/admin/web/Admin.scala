@@ -1,19 +1,21 @@
 package org.noorg.fink.admin.web
 
 import scala.collection.JavaConversions.asScalaSet
+
 import org.noorg.fink.admin.support.ApplicationContextProvider
 import org.noorg.fink.admin.support.MediaManager
+import org.noorg.fink.data.entities.MediaCollection
 import org.noorg.fink.data.entities.Page
-import org.noorg.fink.data.repository.ImageRepository
-import org.noorg.fink.data.repository.MediaRepository
-import org.noorg.fink.data.repository.PageRepository
-import org.noorg.fink.data.repository.PostRepository
-import org.noorg.fink.data.repository.TagRepository
+import org.noorg.fink.data.repositories.ImageRepository
+import org.noorg.fink.data.repositories.MediaRepository
+import org.noorg.fink.data.repositories.PageRepository
+import org.noorg.fink.data.repositories.PostRepository
+import org.noorg.fink.data.repositories.TagRepository
 import org.scalatra.fileupload.FileUploadSupport
 import org.scalatra.scalate.ScalateSupport
 import org.scalatra.ScalatraServlet
+
 import com.codahale.jerkson.Json.generate
-import org.noorg.fink.data.entities.MediaCollection
 
 class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
