@@ -12,9 +12,9 @@ import java.util.Iterator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.noorg.fink.data.entities.Page;
-import org.noorg.fink.data.repository.PageRepository;
+import org.noorg.fink.data.repositories.PageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.support.GraphDatabaseContext;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.data.neo4j.support.node.Neo4jHelper;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -31,12 +31,12 @@ public class PageTest {
 	private PageRepository pageRepository;
 
 	@Autowired
-	private GraphDatabaseContext graphDatabaseContext;
+	private Neo4jTemplate template;
 
 	@Rollback(false)
 	@BeforeTransaction
 	public void clearDatabase() {
-		Neo4jHelper.cleanDb(graphDatabaseContext);
+		Neo4jHelper.cleanDb(template);
 	}
 
 	@Test

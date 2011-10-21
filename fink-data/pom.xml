@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-neo4j</artifactId>
-			<version>1.1.0.RELEASE</version>
+			<version>${spring-data-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
@@ -32,9 +32,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>r09</version>
-			<type>jar</type>
-			<scope>compile</scope>
+			<version>10.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -70,7 +68,12 @@
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j-cypher</artifactId>
-			<version>1.4.1</version>
+			<version>${neo4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j-lucene-index</artifactId>
+			<version>${neo4j-version}</version>
 		</dependency>
 	</dependencies>
 

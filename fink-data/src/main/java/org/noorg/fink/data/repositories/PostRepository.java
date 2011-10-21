@@ -1,4 +1,4 @@
-package org.noorg.fink.data.repository;
+package org.noorg.fink.data.repositories;
 
 import java.util.HashSet;
 import java.util.List;
@@ -7,9 +7,8 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.noorg.fink.data.entities.Post;
 import org.noorg.fink.data.entities.Tag;
+import org.noorg.fink.data.repositories.internal.PostRepositoryInternal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.repository.DirectGraphRepositoryFactory;
-import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +18,8 @@ import com.google.common.collect.ImmutableList;
 @Service
 public class PostRepository {
 	
-	private GraphRepository<Post> repository;
-
 	@Autowired
-	public void setGraphRepositoryFactory(DirectGraphRepositoryFactory graphRepositoryFactory) {
-		repository = graphRepositoryFactory.createGraphRepository(Post.class);		
-	}
+	private PostRepositoryInternal repository;
 
 	public List<Post> getEntries() {
 		return ImmutableList.copyOf(repository.findAll());

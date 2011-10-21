@@ -1,13 +1,10 @@
-package org.noorg.fink.data.repository;
+package org.noorg.fink.data.repositories;
 
 import java.util.List;
 
-import org.neo4j.graphdb.Relationship;
-import org.noorg.fink.data.entities.Image;
 import org.noorg.fink.data.entities.MediaCollection;
+import org.noorg.fink.data.repositories.internal.MediaRepositoryInternal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.repository.DirectGraphRepositoryFactory;
-import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +13,8 @@ import com.google.common.collect.ImmutableList;
 @Repository
 public class MediaRepository {
 	
-	private GraphRepository<MediaCollection> repository;
-
 	@Autowired
-	public void setGraphRepositoryFactory(DirectGraphRepositoryFactory graphRepositoryFactory) {
-		repository = graphRepositoryFactory.createGraphRepository(MediaCollection.class);		
-	}
+	private MediaRepositoryInternal repository;
 
 	public List<MediaCollection> findAll() {
 		return ImmutableList.copyOf(repository.findAll());
