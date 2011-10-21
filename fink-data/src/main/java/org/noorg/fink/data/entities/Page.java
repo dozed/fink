@@ -8,6 +8,7 @@ import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -36,13 +37,16 @@ public class Page extends ContentItem {
 	}
 	
 	public Set<Page> getSubPages() {
-		return ImmutableSet.copyOf(subPages);
+		// TODO addPage doesnt work with the following line
+		//return ImmutableSet.copyOf(subPages);
+		return subPages;
 	}
 	
 	public Page getParentPage() {
 		return parentPage;
 	}
 	
+	@Transactional
 	public void addPage(Page page) {
 		if (!subPages.contains(page)) {
 			subPages.add(page);
