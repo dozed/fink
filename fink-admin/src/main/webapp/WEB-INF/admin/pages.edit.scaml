@@ -71,17 +71,10 @@
 
 
 :!coffeescript
-  class Page extends Batman.Model
-    @encode 'uuid', 'title', 'shortlink', 'author', 'subPages', 'tags', 'text'
+  class SomeView extends Backbone.View
+    render ->
+      $(this.el).html("... some html and content goes here ... ");
+      Backbone.ModelBinding.bind(this)
+  console.log(page)
 
-  class PageEditor extends Batman.App
-    @global yes
-    
-  p = new Page()
-  p.fromJSON(page)
-  
-  PageEditor.page = p
-  PageEditor.run()
-  
-  console.log(p.toJSON())
-
+  alert(1)
