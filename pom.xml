@@ -64,8 +64,8 @@
 		<scalate-version>1.5.2</scalate-version>
 		<scalatra-version>2.0.1</scalatra-version>
 		<spring-version>3.0.6.RELEASE</spring-version>
-    <spring-data-version>2.0.0.BUILD-SNAPSHOT</spring-data-version>
-    <neo4j-version>1.5.M02</neo4j-version>
+		<spring-data-version>2.0.0.BUILD-SNAPSHOT</spring-data-version>
+		<neo4j-version>1.5.M02</neo4j-version>
 
 		<!-- plugins -->
 		<jetty-plugin-version>7.5.0.RC1</jetty-plugin-version>
@@ -198,18 +198,18 @@
 			<name>Spring Maven Milestone Repository</name>
 			<url>http://maven.springframework.org/milestone</url>
 		</repository>
-    <repository>
-      <id>spring-maven-snapshot</id>
-      <name>Spring Framework Maven Snapshot Repository</name>
-      <url>http://maven.springframework.org/snapshot</url>
-    </repository>
+		<repository>
+			<id>spring-maven-snapshot</id>
+			<name>Spring Framework Maven Snapshot Repository</name>
+			<url>http://maven.springframework.org/snapshot</url>
+		</repository>
 
-    <!-- Neo4j Repositories -->
-    <repository>
-      <id>neo4j-snapshots</id>
-      <name>Neo4j Snapshot Repository</name>
-      <url>http://m2.neo4j.org/snapshots</url>
-    </repository>
+		<!-- Neo4j Repositories -->
+		<repository>
+			<id>neo4j-snapshots</id>
+			<name>Neo4j Snapshot Repository</name>
+			<url>http://m2.neo4j.org/snapshots</url>
+		</repository>
 
 		<!-- FuseSource Repositories: scalate -->
 		<repository>
