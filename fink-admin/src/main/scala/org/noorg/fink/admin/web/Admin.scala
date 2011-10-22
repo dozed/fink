@@ -23,12 +23,15 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	def layout(template: String, attributes: (String, Any)*) = {
 		//layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> (adminTemplateBase + "/layouts/admin.scaml") :: attributes.toList: _*)
-		val tpl2 = adminTemplateBase + "/" + template + ".scaml"
-		templateEngine.layout(tpl2, Map(attributes:_*))
+//		val tpl2 = adminTemplateBase + "/" + template + ".scaml"
+//		templateEngine.layout(tpl2, Map(attributes:_*)) 
+		templateAttributes("foo") = "from attributes"
+		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> (adminTemplateBase + "/layouts/admin.scaml"))
 	}
 
 	def layout(template: String) = {
-		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> (adminTemplateBase + "/layouts/admin.scaml"))
+		templateAttributes("layout") = (adminTemplateBase + "/layouts/admin.scaml")
+		scaml(adminTemplateBase + "/" + template + ".scaml")
 	}
 
 	def render(template: String, attributes: (String, Any)*) = {
@@ -92,8 +95,9 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		val root = pageRepository.find("title", "Website")
 		//goDown(root)
 		//println(generate(root))
+		templateAttributes("rootPage") = root
 
-		layout("pages.index", ("rootPage", root))
+		layout("pages.index")
 	}
 
 	def goDown(page: Page) {
@@ -119,7 +123,12 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	get("/pages/edit/:uuid") {
 		val page = pageRepository.findPageByUuid(params("uuid"))
 		val rootPage = pageRepository.find("title", "Website")
-		layout("pages.edit", ("page", page), ("rootPage", rootPage), ("pageJson", generate(page)))
+
+		templateAttributes("page") = page
+		templateAttributes("rootPage") = rootPage
+		templateAttributes("pageJson") = generate(page)
+
+		layout("pages.edit")
 	}
 
 	post("/pages/edit/:uuid") {
