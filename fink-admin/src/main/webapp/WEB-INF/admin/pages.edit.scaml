@@ -13,7 +13,7 @@
   $(document).ready(function() {
     $(this).find("select, input:text, input:checkbox, input:radio, input:file").uniform();
 
-    $("#tags").tagsInput({
+    $("input#tagsInput").tagsInput({
       height: "100px",
       width: "300px",
     });
@@ -56,7 +56,7 @@
     Tags:
     -# race condition?
       %input(type="text" id="tags" name="tags" size="50" data-bind="page.tags | map 'name' | join ','")
-    %input(type="text" id="tags" name="tags" size="50" value={page.getTags().map(t => t.getName)mkString(",")})
+    %input(type="text" name="tags" id="tagsInput" size="50" value={page.getTags().map(t => t.getName)mkString(",")})
   -#
     %textarea(style="width:100%" rows="15" id="pageText-editor" name="text" data-bind="page.text")
   

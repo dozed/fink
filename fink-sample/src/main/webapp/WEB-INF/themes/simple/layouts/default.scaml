@@ -38,7 +38,7 @@
                   %a(href={uri("/collections/" + collection.getShortlink())}) #{collection.getTitle()}
           .down
             %ul
-              -for( page <- pages.findAll() )
+              -for( page <- pages.findPagesByTag("sub-menu") )
                 %li
                   %a(href={uri("/pages/"+page.getShortlink)}) #{page.getTitle}
           %div(style="clear:both")
