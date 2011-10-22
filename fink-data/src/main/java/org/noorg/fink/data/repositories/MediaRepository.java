@@ -55,6 +55,7 @@ public class MediaRepository {
 		return repository.count();
 	}
 
+	@Transactional
 	public void save(MediaCollection media) {
 		repository.save(media);
 	}
@@ -65,6 +66,11 @@ public class MediaRepository {
 				"start n=node({id}) match (n)-[p:PART_OF]->(image) return image order by p.sorting?",
 				MapUtil.map("id", media.getId())).to(Image.class);
 		return ImmutableList.copyOf(r);
+	}
+	
+	@Transactional
+	public void addItemToCollection(MediaCollection media, Image item) {
+		media.addItem(item);
 	}
 
 	@Transactional

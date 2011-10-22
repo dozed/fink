@@ -273,7 +273,9 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	post("/collections/edit/:id/add") {
 		val collection = mediaRepository.findCollection(params("id"))
 		val image = MediaManager.processUpload(fileParams("file"))
+		println(1)
 		collection.addItem(image)
+		println(2)
 		mediaRepository.save(collection)
 		//redirect(uri("/fink-admin/collections/edit/" + collection.getUuid))
 	}

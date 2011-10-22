@@ -12,10 +12,12 @@ import org.noorg.fink.data.repositories.internal.PageRepositoryInternal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ImmutableList;
 
 @Repository
+@Transactional(readOnly=true)
 public class PageRepository {
 
 	@Autowired
@@ -24,6 +26,7 @@ public class PageRepository {
 	@Autowired
 	private Neo4jTemplate template;
 
+	@Transactional
 	public void createSomePages() {
 		Page p = new Page("root");
 		p.addPage(new Page("sub1"));
@@ -34,6 +37,7 @@ public class PageRepository {
 		repository.save(p);
 	}
 
+	@Transactional
 	public void save(Page p) {
 		repository.save(p);
 	}
@@ -88,4 +92,10 @@ public class PageRepository {
 		return ImmutableList.copyOf(repository.findAll());
 	}
 
+	@Transactional
+	public void addSubPage(Page page, Page sub) {
+		page.addPage(sub);
+	}
+
+	
 }

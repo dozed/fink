@@ -20,9 +20,10 @@ public class Page extends ContentItem {
 	@RelatedTo(elementClass = Page.class, type="IS_SUBPAGE", direction=Direction.INCOMING)
 	private Set<Page> subPages = new HashSet<Page>();
 	
-	private String text;
 	@Indexed private String shortlink;
 	
+	private String text;
+
 	Page() {}
 
 	public Page(String title) {
@@ -44,6 +45,7 @@ public class Page extends ContentItem {
 		return parentPage;
 	}
 	
+	// TODO why is annotation needed here?
 	@Transactional
 	public void addPage(Page page) {
 		// subPages does contain the value returned by getSubPages()
