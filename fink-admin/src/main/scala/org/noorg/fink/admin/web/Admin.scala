@@ -22,11 +22,13 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	def adminTemplateBase = "/WEB-INF/admin"
 
 	def layout(template: String) = {
+		templateAttributes("mediaRepository") = mediaRepository
 		templateAttributes("layout") = (adminTemplateBase + "/layouts/admin.scaml")
 		scaml(adminTemplateBase + "/" + template + ".scaml")
 	}
 
 	def render(template: String) = {
+		templateAttributes("mediaRepository") = mediaRepository
 		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> "")
 	}
 
@@ -253,7 +255,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 				val order = s.split(",")
 				mediaRepository.findCollection(params("id")) match {
 					case c : MediaCollection => {
-						c.sortImages(order)
+						//c.sortImages(order)
+						mediaRepository.sortImages(c, order)
 						mediaRepository.save(c)
 					}
 				}
