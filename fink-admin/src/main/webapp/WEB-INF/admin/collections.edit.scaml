@@ -163,8 +163,6 @@
   
   -if(collection.getItems.size > 0)
     %ul.images-list#images-list
-      -#
-        -for(media <- collection.getItems )
       -for(media <- mediaRepository.getCollectionItems(collection) )
         -# hack
         -val image : org.noorg.fink.data.entities.Image = media.asInstanceOf[org.noorg.fink.data.entities.Image]

@@ -255,7 +255,6 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 				val order = s.split(",")
 				mediaRepository.findCollection(params("id")) match {
 					case c : MediaCollection => {
-						//c.sortImages(order)
 						mediaRepository.sortImages(c, order)
 						mediaRepository.save(c)
 					}
