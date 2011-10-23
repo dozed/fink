@@ -1,6 +1,6 @@
 package org.noorg.fink.sample;
 
-import org.noorg.fink.data.repository.PageRepository;
+import org.noorg.fink.data.repositories.PageRepository;
 
 /**
  * Hello world!

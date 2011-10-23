@@ -1,5 +1,6 @@
 -import org.noorg.fink.admin.support.Theming._
 
+-@val mediaRepository : org.noorg.fink.data.repositories.MediaRepository
 -@val collection : org.noorg.fink.data.entities.MediaCollection
 
 :!javascript
@@ -162,7 +163,7 @@
   
   -if(collection.getItems.size > 0)
     %ul.images-list#images-list
-      -for(media <- collection.getSortedImages )
+      -for(media <- mediaRepository.getCollectionItems(collection) )
         -# hack
         -val image : org.noorg.fink.data.entities.Image = media.asInstanceOf[org.noorg.fink.data.entities.Image]
         %li.image(id={image.getUuid})

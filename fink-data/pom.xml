@@ -16,25 +16,16 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-neo4j</artifactId>
-			<version>1.1.0.RELEASE</version>
-		</dependency>
-		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>1.6.2</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency> <groupId>org.aspectj</groupId> <artifactId>aspectjrt</artifactId> 
-			<version>${aspectj-version}</version> <scope>compile</scope> </dependency> -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>r09</version>
-			<type>jar</type>
-			<scope>compile</scope>
+			<version>10.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -53,6 +44,16 @@
 			<version>0.4.0</version>
 		</dependency>
 		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j-cypher</artifactId>
+			<version>${neo4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j-lucene-index</artifactId>
+			<version>${neo4j-version}</version>
+		</dependency>
+		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
 			<version>2.2</version>
@@ -67,10 +68,29 @@
 			<artifactId>aspectjtools</artifactId>
 			<version>${aspectj-version}</version>
 		</dependency>
+		<!-- <dependency> <groupId>org.springframework.data</groupId> <artifactId>spring-data-neo4j-aspects</artifactId> 
+			<version>${spring-data-version}</version> <exclusions> <exclusion> <groupId>org.slf4j</groupId> 
+			<artifactId>slf4j-api</artifactId> </exclusion> <exclusion> <groupId>org.slf4j</groupId> 
+			<artifactId>jcl-over-slf4j</artifactId> </exclusion> <exclusion> <groupId>org.slf4j</groupId> 
+			<artifactId>slf4j-log4j12</artifactId> </exclusion> </exclusions> </dependency> -->
 		<dependency>
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j-cypher</artifactId>
-			<version>1.4.1</version>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-neo4j</artifactId>
+			<version>${spring-data-version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>jcl-over-slf4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
@@ -87,58 +107,24 @@
 			</plugin>
 
 			<!-- aspectj-maven-plugin -->
-			<plugin>
-				<!-- required to resolve aspectj-enhanced class features -->
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.4</version>
-				<configuration>
-					<outxml>true</outxml>
-					<aspectLibraries>
-						<aspectLibrary>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-aspects</artifactId>
-						</aspectLibrary>
-						<aspectLibrary>
-							<groupId>org.springframework.data</groupId>
-							<artifactId>spring-data-neo4j</artifactId>
-						</aspectLibrary>
-					</aspectLibraries>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.7</version>
-				<!-- Note 2.8 does not work with AspectJ aspect path -->
-				<configuration>
-					<downloadSources>true</downloadSources>
-					<downloadJavadocs>false</downloadJavadocs>
-					<wtpversion>2.0</wtpversion>
-					<additionalBuildcommands>
-						<buildCommand>
-							<name>org.eclipse.ajdt.core.ajbuilder</name>
-							<arguments>
-								<aspectPath>org.springframework.aspects</aspectPath>
-							</arguments>
-						</buildCommand>
-					</additionalBuildcommands>
-					<additionalProjectnatures>
-						<projectnature>org.eclipse.ajdt.ui.ajnature</projectnature>
-						<projectnature>com.springsource.sts.roo.core.nature</projectnature>
-					</additionalProjectnatures>
-				</configuration>
-			</plugin>
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>aspectj-maven-plugin</artifactId> 
+				<version>1.2</version> <configuration> <outxml>true</outxml> <aspectLibraries> 
+				<aspectLibrary> <groupId>org.springframework</groupId> <artifactId>spring-aspects</artifactId> 
+				</aspectLibrary> <aspectLibrary> <groupId>org.springframework.data</groupId> 
+				<artifactId>spring-data-neo4j-aspects</artifactId> </aspectLibrary> </aspectLibraries> 
+				<source>1.6</source> <target>1.6</target> </configuration> <executions> <execution> 
+				<goals> <goal>compile</goal> <goal>test-compile</goal> </goals> </execution> 
+				</executions> <dependencies> <dependency> <groupId>org.aspectj</groupId> 
+				<artifactId>aspectjrt</artifactId> <version>${aspectj-version}</version> 
+				</dependency> <dependency> <groupId>org.aspectj</groupId> <artifactId>aspectjtools</artifactId> 
+				<version>${aspectj-version}</version> </dependency> </dependencies> </plugin> 
+				<plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-eclipse-plugin</artifactId> 
+				<version>2.7</version> <configuration> <downloadSources>true</downloadSources> 
+				<downloadJavadocs>false</downloadJavadocs> <wtpversion>2.0</wtpversion> <additionalBuildcommands> 
+				<buildCommand> <name>org.eclipse.ajdt.core.ajbuilder</name> <arguments> <aspectPath>org.springframework.aspects</aspectPath> 
+				</arguments> </buildCommand> </additionalBuildcommands> <additionalProjectnatures> 
+				<projectnature>org.eclipse.ajdt.ui.ajnature</projectnature> </additionalProjectnatures> 
+				</configuration> </plugin> -->
 		</plugins>
 	</build>
 </project>

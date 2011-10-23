@@ -1,6 +1,5 @@
 package org.noorg.fink.admin.support
 
-import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileOutputStream
@@ -8,12 +7,16 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.regex.Pattern
+
+import scala.collection.JavaConversions._
+
 import org.apache.commons.fileupload.FileItem
 import org.apache.commons.io.IOUtils
 import org.noorg.fink.data.entities.Image
-import org.noorg.fink.data.repository.ImageRepository
-import org.noorg.fink.data.repository.MediaRepository
-import scala.collection.JavaConversions._
+import org.noorg.fink.data.repositories.ImageRepository
+import org.noorg.fink.data.repositories.MediaRepository
+
+import javax.imageio.ImageIO
 
 // Image specifications
 sealed abstract case class ImageSpec(name: String)

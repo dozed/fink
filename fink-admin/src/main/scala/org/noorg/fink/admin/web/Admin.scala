@@ -1,37 +1,34 @@
 package org.noorg.fink.admin.web
 
 import scala.collection.JavaConversions.asScalaSet
+
 import org.noorg.fink.admin.support.ApplicationContextProvider
 import org.noorg.fink.admin.support.MediaManager
+import org.noorg.fink.data.entities.MediaCollection
 import org.noorg.fink.data.entities.Page
-import org.noorg.fink.data.repository.ImageRepository
-import org.noorg.fink.data.repository.MediaRepository
-import org.noorg.fink.data.repository.PageRepository
-import org.noorg.fink.data.repository.PostRepository
-import org.noorg.fink.data.repository.TagRepository
+import org.noorg.fink.data.repositories.ImageRepository
+import org.noorg.fink.data.repositories.MediaRepository
+import org.noorg.fink.data.repositories.PageRepository
+import org.noorg.fink.data.repositories.PostRepository
+import org.noorg.fink.data.repositories.TagRepository
 import org.scalatra.fileupload.FileUploadSupport
 import org.scalatra.scalate.ScalateSupport
 import org.scalatra.ScalatraServlet
+
 import com.codahale.jerkson.Json.generate
-import org.noorg.fink.data.entities.MediaCollection
 
 class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	def adminTemplateBase = "/WEB-INF/admin"
 
-	def layout(template: String, attributes: (String, Any)*) = {
-		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> (adminTemplateBase + "/layouts/admin.scaml") :: attributes.toList: _*)
-	}
-
 	def layout(template: String) = {
-		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> (adminTemplateBase + "/layouts/admin.scaml"))
-	}
-
-	def render(template: String, attributes: (String, Any)*) = {
-		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> "" :: attributes.toList: _*)
+		templateAttributes("mediaRepository") = mediaRepository
+		templateAttributes("layout") = (adminTemplateBase + "/layouts/admin.scaml")
+		scaml(adminTemplateBase + "/" + template + ".scaml")
 	}
 
 	def render(template: String) = {
+		templateAttributes("mediaRepository") = mediaRepository
 		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> "")
 	}
 
@@ -77,7 +74,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	get("/") {
-		layout("admin.index", ("content", "Hello World"))
+		layout("admin.index")
 	}
 
 	get("/configuration") {
@@ -88,8 +85,9 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		val root = pageRepository.find("title", "Website")
 		//goDown(root)
 		//println(generate(root))
+		templateAttributes("rootPage") = root
 
-		layout("pages.index", ("rootPage", root))
+		layout("pages.index")
 	}
 
 	def goDown(page: Page) {
@@ -101,7 +99,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	get("/pages/create") {
-		layout("pages.create", ("rootPage", pageRepository.find("title", "Website")))
+		templateAttributes("rootPage") = pageRepository.find("title", "Website")
+		layout("pages.create")
 	}
 
 	post("/pages/create") {
@@ -115,7 +114,12 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	get("/pages/edit/:uuid") {
 		val page = pageRepository.findPageByUuid(params("uuid"))
 		val rootPage = pageRepository.find("title", "Website")
-		layout("pages.edit", ("page", page), ("rootPage", rootPage), ("pageJson", generate(page)))
+
+		templateAttributes("page") = page
+		templateAttributes("rootPage") = rootPage
+		templateAttributes("pageJson") = generate(page)
+
+		layout("pages.edit")
 	}
 
 	post("/pages/edit/:uuid") {
@@ -150,7 +154,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	get("/posts") {
-		layout("posts.index", ("posts", postRepository.getEntries))
+		templateAttributes("posts") = postRepository.getEntries
+		layout("posts.index")
 	}
 
 	get("/posts/create") {
@@ -164,7 +169,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	get("/posts/edit/:uuid") {
 		val post = postRepository.findPostByUuid(params("uuid"))
-		layout("posts.edit", ("post", post))
+		templateAttributes("post") = post
+		layout("posts.edit")
 	}
 
 	post("/posts/edit/:uuid") {
@@ -190,7 +196,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	get("/collections") {
-		layout("collections.index", ("collections", mediaRepository.findAll))
+		templateAttributes("collections") = mediaRepository.findAll
+		layout("collections.index")
 	}
 
 	get("/collections/create") {
@@ -210,12 +217,14 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	get("/collections/edit/:id") {
 		val c = mediaRepository.findCollection(params("id"))
-		render("collections.edit", ("collection", c))
+		templateAttributes("collection") = c
+		render("collections.edit")
 	}
 
 	get("/collections/edit/:id/images") {
 		val c = mediaRepository.findCollection(params("id"))
-		render("collections.images", ("collection", c))
+		templateAttributes("collection") = c
+		render("collections.images")
 	}
 
 	post("/collections/edit/:id/update") {
@@ -246,7 +255,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 				val order = s.split(",")
 				mediaRepository.findCollection(params("id")) match {
 					case c : MediaCollection => {
-						c.sortImages(order)
+						mediaRepository.sortImages(c, order)
 						mediaRepository.save(c)
 					}
 				}
@@ -264,7 +273,9 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	post("/collections/edit/:id/add") {
 		val collection = mediaRepository.findCollection(params("id"))
 		val image = MediaManager.processUpload(fileParams("file"))
+		println(1)
 		collection.addItem(image)
+		println(2)
 		mediaRepository.save(collection)
 		//redirect(uri("/fink-admin/collections/edit/" + collection.getUuid))
 	}
@@ -274,7 +285,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	get("/images") {
-		layout("admin.images", ("images", MediaManager.getImagesList))
+		templateAttributes("images") = MediaManager.getImagesList
+		layout("admin.images")
 	}
 
 	get("/images/upload") {
@@ -288,7 +300,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	get("/images/find") {
-		render("images", ("images", MediaManager.getImagesList))
+		templateAttributes("images") = MediaManager.getImagesList
+		render("images")
 	}
 
 	get("/views/shared/:id") {

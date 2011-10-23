@@ -1,4 +1,4 @@
-package org.noorg.fink.data.repository;
+package org.noorg.fink.data.repositories;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,28 +8,25 @@ import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
 import org.noorg.fink.data.entities.Page;
 import org.noorg.fink.data.entities.Tag;
+import org.noorg.fink.data.repositories.internal.PageRepositoryInternal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.repository.DirectGraphRepositoryFactory;
-import org.springframework.data.neo4j.repository.GraphRepository;
-import org.springframework.data.neo4j.support.GraphDatabaseContext;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ImmutableList;
 
 @Repository
+@Transactional(readOnly=true)
 public class PageRepository {
 
-	private GraphRepository<Page> repository;
-
-	private GraphDatabaseContext context;
+	@Autowired
+	private PageRepositoryInternal repository;
 
 	@Autowired
-	public void setGraphRepositoryFactory(GraphDatabaseContext ctx,
-			DirectGraphRepositoryFactory graphRepositoryFactory) {
-		repository = graphRepositoryFactory.createGraphRepository(Page.class);
-		context = ctx;
-	}
+	private Neo4jTemplate template;
 
+	@Transactional
 	public void createSomePages() {
 		Page p = new Page("root");
 		p.addPage(new Page("sub1"));
@@ -40,6 +37,7 @@ public class PageRepository {
 		repository.save(p);
 	}
 
+	@Transactional
 	public void save(Page p) {
 		repository.save(p);
 	}
@@ -74,10 +72,10 @@ public class PageRepository {
 	}
 
 	public Page findPageByTitleManually(String title) {
-		Index<Node> index = context.getIndex(Page.class, "index_title");
+		Index<Node> index = template.getIndex(Page.class, "index_title");
 		IndexHits<Node> hits = index.get("title", title);
 		if (hits.hasNext()) {
-			return context.createEntityFromState(hits.next(), Page.class);
+			return template.createEntityFromState(hits.next(), Page.class);
 		}
 		return null;
 	}
@@ -94,4 +92,10 @@ public class PageRepository {
 		return ImmutableList.copyOf(repository.findAll());
 	}
 
+	@Transactional
+	public void addSubPage(Page page, Page sub) {
+		page.addPage(sub);
+	}
+
+	
 }

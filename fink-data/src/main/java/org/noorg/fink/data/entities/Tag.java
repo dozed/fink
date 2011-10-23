@@ -1,11 +1,15 @@
 package org.noorg.fink.data.entities;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
 @NodeEntity
 @JsonIgnoreProperties({"persistentState", "entityState"})
 public class Tag implements Comparable<Tag> {
+	
+	@SuppressWarnings("unused")
+	@GraphId private Long id;
 	
 	private String name;
 

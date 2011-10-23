@@ -13,7 +13,7 @@
   $(document).ready(function() {
     $(this).find("select, input:text, input:checkbox, input:radio, input:file").uniform();
 
-    $("#tags").tagsInput({
+    $("input#tagsInput").tagsInput({
       height: "100px",
       width: "300px",
     });
@@ -35,15 +35,15 @@
 %form(id="pages-form" method="post")
   %p(style="margin-bottom: 1em; font-size: 13px")
     Titel:
-    %input(type="text" id="title" name="title" size="50" data-bind="page.title")
+    %input(type="text" name="title" size="50" id="title")
     
   %p(style="margin-bottom: 1em; font-size: 13px")
     Shortlink:
-    %input(type="text" size="50" name="shortlink"  data-bind="page.shortlink")
+    %input(type="text" size="50" name="shortlink" id="shortlink")
 
   %p(style="margin-bottom: 1em; font-size: 13px")
     Autor:
-    %input(type="text" size="50" name="author"  data-bind="page.author")
+    %input(type="text" size="50" name="author" id="author")
   
   %p(style="margin-bottom: 1em; font-size: 13px")
     Parent:
@@ -56,32 +56,43 @@
     Tags:
     -# race condition?
       %input(type="text" id="tags" name="tags" size="50" data-bind="page.tags | map 'name' | join ','")
-    %input(type="text" id="tags" name="tags" size="50" value={page.getTags().map(t => t.getName)mkString(",")})
+    %input(type="text" name="tags" id="tagsInput" size="50" value={page.getTags().map(t => t.getName)mkString(",")})
   -#
     %textarea(style="width:100%" rows="15" id="pageText-editor" name="text" data-bind="page.text")
   
   #page-text-editor-outer(style="position: relative; width: 100%; height: 300px")
     #page-text-editor(style="position: absolute; width: 100%; height: 100%")
-    %input(type="hidden" name="text" id="page-text" value="#{page.getText}")
+    %input(type="hidden" name="text" id="text")
 
 
 .controls
   %a(rel="cancel" class="btn" href={adminBase("/pages")}) Cancel
   %input(type="button" id="save" value="Save")
 
-
-:!coffeescript
-  class Page extends Batman.Model
-    @encode 'uuid', 'title', 'shortlink', 'author', 'subPages', 'tags', 'text'
-
-  class PageEditor extends Batman.App
-    @global yes
-    
-  p = new Page()
-  p.fromJSON(page)
+:!javascript
+  PageView = Backbone.View.extend({
+    el: "#pages-form",
   
-  PageEditor.page = p
-  PageEditor.run()
-  
-  console.log(p.toJSON())
+    initialize: function(){
+      Backbone.ModelBinding.bind(this);
+    }
+  });
 
+  var Page = Backbone.Model.extend({});
+  
+  var p = new Page();
+  p.set(page);
+  
+  var view = new PageView({ model: p });
+  
+  console.log(p);
+
+-#
+  :!coffeescript
+  class SomeView extends Backbone.View
+    render ->
+      $(this.el).html("... some html and content goes here ... ");
+      Backbone.ModelBinding.bind(this)
+  console.log(page)
+
+  alert(1)
