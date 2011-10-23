@@ -69,30 +69,19 @@
   %a(rel="cancel" class="btn" href={adminBase("/pages")}) Cancel
   %input(type="button" id="save" value="Save")
 
-:!javascript
-  PageView = Backbone.View.extend({
-    el: "#pages-form",
-  
-    initialize: function(){
-      Backbone.ModelBinding.bind(this);
-    }
-  });
 
-  var Page = Backbone.Model.extend({});
-  
-  var p = new Page();
-  p.set(page);
-  
-  var view = new PageView({ model: p });
-  
-  console.log(p);
+:!coffeescript
+  $(document).ready ->
+    class PageView extends Backbone.View
+      el: "#pages-form"
+      
+      initialize: ->
+        Backbone.ModelBinding.bind(this)
 
--#
-  :!coffeescript
-  class SomeView extends Backbone.View
-    render ->
-      $(this.el).html("... some html and content goes here ... ");
-      Backbone.ModelBinding.bind(this)
-  console.log(page)
-
-  alert(1)
+    Page = Backbone.Model.extend({})
+    
+    p = new Page()
+    p.set(page)
+    
+    view = new PageView({ model: p })
+    
