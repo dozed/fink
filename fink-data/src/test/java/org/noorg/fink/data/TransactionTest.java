@@ -35,10 +35,12 @@ public class TransactionTest {
 	
 	@Test
 	@Rollback(false)
+	//@Transactional
 	public void shouldAllowAddOutsideOfTransaction() {
 		Page p = pageRepository.findPageByTitle("root");
-		p.addPage(new Page("test"));
-		pageRepository.save(p);
+		pageRepository.createPage("test", "test", "author", p);
+//		p.addPage(new Page("test"));
+//		pageRepository.save(p);
 		assertEquals(3, p.getSubPages().size());
 		assertNotNull(p);
 	}

@@ -2,6 +2,7 @@ package org.noorg.fink.data.repositories;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.index.Index;
@@ -9,6 +10,7 @@ import org.neo4j.graphdb.index.IndexHits;
 import org.noorg.fink.data.entities.Page;
 import org.noorg.fink.data.entities.Tag;
 import org.noorg.fink.data.repositories.internal.PageRepositoryInternal;
+import org.noorg.fink.data.repositories.internal.TagRepositoryInternal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Repository;
@@ -17,11 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.ImmutableList;
 
 @Repository
-@Transactional(readOnly=true)
+@Transactional
 public class PageRepository {
 
 	@Autowired
 	private PageRepositoryInternal repository;
+
+	@Autowired
+	private TagRepository tagRepository;
 
 	@Autowired
 	private Neo4jTemplate template;
@@ -95,6 +100,44 @@ public class PageRepository {
 	@Transactional
 	public void addSubPage(Page page, Page sub) {
 		page.addPage(sub);
+	}
+
+	@Transactional
+	public Page createPage(String title, String shortlink, String author, Page parent) {
+		Page page = new Page(title, shortlink, author);
+		parent.addPage(page);
+		repository.save(page);
+		return page;
+	}
+
+	@Transactional
+	public void updatePage(String uuid, String parentUuid, String title, String shortlink, String author, String text, String[] tags) {
+		Page page = this.findPageByUuid(uuid);
+		Page parent = this.findPageByUuid(parentUuid);
+		Page oldParent = page.getParentPage();
+
+		if (oldParent != null && oldParent != parent) {
+			parent.addPage(page);
+			repository.save(oldParent);
+		}
+
+		page.clearTags();
+
+		for (String t : tags) {
+			Tag tag = tagRepository.findTag(t);
+			if (tag == null) {
+				tag = tagRepository.createTag(t);
+			}
+			page.addTag(tag);
+		}
+
+		page.setTitle(title);
+		page.setShortlink(shortlink);
+		page.setAuthor(author);
+		page.setText(text);
+
+		repository.save(page);
+		repository.save(parent);
 	}
 
 	

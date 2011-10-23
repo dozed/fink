@@ -105,9 +105,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	post("/pages/create") {
 		val parent = pageRepository.findPageByUuid(params("parent"))
-		val page = new Page(params("title"), params("shortlink"), params("author"))
-		parent.addPage(page)
-		pageRepository.save(page)
+		pageRepository.createPage(params("title"), params("shortlink"), params("author"), parent)
 		redirect(uri("/fink-admin/pages"))
 	}
 
@@ -123,33 +121,7 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	}
 
 	post("/pages/edit/:uuid") {
-		val page = pageRepository.findPageByUuid(params("uuid"))
-		val parent = pageRepository.findPageByUuid(params("parent"))
-		val oldParent = page.getParentPage
-
-		if (oldParent != null && oldParent != parent) {
-			parent.addPage(page)
-			pageRepository.save(oldParent)
-		}
-
-		page.clearTags
-
-		for (t <- params("tags").split(",")) {
-			var tag = tagRepository.findTag(t)
-			if (tag == null) {
-				tag = tagRepository.createTag(t)
-			}
-			page.addTag(tag)
-		}
-
-		page.setTitle(params("title"))
-		page.setShortlink(params("shortlink"))
-		page.setAuthor(params("author"))
-		page.setText(params("text"))
-
-		pageRepository.save(page)
-		pageRepository.save(parent)
-
+	  pageRepository.updatePage(params("uuid"), params("parent"), params("title"), params("shortlink"), params("author"), params("text"), params("tags").split(","))
 		redirect(uri("/fink-admin/pages"))
 	}
 
