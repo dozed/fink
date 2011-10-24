@@ -7,31 +7,6 @@
 -@val rootPage : org.noorg.fink.data.entities.Page
 -@val page : org.noorg.fink.data.entities.Page
 
-:!javascript
-  var page = #{generate(page)};
-
-  $(document).ready(function() {
-    $(this).find("select, input:text, input:checkbox, input:radio, input:file").uniform();
-
-    $("input#tagsInput").tagsInput({
-      height: "100px",
-      width: "300px",
-    });
-
-    $("input#save").click(function() {
-      $("form#pages-form").submit();
-    });
-    
-    var pageTextInput = $("#page-text");
-    var editor = ace.edit("page-text-editor");
-    var JavaScriptMode = require("ace/mode/markdown").Mode;
-    editor.getSession().setMode(new JavaScriptMode());
-    editor.getSession().setValue("#{Option(page.getText()).getOrElse("").replace("\r", "").replace("\n", "\\n")}");
-    editor.getSession().on('change', function() {
-      pageTextInput.val(editor.getSession().getValue());
-    });
-  });
-
 %form(id="pages-form" method="post")
   %p(style="margin-bottom: 1em; font-size: 13px")
     Titel:
@@ -71,6 +46,8 @@
 
 
 :!coffeescript
+  page = #{generate(page)}
+
   $(document).ready ->
     class PageView extends Backbone.View
       el: "#pages-form"
@@ -84,4 +61,22 @@
     p.set(page)
     
     view = new PageView({ model: p })
+    
+    $(this).find("select, input:text, input:checkbox, input:radio, input:file").uniform()
+
+    $("input#tagsInput").tagsInput
+      height: "100px"
+      width: "300px"
+
+    $("input#save").click ->
+      $("form#pages-form").submit();
+    
+    pageTextInput = $("#text")
+    editor = ace.edit("page-text-editor")
+    JavaScriptMode = require("ace/mode/markdown").Mode
+    editor.getSession().setMode(new JavaScriptMode())
+    editor.getSession().setValue("#{Option(page.getText()).getOrElse("").replace("\r", "").replace("\n", "\\n")}")
+    editor.getSession().on 'change', ->
+      pageTextInput.val(editor.getSession().getValue())
+
     

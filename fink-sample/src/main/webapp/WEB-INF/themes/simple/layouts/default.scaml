@@ -1,8 +1,8 @@
 - import org.noorg.fink.admin.support.Theming._
 - response.setContentType("text/html")
 
--@ var pages : org.noorg.fink.data.repositories.PageRepository
--@ var media : org.noorg.fink.data.repositories.MediaRepository
+-@ var pageRepository : org.noorg.fink.data.repositories.PageRepository
+-@ var mediaRepository : org.noorg.fink.data.repositories.MediaRepository
 -@ var rootPage : org.noorg.fink.data.entities.Page
 
 -@ var body: String
@@ -33,12 +33,12 @@
         .menu
           .up
             %ul
-              - for ( collection <- media.findCollections() )
+              - for ( collection <- mediaRepository.findCollections() )
                 %li
                   %a(href={uri("/collections/" + collection.getShortlink())}) #{collection.getTitle()}
           .down
             %ul
-              -for( page <- pages.findPagesByTag("sub-menu") )
+              -for( page <- pageRepository.findPagesByTag("sub-menu") )
                 %li
                   %a(href={uri("/pages/"+page.getShortlink)}) #{page.getTitle}
           %div(style="clear:both")

@@ -19,12 +19,11 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 	def themeBase = "/WEB-INF/themes/" + themeName
 		
 	def layout(template: String, attributes : Map[String, Any] = Map[String, Any]()) = {
-		var attr = attributes
-		attr += ("pages" -> pageRepository)
-		attr += ("media" -> mediaRepository)
-		attr += ("rootPage" -> pageRepository.find("title", "Website"))
-		attr += ("layout" -> (themeBase + "/layouts/default.scaml"))
-		templateEngine.layout(themeBase + "/" + template + ".scaml", attr)
+		templateAttributes("mediaRepository") = mediaRepository
+		templateAttributes("pageRepository") = pageRepository
+		templateAttributes("rootPage") = pageRepository.find("title", "Website")
+		templateAttributes("layout") = (themeBase + "/layouts/default.scaml")
+		scaml(themeBase + "/" + template + ".scaml")
 	}
 
 	var postRepository: PostRepository = null
@@ -56,7 +55,6 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 	}
 
 	before() {
-
 		contentType = "text/html"
 		ensureRepositories
 	}
@@ -74,31 +72,37 @@ class Frontend extends ScalatraServlet with ScalateSupport {
 
 		val fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
 
-		layout("post", Map("post" -> post, "date" -> fmt.print(post.getDate())))
+		templateAttributes("post") = post
+		templateAttributes("date") = fmt.print(post.getDate()) // util..
+		layout("post")
 	}
 
 	get("/about") {
-		layout("about", Map("content" -> "Hello World"))
+		layout("about")
 	}
 
 	get("/posts") {
-		layout("read", Map("content" -> postRepository.getEntries()))
+	  templateAttributes("posts") = postRepository.getEntries()
+		layout("read")
 	}
 
 	get("/dates") {
-		layout("dates", Map("content" -> postRepository.getEntries()))
+	  templateAttributes("posts") = postRepository.getEntries()
+		layout("dates")
 	}
 	
 	get("/pages/:shortlink") {
 		val shortlink = params("shortlink")
 		val page = pageRepository.findPageByShortlink(shortlink)
-		layout("page", Map("page" -> page))
+		templateAttributes("page") = page
+		layout("page")
 	}
 
 	get("/collections/:shortlink") {
 		val shortlink = params("shortlink")
 		val collection = mediaRepository.findCollectionByShortlink(shortlink)
-		layout("collection", Map("collection" -> collection))
+		templateAttributes("collection") = collection
+		layout("collection")
 	}
 	
 	notFound {
