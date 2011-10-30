@@ -29,11 +29,7 @@
   
   %p(style="margin-bottom: 1em; font-size: 13px")
     Tags:
-    -# race condition?
-      %input(type="text" id="tags" name="tags" size="50" data-bind="page.tags | map 'name' | join ','")
     %input(type="text" name="tags" id="tagsInput" size="50" value={page.getTags().map(t => t.getName)mkString(",")})
-  -#
-    %textarea(style="width:100%" rows="15" id="pageText-editor" name="text" data-bind="page.text")
   
   #page-text-editor-outer(style="position: relative; width: 100%; height: 300px")
     #page-text-editor(style="position: absolute; width: 100%; height: 100%")
@@ -48,7 +44,7 @@
 :!coffeescript
   page = #{generate(page)}
 
-  $(document).ready ->
+  $ ->
     class PageView extends Backbone.View
       el: "#pages-form"
       
@@ -78,5 +74,9 @@
     editor.getSession().setValue("#{Option(page.getText()).getOrElse("").replace("\r", "").replace("\n", "\\n")}")
     editor.getSession().on 'change', ->
       pageTextInput.val(editor.getSession().getValue())
+      
+    # whut??
+    pageTextInput.val(editor.getSession().getValue())
+    
 
     

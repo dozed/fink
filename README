@@ -63,3 +63,7 @@ $ mvn archetype:generate \
   -DartifactId=website
 
 
+Known Bugs:
+
+NotInTransactionException: if that exception occurs, it means that the maven-aspectj-plugin didnt weave the spring-aspects in
+ 

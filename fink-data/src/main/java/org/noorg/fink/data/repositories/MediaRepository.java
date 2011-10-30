@@ -18,10 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.ImmutableList;
 
 @Repository
+@Transactional(readOnly=true)
 public class MediaRepository {
 
 	@Autowired
 	private MediaRepositoryInternal repository;
+	
+	@Autowired
+	private ImageRepository imageRepository;
 
 	@Autowired
 	private Neo4jTemplate template;
@@ -41,6 +45,10 @@ public class MediaRepository {
 
 	public MediaCollection findCollection(String uuid) {
 		return repository.findByPropertyValue("uuid", uuid);
+	}
+
+	public Image findImage(String uuid) {
+		return imageRepository.findImage(uuid);
 	}
 
 	public MediaCollection findCollectionByTitle(String title) {

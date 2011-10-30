@@ -83,19 +83,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 
 	get("/pages") {
 		val root = pageRepository.find("title", "Website")
-		//goDown(root)
-		//println(generate(root))
 		templateAttributes("rootPage") = root
-
 		layout("pages.index")
-	}
-
-	def goDown(page: Page) {
-		println(page)
-		println(page.getId + ": " + page.getTitle)
-		for (p <- page.getSubPages()) {
-			goDown(p)
-		}
 	}
 
 	get("/pages/create") {
@@ -199,6 +188,12 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 		render("collections.images")
 	}
 
+	get("/collections/edit/:id/image/:imageid") {
+		val image = mediaRepository.findImage(params("imageid"))
+		templateAttributes("image") = image
+		render("collections.image")
+	}
+
 	post("/collections/edit/:id/update") {
 		val title = params("title")
 		val author = params("author")
@@ -245,11 +240,8 @@ class Admin extends ScalatraServlet with ScalateSupport with FileUploadSupport {
 	post("/collections/edit/:id/add") {
 		val collection = mediaRepository.findCollection(params("id"))
 		val image = MediaManager.processUpload(fileParams("file"))
-		println(1)
 		collection.addItem(image)
-		println(2)
 		mediaRepository.save(collection)
-		//redirect(uri("/fink-admin/collections/edit/" + collection.getUuid))
 	}
 
 	post("/collections/edit/:id/delete") {
