@@ -1,0 +1,14 @@
+
+- menu = (m)->
+	ul(class=m.ul_class)
+		- for item in m.items
+			- classes = []
+			- classes.push("active") if m.active? && item.href? && _(m.active).startsWith(item.href)
+			- classes.push(item.li_class) if item.li_class?
+			li(class="#{classes.join('')}")
+				- if(item.href || item.label) 
+					a(class=item.a_class href=item.href)=item.label
+				- if(item.menu) 
+					- menu(item.menu)
+	.clear
+- menu(locals)

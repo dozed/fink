@@ -1,0 +1,27 @@
+- import fink.support.Theming._
+- response.setContentType("text/html")
+
+-@ var body: String
+-@ var title : String = "fink admin (coffee)"
+
+!!! Basic
+html(lang="en")
+	head
+		meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
+
+		link(rel="stylesheet" type="text/css" href={adminAssets("/css/bootstrap.css")})
+		link(rel="stylesheet" type="text/css" href={adminAssets("/css/site.css")})
+
+		script(type="text/javascript" src={adminAssets("/app/frameworks/require.js")})
+		:!javascript
+			require.config({ baseUrl: "/admin/app" });
+			require(["main"]);
+
+		title
+			= title
+	
+	body
+		.container
+			#topbar_nav_container
+			#page_container
+			#footer

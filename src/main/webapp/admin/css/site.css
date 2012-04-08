@@ -1,0 +1,44 @@
+
+
+/* common */
+
+.clear {
+	clear: both;
+}
+
+/* navigation */
+
+#topbar_nav_container {
+	border-bottom: 1px solid #ccc;
+}
+
+#topbar_nav_container ul li {
+	display: block;	
+	float: left;
+	list-style-image: none;
+}
+
+#topbar_nav_container ul li a {
+	display: block;
+	padding: 35px 50px 25px 50px;
+}
+
+#topbar_nav_container ul li a:hover {
+	text-decoration: underline;
+}
+
+#topbar_nav_container ul li.active a {
+	background-color: #eee;
+}
+
+
+/* posts */
+
+.post_list .row.post {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.post_list .row.post h1 {
+	background: #ccc;	
+}

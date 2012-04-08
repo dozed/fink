@@ -1,0 +1,30 @@
+-@ var body: String
+-@ var title : String = "fink"
+
+!!! Basic
+html(lang="en")
+	head
+		meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
+
+		meta(name="description" content="description goes here")
+		meta(name="keywords" content="keywords,goes,here")
+		meta(name="author" content="Your Name")
+
+		title
+			= title
+	
+	body
+		#navigation
+			.wrapper
+				ul
+					li
+						a(href={uri("/")}) home
+					li
+						a(href={uri("/posts")}) posts
+					li
+						a(href={uri("/pages")}) pages
+				.clear
+		#content
+			.wrapper
+				!~~ body
+		#footer

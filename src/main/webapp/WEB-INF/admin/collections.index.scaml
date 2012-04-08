@@ -1,0 +1,45 @@
+- import org.noorg.fink.support.Theming._
+
+:!javascript
+  $(document).ready(function() {
+    $(".collection-link").each(function() {
+      $(this).click(function() {
+        reload_collection($(this).attr("rel"));
+      });
+    });
+
+    $(".collection-create").each(function() {
+      $(this).click(function() {
+        $(".right-inner").load("#{adminBase("/collections/create")}");
+      });
+    });
+    
+    var params = jQuery.bbq.getState();
+    if (params.uuid) {
+      reload_collection(params.uuid);
+    }
+  });
+  
+  function reload_collection(uuid) {
+    $(".right-inner").load("#{adminBase("/collections/edit/")}"+uuid);
+  }
+
+-# why not List[_] ?
+-@val collections : java.util.List[org.noorg.fink.data.entities.MediaCollection]
+
+.collections
+  .left
+    %ul
+      %li
+        %a(href="#create-collection" class="collection-create") Create a new collection
+
+      -for(val collection <- collections)
+        %li
+          %a(href={"#"+collection.getUuid} rel={collection.getUuid} class="collection-link") #{collection.getTitle}
+        
+  .right
+    .right-inner
+      -if(collections.size == 0)
+        %p
+          There are no collections yet, please create one.
+    

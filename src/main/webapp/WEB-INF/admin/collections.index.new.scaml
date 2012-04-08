@@ -1,0 +1,86 @@
+-import org.noorg.fink.support.Theming._
+-@val collections : java.util.List[org.noorg.fink.data.entities.MediaCollection]
+
+:!coffeescript
+  class AppRouter extends Backbone.Router
+    routes:
+      "/edit/:id": "edit"    
+      "/index": "index"    
+      "*actions": "index"    
+      
+    index: ->
+      router = @
+      @ic.fetch
+        success: (collection, resp) ->
+          router.cl.model = collection
+          router.cl.render()
+      
+    edit: (id) ->
+
+
+  class Collection extends Backbone.Model
+    url: "/fink-admin/rest/collection"
+  
+  class Collections extends Backbone.Collection
+    model: Collection
+    url: "/fink-admin/rest/collections"
+    
+    parse: (r) ->
+      return r
+  
+  class CollectionList extends Backbone.View
+    render: ->
+      sidebar = $(@el)
+      this.model.each (o) ->
+        row = new CollectionListRow({ model: o })
+        row.render()
+        console.log row
+        sidebar.append(row.el)
+
+  class CollectionListRow extends Backbone.View
+    events:
+      "click .title": "open"
+  
+    render: ->
+      @el = $('<div><span class="title">' + @model.get('title') + '</span></div>')
+        
+     open: ->
+       console.log "opening collection"
+
+  # domready
+  $ ->
+    # build router
+    router = new AppRouter
+
+    # build media collections model and view
+    router.ic = new Collections
+    router.cl = new CollectionList({ el: $("#sidebar"), model: router.ic })
+
+    # start history navigation
+    Backbone.history.start
+      root: "/fink-admin/collections/"
+      
+    $("#start").click ->
+      alert router.ic.length
+
+%input(type="button" id="start")
+
+#sidebar
+
+-#   
+  .collections
+  .left
+    %ul
+      %li
+        %a(href="#create-collection" class="collection-create") Create a new collection
+
+      -for(val collection <- collections)
+        %li
+          %a(href={"#"+collection.getUuid} rel={collection.getUuid} class="collection-link") #{collection.getTitle}
+        
+  .right
+    .right-inner
+      -if(collections.size == 0)
+        %p
+          There are no collections yet, please create one.
+    

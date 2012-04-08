@@ -1,0 +1,10 @@
+
+- import org.noorg.fink.support.Theming._
+
+-@val posts : java.util.List[org.noorg.fink.data.entities.Post]
+
+%a(href={adminBase("/posts/create")}) create a new post
+
+-for(val post <- posts)
+  %p
+    %a(href={adminBase("/posts/edit/"+post.getUuid)}) #{post.getTitle}
