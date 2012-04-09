@@ -74,7 +74,7 @@ find_coffee_files
 JADE_JS = "#{$target_directory}/admin/app/views/jade.js"
 file JADE_JS do
   $build_count += 1
-  puts "coffeejade --amdout jade.js --amdrequire 'admin-app/frameworks'"
+  puts "coffeejade --amdout jade.js --amdrequire 'app/frameworks'"
   result = `cd #{$target_directory}/admin/app/views && coffeejade --amdout jade.js --amdrequire 'frameworks' * 2>&1`
   if $?!=0
     touch JADE_JS

@@ -2,8 +2,7 @@
 define [ 
 	"model/app"
 	"views/jade"
-	"model/collection"
-], (app, jade, post) ->
+], (app, jade) ->
 
 	class LoadingPage extends CoffeeBar.TemplateController
 		template: jade["application/loading.jade"]
@@ -49,6 +48,7 @@ define [
 				topbar_user_container.render()
 				
 			app.model.bind "change:page", => 
+				console.log "change:page event"
 				page = app.page()
 				app.flash(null)
 				@page_container.empty()
@@ -62,6 +62,7 @@ define [
 			
 			app.whoami.fetch()
 			app.posts.fetch()
+			app.categories.fetch()
 
 		stop_poll: ->
 			if @poll_interval

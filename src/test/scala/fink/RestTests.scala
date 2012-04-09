@@ -63,7 +63,14 @@ class RestTests extends ScalatraFunSuite {
 		ContentItemRepository.shutdown()
 	}
 
-	test("should create posts") {
+	test("should create post via REST") {
+		val rbody = write(Post(0L, 0L, title = "title", text = "text", author = "author"))
+		post("/api/posts", headers = Map("Accept" -> "application/json", "Content-Type" -> "application/json"), body = rbody) {
+			status should equal (200)
+		}
+	}
+
+	test("should create post via POST") {
 		post("/api/posts", "title" -> "a title", "text" -> "some cool text" , "author" -> "boom wah this") {
 			status should equal (200)
 		}
@@ -74,7 +81,7 @@ class RestTests extends ScalatraFunSuite {
 		get("/api/posts") {
 			status should equal (200)
 			posts = read[List[Post]](body)
-			assert(posts.size == 1)
+			assert(posts.size == 2)
 		}
 
 		get("/api/posts/%s".format(posts(0).id)) {

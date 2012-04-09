@@ -18,9 +18,9 @@
 
 define [
   "frameworks/order!frameworks/jquery"
-  "frameworks/order!frameworks/underscore"
-  "frameworks/order!frameworks/underscore.string"
-  "frameworks/order!frameworks/backbone"
+  "frameworks/order!frameworks/underscore-1.1.7"
+  "frameworks/order!frameworks/underscore.string-1.1.5"
+  "frameworks/order!frameworks/backbone-0.5.3"
   "frameworks/order!frameworks/backbone.modelbinding"
   "frameworks/order!frameworks/jquery.flot"
   "frameworks/order!frameworks/jquery.flot.stack"

@@ -1,6 +1,5 @@
 define [
 	"model/app"
-	"model/collection"
 	"model/post"
 	"model/post_collection"
 	"controllers/application"
@@ -8,7 +7,7 @@ define [
 	"controllers/example"
 	"controllers/posts"
 	"controllers/home"
-], (app, Collection, Post, PostCollection, Application) ->
+], (app, Post, PostCollection, Application) ->
 	$ ->
 
 		# setup menu defaults

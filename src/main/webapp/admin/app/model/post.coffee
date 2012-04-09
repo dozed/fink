@@ -1,14 +1,15 @@
 define [ 
-  "frameworks" 
-], ->
+  "model/category"
+  "frameworks"
+], (category) ->
 
 	class Post extends CoffeeBar.Model
 		urlRoot: "api/posts"
 		defaults:
 			id: 0
+			date: 0
 			title: ""
 			author: ""
-			date: null
 			text: ""
 			category: null
 

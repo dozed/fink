@@ -7,7 +7,4 @@ define [
 		model: Post
 		url: "api/posts"
 
-		foo: () ->
-			@
-
 	PostCollection

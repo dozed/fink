@@ -1,13 +1,19 @@
 // Underscore.string
 // (c) 2010 Esa-Matti Suuronen <esa-matti aet suuronen dot org>
 // Underscore.strings is freely distributable under the terms of the MIT license.
-// Documentation: https://github.com/epeli/underscore.string
+// Documentation: https://github.com/edtsech/underscore.string
 // Some code is borrowed from MooTools and Alexandru Marasteanu.
 
-// Version 2.0.0
+// Version 1.1.5
+
 
 (function(root){
   'use strict';
+
+  if (typeof _() != 'undefined') {
+    var _reverse = _().reverse,
+        _include = _.include;
+  }
 
   // Defining helper functions.
 
@@ -16,7 +22,7 @@
   var parseNumber = function(source) { return source * 1 || 0; };
 
   var strRepeat = function(i, m) {
-    for (var o = []; m > 0; o[--m] = i) {}
+    for (var o = []; m > 0; o[--m] = i);
     return o.join('');
   };
 
@@ -167,8 +173,6 @@
   // Defining underscore.string
 
   var _s = {
-              
-    VERSION: '2.0.0',
 
     isBlank: sArgs(function(str){
       return (/^\s*$/).test(str);
@@ -231,9 +235,17 @@
       return arr.join('');
     }),
 
-    include: sArgs(function(str, needle){
+    includes: sArgs(function(str, needle){
       return str.indexOf(needle) !== -1;
     }),
+
+    include: function(obj, needle) {
+      if (!_include || (/string|number/).test(typeof obj)) {
+        return this.includes(obj, needle);
+      } else {
+        return _include(obj, needle);
+      }
+    },
 
     join: sArgs(function(sep) {
       var args = slice(arguments);
@@ -244,9 +256,13 @@
       return str.split("\n");
     }),
 
-    reverse: sArgs(function(str){
-        return Array.prototype.reverse.apply(String(str).split('')).join('');
-    }),
+    reverse: function(obj){
+      if (!_reverse || (/string|number/).test(typeof obj)) {
+        return Array.prototype.reverse.apply(String(obj).split('')).join('');
+      } else {
+        return _reverse.call(_(obj));
+      }
+    },
 
     splice: sArgs(function(str, i, howmany, substr){
       var arr = str.split('');
@@ -293,10 +309,6 @@
       return _s.trim(str).replace(/([a-z\d])([A-Z]+)/g, '$1-$2').replace(/^([A-Z]+)/, '-$1').replace(/\_|\s+/g, '-').toLowerCase();
     },
 
-    humanize: function(str){
-      return _s.capitalize(this.underscored(str).replace(/_id$/,'').replace(/_/g, ' '));
-    },
-
     trim: sArgs(function(str, characters){
       if (!characters && nativeTrim) {
         return nativeTrim.call(str);
@@ -319,39 +331,6 @@
       truncateStr = truncateStr || '...';
       length = parseNumber(length);
       return str.length > length ? str.slice(0,length) + truncateStr : str;
-    }),
-
-    /**
-     * _s.prune: a more elegant version of truncate
-     * prune extra chars, never leaving a half-chopped word.
-     * @author github.com/sergiokas
-     */
-    prune: sArgs(function(str, length, pruneStr){
-      // Function to check word/digit chars including non-ASCII encodings. 
-      var isWordChar = function(c) { return ((c.toUpperCase() != c.toLowerCase()) || /[-_\d]/.test(c)); }
-      
-      var template = '';
-      var pruned = '';
-      var i = 0;
-      
-      // Set default values
-      pruneStr = pruneStr || '...';
-      length = parseNumber(length);
-      
-      // Convert to an ASCII string to avoid problems with unicode chars.
-      for (i in str) {
-        template += (isWordChar(str[i]))?'A':' ';
-      } 
-
-      // Check if we're in the middle of a word
-      if( template.substring(length-1, length+1).search(/^\w\w$/) === 0 )
-        pruned = _s.rtrim(template.slice(0,length).replace(/([\W][\w]*)$/,''));
-      else
-        pruned = _s.rtrim(template.slice(0,length));
-
-      pruned = pruned.replace(/\W+$/,'');
-
-      return (pruned.length+pruneStr.length>str.length) ? str : str.substring(0, pruned.length)+pruneStr;
     }),
 
     words: function(str, delimiter) {
@@ -430,51 +409,31 @@
     strLeftBack: sArgs(function(sourceStr, sep){
       var pos = sourceStr.lastIndexOf(sep);
       return (pos != -1) ? sourceStr.slice(0, pos) : sourceStr;
-    }),
-
-    exports: function() {
-      var result = {};
-
-      for (var prop in this) {
-        if (!this.hasOwnProperty(prop) || prop == 'include' || prop == 'contains' || prop == 'reverse') continue;
-        result[prop] = this[prop];
-      }
-
-      return result;
-    }
+    })
 
   };
 
   // Aliases
 
-  _s.strip    = _s.trim;
-  _s.lstrip   = _s.ltrim;
-  _s.rstrip   = _s.rtrim;
-  _s.center   = _s.lrpad;
-  _s.ljust    = _s.lpad;
-  _s.rjust    = _s.rpad;
-  _s.contains = _s.include;
+  _s.strip  = _s.trim;
+  _s.lstrip = _s.ltrim;
+  _s.rstrip = _s.rtrim;
+  _s.center = _s.lrpad;
+  _s.ljust  = _s.lpad;
+  _s.rjust  = _s.rpad;
 
   // CommonJS module is defined
-  if (typeof exports !== 'undefined') {
-    if (typeof module !== 'undefined' && module.exports) {
-      // Export module
-      module.exports = _s;
-    }
-    exports._s = _s;
+  if (typeof module !== 'undefined' && module.exports) {
+    // Export module
+    module.exports = _s;
 
   // Integrate with Underscore.js
   } else if (typeof root._ !== 'undefined') {
-    // root._.mixin(_s);
-    root._.string = _s;
-    root._.str = root._.string;
+    root._.mixin(_s);
 
   // Or define it
   } else {
-    root._ = {
-      string: _s,
-      str: _s
-    };
+    root._ = _s;
   }
 
 }(this || window));

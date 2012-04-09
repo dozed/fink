@@ -1,0 +1,73 @@
+
+# Requirements
+
+ rake
+ sbt 0.11.2
+
+# Running the sample app
+
+$ git clone git@github.com:dozed/fink.git
+$ cd fink
+$ sbt container:start
+
+The sample application is running on: http://localhost:8080/
+The admin panel is reachable under: http://localhost:8080/fink-admin/ (<- note the extra / at the end)
+
+
+# Development notes
+
+Here are some tipps to make development more productive. Basically they allow you to work on your codebase
+without having to redeploy the web application each time.
+
+- You can edit the web resources in fink-admin/src/main/webapp and fink-sample/src/main/webapp. Both folders are mounted to the webroot.
+
+- For rapid development JRebel is also great. It can detect changes in .class files and
+  reload those classes on the-fly.
+
+
+Using JRebel:
+
+- Install JRebel
+- Create configuration
+
+  $ cd fink/fink-sample
+  $ mvn -P jrebel jrebel:generate -Drebel.xml.dir=src/main/webapp/WEB-INF/classes
+
+- Edit configuration:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.zeroturnaround.com" xsi:schemaLocation="http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd">
+  <classpath>
+    <dir name="/home/stefan/Desktop/fink/fink-sample/target/fink-sample-0.0.1-SNAPSHOT/WEB-INF/classes" />
+    <dir name="/home/stefan/Desktop/fink/fink-admin/target/fink-admin-0.0.1-SNAPSHOT/WEB-INF/classes" />
+    <dir name="/home/stefan/Desktop/fink/fink-data/target/classes" />
+  </classpath>
+</application>
+
+- Activate JRebel:
+
+  $ export MAVEN_OPTS="-javaagent:$JREBEL_HOME/jrebel.jar -Xmx1024m -XX:MaxPermSize=256m"
+  
+
+Eclipse related:
+
+If you use Eclipse as IDE, it is suggested to run "mvn eclipse:eclipse" before importing the projects to eclipse.
+This is to prevent problems with AspectJ.
+
+
+Using the quickstart archetype:
+
+The following command creates a simple fink-based website.
+
+$ mvn archetype:generate \
+  -DarchetypeGroupId=org.noorg.fink \
+  -DarchetypeArtifactId=website-quickstart \
+  -DarchetypeVersion=0.0.1-SNAPSHOT \
+  -DgroupId=org.fooorg \
+  -DartifactId=website
+
+
+Known Bugs:
+
+NotInTransactionException: if that exception occurs, it means that the maven-aspectj-plugin didnt weave the spring-aspects in
+ 

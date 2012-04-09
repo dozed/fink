@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 case class User(id: Long = 0L, name: String, password: String)
 
 case class Tag(id: Long = 0L, name: String)
+
 case class Category(
 	id: Long = 0L,
 	name: String = ""

@@ -47,6 +47,7 @@ define [
 		app.page new SigninController
 
 	app.router.route "/signout", "signout", (tab, test) ->
+		console.log "signout"
 		$.ajax
 			url: "auth/logout"
 			dataType: "json"

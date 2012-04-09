@@ -7,7 +7,7 @@
 	</appender>
 
 	<logger name="org.fusesource.scalate" level="INFO" />
-	<logger name="org.scalatra" level="DEBUG" />
+	<logger name="org.scalatra" level="INFO" />
 	<logger name="org.eclipse.jetty" level="INFO" />
 
 	<root level="info">

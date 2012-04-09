@@ -7,12 +7,19 @@ define [
 ], (CollectionController, app, Post, PostCollection, jade) ->
 
 	class CreatePostView extends CoffeeBar.TemplateController
-		template: jade["posts/create.jade"]
 		events:
 			"click .btn-ok": "do_submit"
 			"click .btn-cancel": "do_cancel"
 
 		model: new Post()
+
+		template: jade["posts/create.jade"]
+		template_data: ->
+			categories: app.categories.toJSON()
+
+		initialize: ->
+			super
+			app.categories.bind "change", @render, @
 
 		on_render: ->
 			Backbone.ModelBinding.bind(@)

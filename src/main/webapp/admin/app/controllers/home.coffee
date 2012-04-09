@@ -9,9 +9,11 @@ define [
 
 			@bind "render", =>
 				console.log "after render"
-				
 
 	app.router.route "/", "home", (tab, test) ->
+		app.page new DashboardController
+
+	app.router.route "/home", "home", (tab, test) ->
 		app.page new DashboardController
 
 	DashboardController

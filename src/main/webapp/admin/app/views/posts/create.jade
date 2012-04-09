@@ -16,6 +16,13 @@
 					label.control-label(for="title") Title
 					.controls
 						input#title.input-xlarge(type="text")
+				
+				.control-group
+					label.control-label(for="category") Category
+					.controls
+						select#category
+							- for category in categories
+								option(value=category.id) #{category.name}
 
 				.control-group
 					label.control-label(for="author") Author

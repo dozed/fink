@@ -230,7 +230,6 @@ var modelbinding = (function(Backbone, _, $) {
         var setModelValue = function(attr, val, text){
           var data = {};
           data[attr] = val;
-          data[attr + "_text"] = text;
           model.set(data);
         };
 
