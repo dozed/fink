@@ -199,7 +199,6 @@ object ContentItemRepository extends EmbeddedGraphDatabaseServiceProvider with N
 	}
 
 	ShutdownHookThread {
-		println("shutting down gds")
 		shutdown()
 	}
 }
