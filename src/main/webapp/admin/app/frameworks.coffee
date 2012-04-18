@@ -29,6 +29,7 @@ define [
   "frameworks/order!frameworks/jquery.effects.core"
   "frameworks/order!frameworks/jquery.effects.slide"
   "frameworks/order!frameworks/jquery.datatables"
+  "frameworks/order!frameworks/jquery.tagsinput"
   "frameworks/order!frameworks/coffeejade-runtime"
   "frameworks/order!frameworks/bootstrap-dropdown"
   "frameworks/order!frameworks/bootstrap-twipsy"

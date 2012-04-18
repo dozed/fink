@@ -22,11 +22,23 @@
 						input#author.input-xlarge(type="text")
 
 				.control-group
+					label.control-label(for="category") Category
+					.controls
+						select#categorySelect
+							- for category in categories
+								option(value=category.id) #{category.name}
+
+				.control-group
+					label.control-label(for="tags") Tags
+					.controls
+						input(type="text" name="tags" id="tagsInput" size="50" value="1,2")
+
+				.control-group
 					label.control-label(for="text") Text
 					.controls
 						textarea#text(style="width: 370px; height: 100px")
 
 				.form-actions
-					button.btn.btn-ok.btn-primary(type="submit") Save changes
+					input.btn.btn-ok.btn-primary(type="submit") Save changes
 					span
 					button.btn.btn-cancel Cancel

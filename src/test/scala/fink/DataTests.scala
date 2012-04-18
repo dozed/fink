@@ -8,7 +8,8 @@ import fink.data._
 import org.neo4j.graphdb.index._
 import org.neo4j.graphdb._
 
-import org.scalatest._
+import org.scalatest.FunSuite
+import org.scalatest.BeforeAndAfterAll
 
 class DataTests extends FunSuite with BeforeAndAfterAll with RepositorySupport {
 
@@ -80,10 +81,28 @@ class DataTests extends FunSuite with BeforeAndAfterAll with RepositorySupport {
 
 	test("should save post-category relations") {
 		val categories = categoryRepository.findAll()
-		val c = categories(0)
-		val p1 = Post(title="a foo post", category=c)
+		val p1 = Post(title="a foo post")
+		p1.category = categories.headOption
+		p1.tags = List(Tag(name="asd"))
+
 		val p2 = postRepository.save(p1)
-		val p3 = postRepository.byId(p2.id)
+		val p3 = postRepository.byId(p2.id).get
+		println(p2.tags)
+		println(p3.tags)
+		assert(p2 == p3)
+		assert(p2.tags == p3.tags)
+		assert(p2.category == p3.category)
 	}
 
+	test("should save post-category relations 2") {
+		val categories = categoryRepository.findAll()
+		val p1 = Post(title="a foo post")
+		p1.category = categories.headOption
+		p1.tags=tagRepository.findAll()
+		// assert(p1 == p3)
+
+		val p2 = postRepository.save(p1)
+		val p3 = postRepository.byId(p2.id).get
+		assert(p2 == p3)
+	}
 }

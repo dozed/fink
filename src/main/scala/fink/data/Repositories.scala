@@ -100,10 +100,15 @@ trait ContentItemRepository[T <: AnyRef] extends Repository[T] with GraphDatabas
 
 	// creates a new node or updates an existing
 	def save(t: T)(implicit m: Manifest[T]) : T = {
-		withTx { implicit neo =>
-			val n = createNode(t)(ds)
-			superNode --> "sub" --> n
-			handleIdentity(t, n)	
+		getIdentity(t) match {
+			case 0L =>
+				withTx { implicit neo =>
+					val n = createNode(t)(ds)
+					superNode --> "sub" --> n
+					handleIdentity(t, n)	
+				}
+			case _ => // already saved, update
+				update(t).get
 		}
 	}
 
@@ -186,14 +191,15 @@ object ContentItemRepository extends EmbeddedGraphDatabaseServiceProvider with N
 		if (hits.hasNext) Option(hits.next) else None
 	}
 
+	implicit def contentItem2Node[T](ci: ContentItem2Node[T]) : T = ci.item
+	implicit def node2ContentItem[T](ci: ContentItem2Node[T]) : Node = ci.node
+
 	def shutdown() {
 		shutdown(ds)
 	}
 
-	implicit def contentItem2Node[T](ci: ContentItem2Node[T]) : T = ci.item
-	implicit def node2ContentItem[T](ci: ContentItem2Node[T]) : Node = ci.node
-
 	ShutdownHookThread {
+		println("shutting down gds")
 		shutdown()
 	}
 }
@@ -232,7 +238,7 @@ class TagRepository extends ContentItemRepository[Tag] {
 	}
 }
 
-class PostRepository extends ContentItemRepository[Post] {
+class PostRepository extends ContentItemRepository[Post] with RepositorySupport {
 	def handleIdentity(item: Post, node: Node) = item.copy(id = node.getId)
 	def getIdentity(item: Post) = item.id
 
@@ -256,19 +262,19 @@ class PostRepository extends ContentItemRepository[Post] {
 					rel =>
 						val tn = rel.getEndNode
 						val tag = Neo4jWrapper.toCC[Tag](tn).get
-						Repositories.tagRepository.handleIdentity(tag, tn)
+						tagRepository.handleIdentity(tag, tn)
 				}
 
 				var post = postWithId
 
-				post = node.getRelationships(Direction.OUTGOING, "category").toList.map {
+				node.getRelationships(Direction.OUTGOING, "category").toList.map {
 					rel =>
 						val tn = rel.getEndNode
 						val tag = Neo4jWrapper.toCC[Category](tn).get
-						Repositories.categoryRepository.handleIdentity(tag, tn)
+						categoryRepository.handleIdentity(tag, tn)
 				}.headOption match {
-					case Some(category) => post.copy(category = category)
-					case None => post
+					case Some(category) => post.category = Some(category)
+					case None => 
 				}
 
 				post.tags = tags
@@ -276,6 +282,72 @@ class PostRepository extends ContentItemRepository[Post] {
 			}
 		} catch {
 			case e: NotFoundException => None
+		}
+	}
+
+	override def save(t: Post)(implicit m: Manifest[Post]) : Post = {
+		withTx { implicit neo =>
+			val n = createNode(t)(ds)
+
+			// index node
+			superNode --> "sub" --> n
+
+			val np = handleIdentity(t, n)
+
+			// handle relationships
+			t.category.map { c =>
+				val cat = categoryRepository.save(c)
+				val catNode = categoryRepository.node(c)
+				n --> "category" --> catNode.get
+				np.category = Some(cat)
+			}
+
+			np.tags = t.tags.map { tag =>
+				val t = tagRepository.save(tag)
+				val tn = tagRepository.node(t).get
+				n --> "tags" --> tn
+				t
+			}
+
+			np
+		}
+	}
+
+	override def update(t: Post)(implicit m: Manifest[Post]) : Option[Post] = {
+		withTx { implicit neo =>
+			for {
+				id <- Option(getIdentity(t))
+				node <- Option(ds.gds.getNodeById(id))
+			} yield {
+				serialize(t, node)
+				
+				node.getRelationships(Direction.OUTGOING, "category").foreach { r =>
+					r.delete()
+				}
+
+				t.category.map { c =>
+					println("updating cat: %s".format(c))
+					val cat = categoryRepository.save(c)
+					val catNode = categoryRepository.node(c).get
+					node --> "category" --> catNode
+					t.category = Some(cat)
+				}
+
+				println("tags: " + node.getRelationships(Direction.OUTGOING, "tags").toList.size())
+
+				node.getRelationships(Direction.OUTGOING, "tags").foreach { r =>
+					r.delete()
+				}
+
+				t.tags = t.tags.map { tag =>
+					val t = tagRepository.save(tag)
+					val tn = tagRepository.node(t).get
+					node --> "tags" --> tn
+					t
+				}
+
+				t
+			}
 		}
 	}
 }

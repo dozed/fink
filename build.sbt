@@ -49,13 +49,8 @@ libraryDependencies ++= Seq(
 	"org.scalatra" %% "scalatra-fileupload" % "2.1.0.M1",
 	"org.scalatra" %% "scalatra-scalatest" % "2.1.0.M1" % "test",
 	"com.tinkerpop.gremlin" % "gremlin-scala" % "1.6-SNAPSHOT",
-	// "jp.tricreo" % "baseunits-scala_2.9.0-1" % "0.0.2-SNAPSHOT",
 	"org.apache.lucene" % "lucene-analyzers" % "3.5.0",
-	"com.codahale" %% "jerkson" % "0.5.0",
 	"com.tinkerpop.blueprints" % "blueprints-neo4j-graph" % "1.3-SNAPSHOT",
 	"commons-io" % "commons-io" % "2.0.1",
-	"net.liftweb" %% "lift-json" % "2.4",
-	"com.novus" %% "salat-core" % "0.0.8-SNAPSHOT"
-	// "org.mongodb" % "mongo-java-driver" % "2.5.3",
-	// "com.mongodb.casbah" %% "casbah-core" % "2.1.5-1"
+	"net.liftweb" %% "lift-json" % "2.4"
 )

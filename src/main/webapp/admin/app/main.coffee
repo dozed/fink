@@ -4,7 +4,6 @@ define [
 	"model/post_collection"
 	"controllers/application"
 	"controllers/signin"
-	"controllers/example"
 	"controllers/posts"
 	"controllers/home"
 ], (app, Post, PostCollection, Application) ->
@@ -15,9 +14,6 @@ define [
 		menu.push
 			href: "#/home"
 			label: "Home"
-		menu.push
-			href: "#/example"
-			label: "Example"
 		menu.push
 			href: "#/posts"
 			label: "Posts"

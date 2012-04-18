@@ -12,7 +12,6 @@ import org.scalatra._
 
 import java.net.URL
 import scalate.ScalateSupport
-import com.codahale.jerkson.Json._
 import scala.collection.mutable.ListBuffer
 
 import annotation.tailrec

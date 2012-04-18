@@ -42,3 +42,10 @@
 .post_list .row.post h1 {
 	background: #ccc;	
 }
+
+
+
+/* fixes for tags input in combination with bootstrap */
+div.tagsinput input {
+	box-shadow: none;
+}

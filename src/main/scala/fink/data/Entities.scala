@@ -9,10 +9,7 @@ case class User(id: Long = 0L, name: String, password: String)
 
 case class Tag(id: Long = 0L, name: String)
 
-case class Category(
-	id: Long = 0L,
-	name: String = ""
-)
+case class Category(id: Long = 0L, name: String = "")
 
 trait ContentItem {
 	def id: Long
@@ -47,11 +44,15 @@ case class Post(
 	date: Long = 0L,
 	title: String,
 	author: String = "",
-	text: String = "",
-	category: Category = null) {
+	text: String = "") {
 
 	var tags = List[Tag]()
+	// def tags = _tags
+	// def tags_=(tags:List[Tag]) { _tags = tags }
 
+	var category : Option[Category] = None
+	// def category = _category
+	// def category_=(c:Category) { _category = Some(c) }
 }
 
 case class Image(

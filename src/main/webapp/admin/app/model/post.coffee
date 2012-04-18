@@ -12,5 +12,12 @@ define [
 			author: ""
 			text: ""
 			category: null
+			tags: []
+
+		toJSON: ->
+			js = super
+			if (js.category != null && js.category.toJSON)
+				js.category = js.category.toJSON()
+			js
 
 	Post

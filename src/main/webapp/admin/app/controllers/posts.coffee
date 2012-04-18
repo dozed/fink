@@ -15,6 +15,7 @@ define [
 
 		template: jade["posts/create.jade"]
 		template_data: ->
+			model: @model
 			categories: app.categories.toJSON()
 
 		initialize: ->
@@ -23,13 +24,22 @@ define [
 
 		on_render: ->
 			Backbone.ModelBinding.bind(@)
+			@$("#tagsInput").tagsInput
+				height: "100px"
+				width: "300px"
 
 		do_cancel: ->
 			app.router.navigate "/posts", { trigger: true }
 			false
 
 		do_submit: ->
-			@model.save()
+			catId = @model.attributes.category
+			cat = app.categories.get(catId)
+
+			modelClone = @model.clone()
+			modelClone.attributes.category = cat
+
+			modelClone.save()
 			app.router.navigate "/posts", { trigger: true }
 			false
 
@@ -43,10 +53,29 @@ define [
 			super
 			@model.bind "change", @render, @
 
+		template_data: ->
+			model: @model.toJSON()
+			categories: app.categories.toJSON()
+
 		on_render: ->
-			Backbone.ModelBinding.bind(@)
-			@$(".btn-ok").click ->
-				console.log "foo"
+			# Backbone.ModelBinding.bind(@)
+			@$("#title").val(@model.get("title"))
+			@$("#author").val(@model.get("author"))
+			@$("#text").val(@model.get("text"))
+
+			@$('input[name="tags"]').val(@model.get("tags").map (tag) -> tag.name)
+
+			@tagsInput = @$('input[name="tags"]').tagsInput
+				height: "100px"
+				width: "300px"
+
+			# handle tags
+			@$('input[name="tags"]').importTags
+
+			# selected category
+			cat = @model.get("category")
+			if cat != null && cat != 'undefined'
+				@$('select#categorySelect option[value="' + cat.id + '"]').prop("selected", true)
 
 		do_cancel: ->
 			app.router.navigate "/posts", { trigger: true }
@@ -54,8 +83,21 @@ define [
 
 		# TODO need to click twice
 		do_submit: ->
+			catId = @$("select#categorySelect option:selected").val()
+			cat = app.categories.get(catId)
+
+			tags = @$('input[name="tags"]').val().split(",").map (tag) -> {id: 0, name: tag}
+
+			@model.set
+				title: @$("#title").val()
+				author: @$("#author").val()
+				text: @$("#text").val()
+				category: cat
+				tags: tags
+
 			@model.save()
 			app.router.navigate "/posts", { trigger: true }
+
 			false
 
 	class PostsPage extends CoffeeBar.TemplateController
