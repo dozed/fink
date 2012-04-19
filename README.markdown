@@ -19,12 +19,10 @@ The admin panel is reachable under: http://localhost:8080/admin
 
 # Development notes
 
-## Edit .coffee files
+- Modify and recompile .coffee files
 
-- rake watch
+	rake watch
 
-## Use JRebel:
-
-- Download and install JRebel
+- Use JRebel to reload .class files
 
 	java -noverify -javaagent:/usr/local/jrebel/jrebel.jar -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=512M -Xmx3024M -Xss2M -jar /usr/local/sbt-launch.jar "$@"
