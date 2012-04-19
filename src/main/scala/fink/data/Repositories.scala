@@ -103,9 +103,11 @@ trait ContentItemRepository[T <: AnyRef] extends Repository[T] with GraphDatabas
 		getIdentity(t) match {
 			case 0L =>
 				withTx { implicit neo =>
-					val n = createNode(t)(ds)
-					superNode --> "sub" --> n
-					handleIdentity(t, n)	
+					val node = createNode(t)(ds)
+					superNode --> "sub" --> node
+					val tn = handleIdentity(t, node)	
+					persistRelationships(tn, node)
+					tn
 				}
 			case _ => // already saved, update
 				update(t).get
@@ -119,6 +121,7 @@ trait ContentItemRepository[T <: AnyRef] extends Repository[T] with GraphDatabas
 				node <- Option(ds.gds.getNodeById(id))
 			} yield {
 				serialize(t, node)
+				persistRelationships(t, node)
 				t
 			}
 			// Option(ds.gds.getNodeById(getIdentity(t))).map(Neo4jWrapper.serialize(t, _))
@@ -127,13 +130,21 @@ trait ContentItemRepository[T <: AnyRef] extends Repository[T] with GraphDatabas
 
 	def byId(id: Long)(implicit m: Manifest[T]) : Option[T] = {
 		try {
-			val item = Option(ds.gds.getNodeById(id))
-				.map(n => (n, Neo4jWrapper.toCC[T](n)))
-				.map(a => handleIdentity(a._2.get, a._1))
-			item
+			for {
+				node <- Option(ds.gds.getNodeById(id))
+				post <- Neo4jWrapper.toCC[T](node)
+				postWithId <- Option(handleIdentity(post, node))
+			} yield {
+				loadRelationships(postWithId, node)
+				postWithId
+			}
 		} catch {
 			case e: NotFoundException => None
 		}
+	}
+
+	def findAll()(implicit m: Manifest[T]) : List[T] = {
+		superNode.getRelationships(Direction.OUTGOING).map(r => byId(r.getEndNode.getId)).toList.flatten
 	}
 
 	def node(t: T) : Option[Node] = getIdentity(t) match {
@@ -151,25 +162,10 @@ trait ContentItemRepository[T <: AnyRef] extends Repository[T] with GraphDatabas
 
 	def handleIdentity(t: T, node: Node) : T
 	def getIdentity(t: T) : Long
-
-	// import ContentItemRepository._
-
-	// def coolSave(t: T)(implicit m: Manifest[T]) : ContentItem2Node[T] = {
-	// 	withTx { implicit neo =>
-	// 		val n = createNode(t)(ds)
-	// 		getReferenceNode --> classTag --> n
-	// 		ContentItem2Node[T](t, n)
-	// 	}
-	// }
+	def persistRelationships(t: T, node: Node) : Unit = ()
+	def loadRelationships(t: T, node: Node) : Unit = ()
 
 	private def classTag(implicit m: Manifest[T]) = "__class_%s__".format(m.toString)
-
-	def findAll()(implicit m: Manifest[T]) : List[T] = {
-		superNode.getRelationships(Direction.OUTGOING)
-			.map(_.getEndNode).toList
-			.map(n => (n, Neo4jWrapper.toCC[T](n)))
-			.map(a => handleIdentity(a._2.get, a._1))
-	}
 }
  
 object ContentItemRepository extends EmbeddedGraphDatabaseServiceProvider with Neo4jWrapper with Neo4jIndexProvider with TypedTraverser {
@@ -238,7 +234,13 @@ class TagRepository extends ContentItemRepository[Tag] {
 }
 
 class PostRepository extends ContentItemRepository[Post] with RepositorySupport {
-	def handleIdentity(item: Post, node: Node) = item.copy(id = node.getId)
+	def handleIdentity(item: Post, node: Node) = {
+		val clone = item.copy(id = node.getId)
+		clone.category = item.category
+		clone.tags = item.tags
+		clone
+	}
+
 	def getIdentity(item: Post) = item.id
 
 	def createPost(title: String, text: String, author: String, category: String, tags: String) = {
@@ -250,103 +252,46 @@ class PostRepository extends ContentItemRepository[Post] with RepositorySupport 
 
 	def findPost(year: Int, month: Int, day: Int, title: String) : Option[Post] = None
 
-	override def byId(id: Long)(implicit m: Manifest[Post]) : Option[Post] = {
-		try {
-			for {
-				node <- Option(ds.gds.getNodeById(id))
-				post <- Neo4jWrapper.toCC[Post](node)
-				postWithId <- Option(handleIdentity(post, node))
-			} yield {
-				val tags = node.getRelationships(Direction.OUTGOING, "tags").toList.map {
-					rel =>
-						val tn = rel.getEndNode
-						val tag = Neo4jWrapper.toCC[Tag](tn).get
-						tagRepository.handleIdentity(tag, tn)
-				}
+	override def loadRelationships(post: Post, node: Node) : Unit = {
+		post.tags = node.getRelationships(Direction.OUTGOING, "tags").toList.map { rel =>
+			val tn = rel.getEndNode
+			val tag = Neo4jWrapper.toCC[Tag](tn).get
+			tagRepository.handleIdentity(tag, tn)
+		}
 
-				var post = postWithId
-
-				node.getRelationships(Direction.OUTGOING, "category").toList.map {
-					rel =>
-						val tn = rel.getEndNode
-						val tag = Neo4jWrapper.toCC[Category](tn).get
-						categoryRepository.handleIdentity(tag, tn)
-				}.headOption match {
-					case Some(category) => post.category = Some(category)
-					case None => 
-				}
-
-				post.tags = tags
-				post
-			}
-		} catch {
-			case e: NotFoundException => None
+		node.getRelationships(Direction.OUTGOING, "category").toList.map { rel =>
+			val tn = rel.getEndNode
+			val tag = Neo4jWrapper.toCC[Category](tn).get
+			categoryRepository.handleIdentity(tag, tn)
+		}.headOption match {
+			case Some(category) => post.category = Some(category)
+			case None => 
 		}
 	}
 
-	override def save(t: Post)(implicit m: Manifest[Post]) : Post = {
-		withTx { implicit neo =>
-			val n = createNode(t)(ds)
-
-			// index node
-			superNode --> "sub" --> n
-
-			val np = handleIdentity(t, n)
-
-			// handle relationships
-			t.category.map { c =>
-				val cat = categoryRepository.save(c)
-				val catNode = categoryRepository.node(c)
-				n --> "category" --> catNode.get
-				np.category = Some(cat)
-			}
-
-			np.tags = t.tags.map { tag =>
-				val t = tagRepository.save(tag)
-				val tn = tagRepository.node(t).get
-				n --> "tags" --> tn
-				t
-			}
-
-			np
+	override def persistRelationships(post: Post, node: Node) : Unit = {
+		node.getRelationships(Direction.OUTGOING, "category").foreach { r =>
+			r.delete()
 		}
-	}
 
-	override def update(t: Post)(implicit m: Manifest[Post]) : Option[Post] = {
-		withTx { implicit neo =>
-			for {
-				id <- Option(getIdentity(t))
-				node <- Option(ds.gds.getNodeById(id))
-			} yield {
-				serialize(t, node)
-				
-				node.getRelationships(Direction.OUTGOING, "category").foreach { r =>
-					r.delete()
-				}
+		node.getRelationships(Direction.OUTGOING, "tags").foreach { r =>
+			r.delete()
+		}
 
-				t.category.map { c =>
-					println("updating cat: %s".format(c))
-					val cat = categoryRepository.save(c)
-					val catNode = categoryRepository.node(c).get
-					node --> "category" --> catNode
-					t.category = Some(cat)
-				}
+		// handle 1:1 relationships
+		post.category.map { c =>
+			val category = categoryRepository.save(c)
+			val categoryNode = categoryRepository.node(category)
+			node --> "category" --> categoryNode.get
+			post.category = Some(category)
+		}
 
-				println("tags: " + node.getRelationships(Direction.OUTGOING, "tags").toList.size())
-
-				node.getRelationships(Direction.OUTGOING, "tags").foreach { r =>
-					r.delete()
-				}
-
-				t.tags = t.tags.map { tag =>
-					val t = tagRepository.save(tag)
-					val tn = tagRepository.node(t).get
-					node --> "tags" --> tn
-					t
-				}
-
-				t
-			}
+		// handle 1:n relationships
+		post.tags = post.tags.map { t =>
+			val tag = tagRepository.save(t)
+			val tagNode = tagRepository.node(tag).get
+			node --> "tags" --> tagNode
+			t
 		}
 	}
 }

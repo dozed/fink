@@ -46,9 +46,8 @@ class Frontend extends ScalatraServlet with ScalateSupport with RepositorySuppor
 	}
 
 	get("/") {
-		// layout("admin.index")
 		templateAttributes("layout") = (templateBase + "/layouts/default.jade")
-		jade(templateBase + "/index.jade")	
+		jade(templateBase + "/index.jade", "posts" -> postRepository.findAll)
 	}
 
 	get("/post/:year/:month/:day/:title") {

@@ -1,1 +1,11 @@
-p foo
+-@ val posts: List[fink.data.Post]
+
+h1 Posts
+
+- for (post <- posts)
+	h2
+		a(href={uri("/posts/" + post.title.toLowerCase.replaceAll(" ", "-"))}) #{post.title}
+	
+	p Tags: #{post.tags.map(_.name).mkString(", ")}
+	p Category: #{post.category.map(_.name).getOrElse("")}
+	p Author: #{post.author}
