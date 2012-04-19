@@ -61,11 +61,8 @@ class Admin extends ScalatraServlet with RepositorySupport with ResourcesSupport
 		contentType = "text/html"
 	}
 
-	get("/bla") {
-		"asdojaosdj"
-	}
-
 	get("/") {
+		if (request.getPathInfo == null) redirect("/admin/")
 		templateAttributes("layout") = (adminTemplateBase + "/layouts/coffee.jade")
 		jade(adminTemplateBase + "/index.jade")	
 	}

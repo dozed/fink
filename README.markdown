@@ -15,7 +15,7 @@ sbt 0.11.2
 
 The sample application is running on: http://localhost:8080/
 
-The admin panel is reachable under: http://localhost:8080/fink-admin/ (<- note the extra / at the end)
+The admin panel is reachable under: http://localhost:8080/admin
 
 # Development notes
 

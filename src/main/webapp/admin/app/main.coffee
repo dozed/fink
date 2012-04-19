@@ -43,4 +43,4 @@ define [
 						message: "The server is expirencing some problems right now.  Try again later."
 
 		application = new Application()
-		app.router.navigate("#/signin", true) unless Backbone.history.start({})
+		app.router.navigate("/signin", true) unless Backbone.history.start({})

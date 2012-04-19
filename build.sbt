@@ -17,10 +17,14 @@ seq(webSettings :_*)
 
 scanInterval in Compile := 0
 
+webappResources in Compile <+= (resourceManaged in Compile)(sd => sd / "coffee")
+
 // coffeescripted
 seq(coffeeSettings: _*)
 
-webappResources in Compile <+= (resourceManaged in Compile)(sd => sd / "coffee")
+// (sourceDirectory in (Compile, CoffeeKeys.coffee)) <<= baseDirectory{ _ / "src" / "src" / "main" / "webapp" / "admin" / "app"}
+
+// (resourceManaged in (Compile, CoffeeKeys.coffee)) <<= (resourceManaged in Compile)(sd => sd / "coffee2")
 
 // add neo4j-scala sources
 unmanagedSourceDirectories in Compile <+= baseDirectory{ _ / "3rdparty" / "neo4j-scala" / "src" / "main" / "scala"}
@@ -51,6 +55,7 @@ libraryDependencies ++= Seq(
 	"com.tinkerpop.gremlin" % "gremlin-scala" % "1.6-SNAPSHOT",
 	"org.apache.lucene" % "lucene-analyzers" % "3.5.0",
 	"com.tinkerpop.blueprints" % "blueprints-neo4j-graph" % "1.3-SNAPSHOT",
+	"org.codehaus.janino" % "janino" % "2.6.1",
 	"commons-io" % "commons-io" % "2.0.1",
 	"net.liftweb" %% "lift-json" % "2.4"
 )
