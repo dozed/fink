@@ -20,31 +20,45 @@ define [
 
 		initialize: ->
 			super
-			app.categories.bind "change", @render, @
+			app.categories.bind "all", @render, @
 
 		on_render: ->
-			Backbone.ModelBinding.bind(@)
-			@$("#tagsInput").tagsInput
-				height: "100px"
-				width: "300px"
+			# Backbone.ModelBinding.bind(@)
+			console.log "render"
+
+			@$("#title").val("")
+			@$("#author").val("")
+			@$("#text").val("")
+
+			@$("#tags").tagit()
 
 		do_cancel: ->
 			app.router.navigate "/posts", { trigger: true }
 			false
 
 		do_submit: ->
-			catId = @model.attributes.category
+			catId = @$("select#categorySelect option:selected").val()
 			cat = app.categories.get(catId)
 
-			modelClone = @model.clone()
-			modelClone.attributes.category = cat
+			tags = @$("#tags").tagit("assignedTags").map (tag) ->
+				c = app.tags.select (a) -> a.get("name") == tag
+				if (_.size(c) > 0)
+					_.first(c)
+				else
+					{id: 0, name: tag}
 
-			modelClone.save()
+			@model.set
+				title: @$("#title").val()
+				author: @$("#author").val()
+				text: @$("#text").val()
+				category: cat
+				tags: tags
+
+			@model.save()
 			app.router.navigate "/posts", { trigger: true }
 			false
 
 	class EditPostView extends CoffeeBar.TemplateController
-		template: jade["posts/edit.jade"]
 		events:
 			"click .btn-ok": "do_submit"
 			"click .btn-cancel": "do_cancel"
@@ -53,6 +67,7 @@ define [
 			super
 			@model.bind "change", @render, @
 
+		template: jade["posts/edit.jade"]
 		template_data: ->
 			model: @model.toJSON()
 			categories: app.categories.toJSON()
@@ -63,14 +78,10 @@ define [
 			@$("#author").val(@model.get("author"))
 			@$("#text").val(@model.get("text"))
 
-			@$('input[name="tags"]').val(@model.get("tags").map (tag) -> tag.name)
-
-			@tagsInput = @$('input[name="tags"]').tagsInput
-				height: "100px"
-				width: "300px"
-
 			# handle tags
-			@$('input[name="tags"]').importTags
+			@$("#tags").tagit()
+			@$("#tags").tagit("removeAll")
+			@model.get("tags").map (tag) -> @$("#tags").tagit("createTag", tag.name)
 
 			# selected category
 			cat = @model.get("category")
@@ -81,12 +92,16 @@ define [
 			app.router.navigate "/posts", { trigger: true }
 			false
 
-		# TODO need to click twice
 		do_submit: ->
 			catId = @$("select#categorySelect option:selected").val()
 			cat = app.categories.get(catId)
 
-			tags = @$('input[name="tags"]').val().split(",").map (tag) -> {id: 0, name: tag}
+			tags = @$("#tags").tagit("assignedTags").map (tag) ->
+				c = app.tags.select (a) -> a.get("name") == tag
+				if (_.size(c) > 0)
+					_.first(c)
+				else
+					{id: 0, name: tag}
 
 			@model.set
 				title: @$("#title").val()
@@ -96,6 +111,7 @@ define [
 				tags: tags
 
 			@model.save()
+			app.tags.fetch()
 			app.router.navigate "/posts", { trigger: true }
 
 			false

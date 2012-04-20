@@ -63,6 +63,7 @@ define [
 			app.whoami.fetch()
 			app.posts.fetch()
 			app.categories.fetch()
+			app.tags.fetch()
 
 		stop_poll: ->
 			if @poll_interval

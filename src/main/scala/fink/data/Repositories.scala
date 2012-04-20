@@ -47,38 +47,18 @@ trait RepositorySupport {
 
 trait Repository[T <: AnyRef] {
 	def save(t: T)(implicit m: Manifest[T]) : T
-	def update(t: T)(implicit m: Manifest[T]) : Option[T]
+	def update(t: T)(implicit m: Manifest[T]) : T
 	def byId(id: Long)(implicit m: Manifest[T]) : Option[T]
-	def delete(id: Long)
 	def findAll()(implicit m: Manifest[T]) : List[T]
-	def superNode(implicit m: Manifest[T]) : Node
+	def delete(id: Long)
 	def node(t: T) : Option[Node]
-
-	// the following methods need to be implemented in the user repository
-	// TODO use type classes: Locator
-
-	/**
-	 * Maps the identity from the Node back into the user object or stores it in a cache.
-	 *
-	 * @param t The user object.
-	 * @param node The retrieved node.
-	 * @returns A copy of the user object, in most cases with an attached identifier.
-	 */
-	def handleIdentity(t: T, node: Node) : T
-
-	/**
-	 * Extracts the identity from a user object.
-	 * TODO use @Key
-	 *
-	 * @param t The user object.
-	 * @return The object's identity.
-	 */
-	def getIdentity(t: T) : Long
 }
 
-trait ContentItemRepository[T <: AnyRef] extends Repository[T] with GraphDatabaseServiceProvider with Neo4jWrapper with Neo4jIndexProvider with TypedTraverser{
+trait ContentItemRepository[T <: AnyRef] extends Repository[T] with GraphDatabaseServiceProvider with Neo4jWrapper with Neo4jIndexProvider {
 
 	val ds = ContentItemRepository.ds
+
+	private def classTag(implicit m: Manifest[T]) = "__class_%s__".format(m.toString)
 
 	private var _superNode : Option[Node] = None
 
@@ -110,11 +90,11 @@ trait ContentItemRepository[T <: AnyRef] extends Repository[T] with GraphDatabas
 					tn
 				}
 			case _ => // already saved, update
-				update(t).get
+				update(t)
 		}
 	}
 
-	def update(t: T)(implicit m: Manifest[T]) : Option[T] = {
+	def update(t: T)(implicit m: Manifest[T]) : T = {
 		withTx { implicit neo =>
 			for {
 				id <- Option(getIdentity(t))
@@ -122,9 +102,9 @@ trait ContentItemRepository[T <: AnyRef] extends Repository[T] with GraphDatabas
 			} yield {
 				serialize(t, node)
 				persistRelationships(t, node)
-				t
 			}
-			// Option(ds.gds.getNodeById(getIdentity(t))).map(Neo4jWrapper.serialize(t, _))
+
+			t
 		}
 	}
 
@@ -156,16 +136,17 @@ trait ContentItemRepository[T <: AnyRef] extends Repository[T] with GraphDatabas
 		withTx { implicit neo =>
 			val node = ds.gds.getNodeById(id)
 			node.getRelationships().foreach(_.delete())
+			deleteRelationships(node)
 			node.delete()
 		}
 	}
 
-	def handleIdentity(t: T, node: Node) : T
-	def getIdentity(t: T) : Long
-	def persistRelationships(t: T, node: Node) : Unit = ()
-	def loadRelationships(t: T, node: Node) : Unit = ()
+	protected def handleIdentity(t: T, node: Node) : T
+	protected def getIdentity(t: T) : Long
+	protected def persistRelationships(t: T, node: Node) : Unit = ()
+	protected def loadRelationships(t: T, node: Node) : Unit = ()
+	protected def deleteRelationships(node: Node) : Unit = ()
 
-	private def classTag(implicit m: Manifest[T]) = "__class_%s__".format(m.toString)
 }
  
 object ContentItemRepository extends EmbeddedGraphDatabaseServiceProvider with Neo4jWrapper with Neo4jIndexProvider with TypedTraverser {
@@ -216,7 +197,6 @@ class ImageRepository extends ContentItemRepository[Image] {
 		val image = Image(title = title, full = full, medium = medium, thumb = thumb)
 		save(image)
 	}
-
 }
 
 class TagRepository extends ContentItemRepository[Tag] {
@@ -234,14 +214,6 @@ class TagRepository extends ContentItemRepository[Tag] {
 }
 
 class PostRepository extends ContentItemRepository[Post] with RepositorySupport {
-	def handleIdentity(item: Post, node: Node) = {
-		val clone = item.copy(id = node.getId)
-		clone.category = item.category
-		clone.tags = item.tags
-		clone
-	}
-
-	def getIdentity(item: Post) = item.id
 
 	def createPost(title: String, text: String, author: String, category: String, tags: String) = {
 		val post = Post(0L, 0L, title = title, text = text, author = author)
@@ -251,6 +223,15 @@ class PostRepository extends ContentItemRepository[Post] with RepositorySupport 
 	def findPostByUuid(uuid: String) : Option[Post] = None
 
 	def findPost(year: Int, month: Int, day: Int, title: String) : Option[Post] = None
+
+	override def handleIdentity(item: Post, node: Node) = {
+		val clone = item.copy(id = node.getId)
+		clone.category = item.category
+		clone.tags = item.tags
+		clone
+	}
+
+	override def getIdentity(item: Post) = item.id
 
 	override def loadRelationships(post: Post, node: Node) : Unit = {
 		post.tags = node.getRelationships(Direction.OUTGOING, "tags").toList.map { rel =>
@@ -279,11 +260,20 @@ class PostRepository extends ContentItemRepository[Post] with RepositorySupport 
 		}
 
 		// handle 1:1 relationships
-		post.category.map { c =>
-			val category = categoryRepository.save(c)
-			val categoryNode = categoryRepository.node(category)
-			node --> "category" --> categoryNode.get
-			post.category = Some(category)
+		post.category match {
+			case c:Category =>
+				val category = categoryRepository.save(c)
+				val categoryNode = categoryRepository.node(category)
+				node --> "category" --> categoryNode.get
+				post.category = Some(category)
+
+			// can be null due to lift-json mapping null to Some(null)
+			case _ =>
+				val categories = categoryRepository.findAll()
+				val category = categories(0)
+				val categoryNode = categoryRepository.node(category)
+				node --> "category" --> categoryNode.get
+				post.category = Some(category)
 		}
 
 		// handle 1:n relationships
@@ -291,7 +281,7 @@ class PostRepository extends ContentItemRepository[Post] with RepositorySupport 
 			val tag = tagRepository.save(t)
 			val tagNode = tagRepository.node(tag).get
 			node --> "tags" --> tagNode
-			t
+			tag
 		}
 	}
 }

@@ -20,7 +20,7 @@ class Admin extends ScalatraServlet with RepositorySupport with ResourcesSupport
 		ContentItemRepository.shutdown()
 	}
 
-	implicit override val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category]))) + FieldSerializer[Post]()
+	implicit override val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category], classOf[Tag]))) + FieldSerializer[Post]()
 
 	def adminTemplateBase = "/WEB-INF/admin"
 
@@ -49,12 +49,6 @@ class Admin extends ScalatraServlet with RepositorySupport with ResourcesSupport
 	def sanitize() = {
 		// MediaManager.base = servletContext.getRealPath("/uploads")
 		MediaManager.base = "/tmp/foo"
-		// pageRepository.find("title", "Website") match {
-		// 	case Some(page) =>
-		// 	case None =>
-		// 		val page = Page(title = "Website")
-		// 		pageRepository.save(page)
-		// }
 	}
 
 	before() {

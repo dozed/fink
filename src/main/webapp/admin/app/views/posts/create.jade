@@ -18,21 +18,21 @@
 						input#title.input-xlarge(type="text")
 				
 				.control-group
-					label.control-label(for="category") Category
-					.controls
-						select#category
-							- for category in categories
-								option(value=category.id) #{category.name}
-
-				.control-group
 					label.control-label(for="author") Author
 					.controls
 						input#author.input-xlarge(type="text")
 
 				.control-group
+					label.control-label(for="category") Category
+					.controls
+						select#categorySelect
+							- for category in categories
+								option(value=category.id) #{category.name}
+
+				.control-group
 					label.control-label(for="tags") Tags
 					.controls
-						input(type="text" name="tags" id="tagsInput" size="50" value="1,2")
+						ul#tags
 
 				.control-group
 					label.control-label(for="text") Text
@@ -40,6 +40,6 @@
 						textarea#text(style="width: 370px; height: 100px")
 
 				.form-actions
-					button.btn.btn-ok.btn-primary(type="submit") Create post
+					input.btn.btn-ok.btn-primary(type="submit") Create post
 					span
 					button.btn.btn-cancel Cancel

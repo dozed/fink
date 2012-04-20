@@ -30,6 +30,8 @@ define [
   "frameworks/order!frameworks/jquery.effects.slide"
   "frameworks/order!frameworks/jquery.datatables"
   "frameworks/order!frameworks/jquery.tagsinput"
+  "frameworks/order!frameworks/jquery.ui.min"
+  "frameworks/order!frameworks/jquery.tagit"
   "frameworks/order!frameworks/coffeejade-runtime"
   "frameworks/order!frameworks/bootstrap-dropdown"
   "frameworks/order!frameworks/bootstrap-twipsy"

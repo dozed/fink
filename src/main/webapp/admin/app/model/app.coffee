@@ -2,7 +2,8 @@ define [
 	"model/whoami"
 	"model/post_collection"
 	"model/category_collection"
-], (WhoAmI, PostCollection, CategoryCollection) ->
+	"model/tag_collection"
+], (WhoAmI, PostCollection, CategoryCollection, TagCollection) ->
 	
 	class AppModel extends CoffeeBar.Model
 		defaults: 
@@ -21,6 +22,7 @@ define [
 		whoami: new WhoAmI()
 		posts: new PostCollection()
 		categories: new CategoryCollection()
+		tags: new TagCollection()
 		model: model
 		flash: model.property("flash")
 		page: model.property("page")
