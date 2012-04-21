@@ -261,7 +261,7 @@ class PostRepository extends ContentItemRepository[Post] with RepositorySupport 
 
 		// handle 1:1 relationships
 		post.category match {
-			case c:Category =>
+			case Some(c) if c != null =>
 				val category = categoryRepository.save(c)
 				val categoryNode = categoryRepository.node(category)
 				node --> "category" --> categoryNode.get
