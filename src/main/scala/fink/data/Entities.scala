@@ -68,7 +68,8 @@ case class Gallery(
 	id: Long = 0L,
 	date: Long = 0L,
 	title: String = "",
-	shortlink: String = ""
+	shortlink: String = "",
+	text: String = ""
 ) {
 	var images = List[Image]()
 	var tags = List[Tag]()

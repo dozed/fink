@@ -20,7 +20,7 @@ import org.joda.time.DateTime
 
 trait ResourcesSupport extends ScalatraServlet with RepositorySupport with LiftJsonRequestBodyWithoutFormats {
 
-	implicit val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category], classOf[Tag]))) + FieldSerializer[Post]()
+	implicit val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category], classOf[Tag]))) + FieldSerializer[Post]()  + FieldSerializer[Gallery]() + FieldSerializer[Image]()
 
 	get("/api/posts") {
 		write(postRepository.findAll)

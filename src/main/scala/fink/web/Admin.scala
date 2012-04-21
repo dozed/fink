@@ -20,7 +20,7 @@ class Admin extends ScalatraServlet with RepositorySupport with ResourcesSupport
 		ContentItemRepository.shutdown()
 	}
 
-	implicit override val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category], classOf[Tag]))) + FieldSerializer[Post]()
+	override implicit val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category], classOf[Tag]))) + FieldSerializer[Post]()  + FieldSerializer[Gallery]() + FieldSerializer[Image]()
 
 	def adminTemplateBase = "/WEB-INF/admin"
 
