@@ -16,6 +16,8 @@ import org.scalatra.servlet._
 import net.liftweb.json._
 import net.liftweb.json.Serialization.{read, write}
 
+import org.joda.time.DateTime
+
 trait ResourcesSupport extends ScalatraServlet with RepositorySupport with LiftJsonRequestBodyWithoutFormats {
 
 	implicit val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category], classOf[Tag]))) + FieldSerializer[Post]()
@@ -37,7 +39,7 @@ trait ResourcesSupport extends ScalatraServlet with RepositorySupport with LiftJ
 			val post = postRepository.save(r)
 			write(post)
 		} else {
-			val post = postRepository.save(Post(title=params("title"), text=params("text"), author=params("author")))
+			val post = postRepository.save(Post(title=params("title"), text=params("text"), author=params("author"), date=(new DateTime).getMillis))
 			write(post)			
 		}
 	}

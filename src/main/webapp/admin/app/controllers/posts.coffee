@@ -98,7 +98,7 @@ define [
 		app.page new PostsPage
 
 	app.router.route "/posts/create", "posts", ->
-		app.page new EditPostView({ model: new Post, template: jade["posts/create.jade"] })
+		app.page new EditPostView({ model: new Post({ date: new Date().getTime() }), template: jade["posts/create.jade"] })
 
 	app.router.route "/posts/edit/:id", "posts", (id) ->
 		post = new Post({id: id})

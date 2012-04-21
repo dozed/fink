@@ -53,6 +53,13 @@ case class Post(
 	var category : Option[Category] = None
 	// def category = _category
 	// def category_=(c:Category) { _category = Some(c) }
+
+	// fetch relations from other instance
+	def copyRelations(post:Post) = {
+		tags = post.tags
+		category = post.category
+		this
+	}
 }
 
 case class Image(

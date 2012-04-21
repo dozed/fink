@@ -21,6 +21,7 @@ import org.neo4j.scala.Neo4jWrapper
 import org.neo4j.scala.Neo4jWrapperImplicits
 import org.neo4j.scala.TypedTraverser
 
+import org.joda.time.DateTime
 
 // 
 // trait Locator[T]
@@ -215,22 +216,9 @@ class TagRepository extends ContentItemRepository[Tag] {
 
 class PostRepository extends ContentItemRepository[Post] with RepositorySupport {
 
-	def createPost(title: String, text: String, author: String, category: String, tags: String) = {
-		val post = Post(0L, 0L, title = title, text = text, author = author)
-		save(post)
-	}
-
-	def findPostByUuid(uuid: String) : Option[Post] = None
-
 	def findPost(year: Int, month: Int, day: Int, title: String) : Option[Post] = None
 
-	override def handleIdentity(item: Post, node: Node) = {
-		val clone = item.copy(id = node.getId)
-		clone.category = item.category
-		clone.tags = item.tags
-		clone
-	}
-
+	override def handleIdentity(item: Post, node: Node) = item.copy(id = node.getId).copyRelations(item)
 	override def getIdentity(item: Post) = item.id
 
 	override def loadRelationships(post: Post, node: Node) : Unit = {

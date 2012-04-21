@@ -47,7 +47,7 @@ define [
   ClassHelpers = {}
   
   _.find = _.detect
-  
+
   # Wrap an optional error callback with a fallback error event.
   wrapError = (onError, model, options) ->
     (resp) ->
