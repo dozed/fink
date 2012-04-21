@@ -6,58 +6,6 @@ define [
 	"views/jade"
 ], (CollectionController, app, Post, PostCollection, jade) ->
 
-	class CreatePostView extends CoffeeBar.TemplateController
-		events:
-			"click .btn-ok": "do_submit"
-			"click .btn-cancel": "do_cancel"
-
-		model: new Post()
-
-		template: jade["posts/create.jade"]
-		template_data: ->
-			model: @model
-			categories: app.categories.toJSON()
-
-		initialize: ->
-			super
-			app.categories.bind "all", @render, @
-
-		on_render: ->
-			# Backbone.ModelBinding.bind(@)
-			console.log "render"
-
-			@$("#title").val("")
-			@$("#author").val("")
-			@$("#text").val("")
-
-			@$("#tags").tagit()
-
-		do_cancel: ->
-			app.router.navigate "/posts", { trigger: true }
-			false
-
-		do_submit: ->
-			catId = @$("select#categorySelect option:selected").val()
-			cat = app.categories.get(catId)
-
-			tags = @$("#tags").tagit("assignedTags").map (tag) ->
-				c = app.tags.select (a) -> a.get("name") == tag
-				if (_.size(c) > 0)
-					_.first(c)
-				else
-					{id: 0, name: tag}
-
-			@model.set
-				title: @$("#title").val()
-				author: @$("#author").val()
-				text: @$("#text").val()
-				category: cat
-				tags: tags
-
-			@model.save()
-			app.router.navigate "/posts", { trigger: true }
-			false
-
 	class EditPostView extends CoffeeBar.TemplateController
 		events:
 			"click .btn-ok": "do_submit"
@@ -150,7 +98,7 @@ define [
 		app.page new PostsPage
 
 	app.router.route "/posts/create", "posts", ->
-		app.page new CreatePostView
+		app.page new EditPostView({ model: new Post, template: jade["posts/create.jade"] })
 
 	app.router.route "/posts/edit/:id", "posts", (id) ->
 		post = new Post({id: id})
