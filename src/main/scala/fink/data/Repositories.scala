@@ -259,15 +259,17 @@ class PostRepository extends ContentItemRepository[Post] with RepositorySupport 
 			r.delete()
 		}
 
+		// can be null due to lift-json mapping null to Some(null)
+		post.category = post.category.flatMap(Option(_))
+
 		// handle 1:1 relationships
 		post.category match {
-			case Some(c) if c != null =>
+			case Some(c) =>
 				val category = categoryRepository.save(c)
 				val categoryNode = categoryRepository.node(category)
 				node --> "category" --> categoryNode.get
 				post.category = Some(category)
 
-			// can be null due to lift-json mapping null to Some(null)
 			case _ =>
 				val categories = categoryRepository.findAll()
 				val category = categories(0)
