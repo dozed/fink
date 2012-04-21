@@ -30,7 +30,7 @@ class DataTests extends FunSuite with BeforeAndAfterAll with RepositorySupport {
 	}
 
 	test("should save in transaction and findall") {
-		val count = 10
+		val count = 3
 
 		// TODO this call is needed to setup the super-node, maybe create super-node in external tx
 		postRepository.save(Post(0L, 0L, title = "title", text = "text", author = "author"))

@@ -35,6 +35,7 @@ object Repositories {
 	val pageRepository = new PageRepository
 	val mediaRepository = new MediaRepository
 	val categoryRepository = new CategoryRepository
+	val galleryRepository = new GalleryRepository
 }
 
 trait RepositorySupport {
@@ -44,6 +45,7 @@ trait RepositorySupport {
 	def pageRepository = Repositories.pageRepository
 	def mediaRepository = Repositories.mediaRepository
 	def categoryRepository = Repositories.categoryRepository
+	def galleryRepository = Repositories.galleryRepository
 }
 
 trait Repository[T <: AnyRef] {
@@ -272,6 +274,45 @@ class PostRepository extends ContentItemRepository[Post] with RepositorySupport 
 			val tagNode = tagRepository.node(tag).get
 			node --> "tags" --> tagNode
 			tag
+		}
+	}
+}
+
+class GalleryRepository extends ContentItemRepository[Gallery] with RepositorySupport {
+	def handleIdentity(item: Gallery, node: Node) = item.copy(id = node.getId).copyRelations(item)
+	def getIdentity(item: Gallery) = item.id
+
+	override def loadRelationships(gallery: Gallery, node: Node) : Unit = {
+		gallery.images = node.getRelationships(Direction.OUTGOING, "images").toList.map { rel =>
+			Neo4jWrapper.toCC[Image](rel.getEndNode).map(imageRepository.handleIdentity(_, rel.getEndNode))
+		}.flatten
+
+		gallery.tags = node.getRelationships(Direction.OUTGOING, "tags").toList.map { rel =>
+			Neo4jWrapper.toCC[Tag](rel.getEndNode).map(tagRepository.handleIdentity(_, rel.getEndNode))
+		}.flatten
+	}
+
+	override def persistRelationships(gallery: Gallery, node: Node) : Unit = {
+		node.getRelationships(Direction.OUTGOING, "images").foreach { r =>
+			r.delete()
+		}
+
+		node.getRelationships(Direction.OUTGOING, "tags").foreach { r =>
+			r.delete()
+		}
+
+		gallery.tags = gallery.tags.map { t =>
+			val tag = tagRepository.save(t)
+			val tagNode = tagRepository.node(tag).get
+			node --> "tags" --> tagNode
+			tag
+		}
+
+		gallery.images = gallery.images.map { i =>
+			val image = imageRepository.save(i)
+			val imageNode = imageRepository.node(i).get
+			node --> "images" --> imageNode
+			image
 		}
 	}
 }

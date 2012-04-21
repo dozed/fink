@@ -6,6 +6,7 @@ define [
 	"controllers/signin"
 	"controllers/posts"
 	"controllers/home"
+	"controllers/galleries"
 ], (app, Post, PostCollection, Application) ->
 	$ ->
 
@@ -17,6 +18,9 @@ define [
 		menu.push
 			href: "#/posts"
 			label: "Posts"
+		menu.push
+			href: "#/galleries"
+			label: "Galleries"
 		menu.push
 			href: "#/signout"
 			label: "Signout"

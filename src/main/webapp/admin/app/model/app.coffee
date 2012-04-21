@@ -3,7 +3,8 @@ define [
 	"model/post_collection"
 	"model/category_collection"
 	"model/tag_collection"
-], (WhoAmI, PostCollection, CategoryCollection, TagCollection) ->
+	"model/gallery_collection"
+], (WhoAmI, PostCollection, CategoryCollection, TagCollection, GalleryCollection) ->
 	
 	class AppModel extends CoffeeBar.Model
 		defaults: 
@@ -23,6 +24,7 @@ define [
 		posts: new PostCollection()
 		categories: new CategoryCollection()
 		tags: new TagCollection()
+		galleries: new GalleryCollection()
 		model: model
 		flash: model.property("flash")
 		page: model.property("page")

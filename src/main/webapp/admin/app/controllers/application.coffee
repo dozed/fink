@@ -62,6 +62,7 @@ define [
 			
 			app.whoami.fetch()
 			app.posts.fetch()
+			app.galleries.fetch()
 			app.categories.fetch()
 			app.tags.fetch()
 

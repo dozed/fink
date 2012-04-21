@@ -86,6 +86,38 @@ trait ResourcesSupport extends ScalatraServlet with RepositorySupport with LiftJ
 		pageRepository.byId(id).map(write(_)).getOrElse(write("error"))
 	}
 
+
+	get("/api/galleries") {
+		write(galleryRepository.findAll)
+	}
+
+	post("/api/galleries") {
+		val r = read[Gallery](request.body)
+		val gallery = galleryRepository.save(r)
+		write(gallery)
+	}
+
+	get("/api/galleries/:id") {
+		val id = JLong.parseLong(params("id"))
+		galleryRepository.byId(id).map(write(_)).getOrElse(write("error"))
+	}
+ 
+	put("/api/galleries/:id") {
+		val id = JLong.parseLong(params("id"))
+
+		if (id != 0) {
+			val gallery = read[Gallery](request.body)
+			write(galleryRepository.update(gallery))
+		}
+	}
+
+	delete("/api/galleries/:id") {
+		val id = JLong.parseLong(params("id"))
+		galleryRepository.delete(id)
+		""
+	}
+
+
 	get("/api/categories") {
 		categoryRepository.createIfNotExist(Config.postCategories)
 		write(categoryRepository.findAll)

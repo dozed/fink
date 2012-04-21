@@ -20,14 +20,6 @@ trait ContentItem {
 	// tags business
 	var tags = new HashSet[Tag]()
 
-	def clearTags() {
-		tags.clear
-	}
-
-	def addTag(tag: Tag) {
-		tags += tag
-	}
-
 }
 
 case class Page(
@@ -65,12 +57,29 @@ case class Post(
 case class Image(
 	id: Long = 0L,
 	date: Long = 0L,
-	title: String,
+	title: String = "",
 	author: String = "",
 	full: String,
 	medium: String,
 	thumb: String
-) extends ContentItem
+)
+
+case class Gallery(
+	id: Long = 0L,
+	date: Long = 0L,
+	title: String = "",
+	shortlink: String = ""
+) {
+	var images = List[Image]()
+	var tags = List[Tag]()
+	var cover: Option[Image] = None
+
+	def copyRelations(gallery:Gallery) = {
+		tags = gallery.tags
+		images = gallery.images
+		this
+	}
+}
 
 case class MediaCollection(
 	id: Long = 0L,
