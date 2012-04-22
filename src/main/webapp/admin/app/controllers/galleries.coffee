@@ -14,8 +14,8 @@ define [
 		initialize: ->
 			super
 			tabs = [
-				{ a: "#", label: "Meta", page: new EditGalleryView({ model: @model }) },
-				{ a: "#", label: "Images", page: new GalleryImagesView({ model: @model }) }
+				{ a: "#", label: "Meta", page: new GalleryInfoEditor({ model: @model }) },
+				{ a: "#", label: "Images", page: new GalleryImagesEditor({ model: @model }) }
 			]
 			@tabs_controller = new TabsController
 				tabs: tabs
@@ -25,7 +25,7 @@ define [
 			@$(".editor").empty().append(el)
 
 
-	class EditGalleryView extends CoffeeBar.TemplateController
+	class GalleryInfoEditor extends CoffeeBar.TemplateController
 		events:
 			"click .btn-ok": "do_submit"
 			"click .btn-cancel": "do_cancel"
@@ -71,7 +71,7 @@ define [
 
 			false
 
-	class GalleryImagesView extends CoffeeBar.TemplateController
+	class GalleryImagesEditor extends CoffeeBar.TemplateController
 		template: jade["gallery/edit_images.jade"]
 
 		initialize: ->
@@ -84,7 +84,7 @@ define [
 				collection: @image_collection
 				child_control: (model) ->
 					console.log "foo"
-					new ImageItem({ model: model })
+					new ImageListItem({ model: model })
 
 		on_render: ->
 			el = @collection_controller.render().el
@@ -92,7 +92,7 @@ define [
 			@$(".images").empty().append(el)
 
 
-	class ImageItem extends CoffeeBar.TemplateController
+	class ImageListItem extends CoffeeBar.TemplateController
 		template: jade["gallery/image.jade"]
 
 
@@ -106,13 +106,13 @@ define [
 
 			@collection_controller = new CollectionController
 				collection: app.galleries
-				child_control: (model) -> new GalleryItem({ model: model })
+				child_control: (model) -> new GalleryListItem({ model: model })
 
 		on_render: ->
 			el = @collection_controller.render().el
 			@$(".galleries").empty().append(el)
 
-	class GalleryItem extends CoffeeBar.TemplateController
+	class GalleryListItem extends CoffeeBar.TemplateController
 		template: jade["gallery/item.jade"]
 		events:
 			"click a.btn-delete": "do_delete"
