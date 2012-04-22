@@ -78,6 +78,7 @@ case class Gallery(
 	def copyRelations(gallery:Gallery) = {
 		tags = gallery.tags
 		images = gallery.images
+		cover = gallery.cover
 		this
 	}
 }

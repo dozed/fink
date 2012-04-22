@@ -1,10 +1,29 @@
 define [
 	"controllers/collection_controller"
+	"controllers/tabs_controller"
 	"model/app"
 	"model/gallery"
 	"model/gallery_collection"
+	"model/image"
 	"views/jade"
-], (CollectionController, app, Gallery, GalleryCollection, jade) ->
+], (CollectionController, TabsController, app, Gallery, GalleryCollection, Image, jade) ->
+
+	class GalleryEditor extends CoffeeBar.TemplateController
+		template: jade["gallery/edit.jade"]
+
+		initialize: ->
+			super
+			tabs = [
+				{ a: "#", label: "Meta", page: new EditGalleryView({ model: @model }) },
+				{ a: "#", label: "Images", page: new GalleryImagesView({ model: @model }) }
+			]
+			@tabs_controller = new TabsController
+				tabs: tabs
+
+		on_render: ->
+			el = @tabs_controller.render().el
+			@$(".editor").empty().append(el)
+
 
 	class EditGalleryView extends CoffeeBar.TemplateController
 		events:
@@ -15,7 +34,7 @@ define [
 			super
 			@model.bind "change", @render, @
 
-		template: jade["gallery/edit.jade"]
+		template: jade["gallery/edit_meta.jade"]
 		template_data: ->
 			model: @model.toJSON()
 
@@ -52,6 +71,32 @@ define [
 
 			false
 
+	class GalleryImagesView extends CoffeeBar.TemplateController
+		template: jade["gallery/edit_images.jade"]
+
+		initialize: ->
+			super
+
+			@image_collection = new CoffeeBar.Collection()
+			@image_collection.reset([new Image(), new Image()])
+
+			@collection_controller = new CollectionController
+				collection: @image_collection
+				child_control: (model) ->
+					console.log "foo"
+					new ImageItem({ model: model })
+
+		on_render: ->
+			el = @collection_controller.render().el
+			console.log el
+			@$(".images").empty().append(el)
+
+
+	class ImageItem extends CoffeeBar.TemplateController
+		template: jade["gallery/image.jade"]
+
+
+	# main gallery list
 	class GalleriesPage extends CoffeeBar.TemplateController
 		template: jade["gallery/index.jade"]
 
@@ -66,8 +111,6 @@ define [
 		on_render: ->
 			el = @collection_controller.render().el
 			@$(".galleries").empty().append(el)
-
-		poll: -> @model.fetch()
 
 	class GalleryItem extends CoffeeBar.TemplateController
 		template: jade["gallery/item.jade"]
@@ -88,7 +131,7 @@ define [
 
 	app.router.route "/galleries/edit/:id", "galleries", (id) ->
 		gallery = new Gallery({id: id})
-		app.page new EditGalleryView({ model: gallery })
+		app.page new GalleryEditor({ model: gallery })
 		gallery.fetch()
 		
 	GalleriesPage
