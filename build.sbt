@@ -19,12 +19,16 @@ scanInterval in Compile := 0
 
 webappResources in Compile <+= (resourceManaged in Compile)(sd => sd / "coffee")
 
-// coffeescripted
+// sbt-brew
 seq(coffeeSettings: _*)
 
-// (sourceDirectory in (Compile, CoffeeKeys.coffee)) <<= baseDirectory{ _ / "src" / "src" / "main" / "webapp" / "admin" / "app"}
+seq(coffeeJadeSettings: _*)
 
-// (resourceManaged in (Compile, CoffeeKeys.coffee)) <<= (resourceManaged in Compile)(sd => sd / "coffee2")
+(sourceDirectory in (Compile, BrewKeys.coffee)) <<= baseDirectory{ _ / "src" / "main" / "webapp" / "admin" / "app"}
+
+(resourceManaged in (Compile, BrewKeys.coffee)) <<= (resourceManaged in Compile)(sd => sd / "coffee" / "admin" / "app")
+
+(BrewKeys.bare in (Compile, BrewKeys.coffee)) := true
 
 // add neo4j-scala sources
 unmanagedSourceDirectories in Compile <+= baseDirectory{ _ / "3rdparty" / "neo4j-scala" / "src" / "main" / "scala"}

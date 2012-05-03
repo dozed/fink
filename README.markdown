@@ -11,17 +11,15 @@ sbt 0.11.2
 
 	$ git clone git@github.com:dozed/fink.git
 	$ cd fink
-	$ sbt container:start
+	$ sbt
+	> container:start
+	> ~;compile;coffee
 
 The sample application is running on: http://localhost:8080/
 
 The admin panel is reachable under: http://localhost:8080/admin
 
 # Development notes
-
-- Modify and recompile .coffee files
-
-	rake watch
 
 - Use JRebel to reload .class files
 
