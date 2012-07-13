@@ -48,3 +48,4 @@ define [
 
 		application = new Application()
 		app.router.navigate("/signin", true) unless Backbone.history.start({})
+		# app.router.navigate("/home", true) unless Backbone.history.start({})

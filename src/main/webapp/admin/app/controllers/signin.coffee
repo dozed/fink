@@ -65,4 +65,28 @@ define [
 					kind: "error"
 					title: "Error communicating with the server."
 
+	$.ajax
+		url: "auth/login"
+		dataType: "json"
+		type: "POST"
+		data:
+			username: "admin"
+			password: "admin"
+
+		success: (data) ->
+			app.whoami.fetch()
+			app.router.navigate("#/", true)
+
+		error: (data) ->
+			if data.status == 401
+				app.flash
+					kind: "error"
+					title: "Invalid username or password"
+				app.router.navigate "#/signin", false
+			else
+				app.flash
+					kind: "error"
+					title: "Error communicating with the server."
+				app.router.navigate "#/signin", true
+
 	SigninController
