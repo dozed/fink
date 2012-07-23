@@ -1,6 +1,10 @@
 .settings
 .project
 .classpath
+
+.idea
+.idea_modules
+
 target
 db
 

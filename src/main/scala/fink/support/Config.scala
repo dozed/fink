@@ -5,7 +5,7 @@ import java.util.Properties
 import scala.collection.JavaConversions._
 import fink.data._
 
-object Config extends RepositorySupport {
+object Config {
   
   val fmtDays = DateTimeFormat.forPattern("yyyy-MM-dd")
   val fmtMinutes = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm")

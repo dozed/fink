@@ -14,24 +14,24 @@ import org.scalatra.servlet._
 import net.liftweb.json._
 import net.liftweb.json.Serialization.{read, write}
 
-class Admin extends ScalatraServlet with RepositorySupport with ResourcesSupport with AuthenticationRoutes with ScalateSupport with FileUploadSupport {
+class Admin extends ScalatraServlet with RepositorySupport with AuthenticationRoutes with ResourcesSupport with ScalateSupport with FileUploadSupport {
 
-	override def destroy() {
-		ContentItemRepository.shutdown()
-	}
+	// override def destroy() {
+	// 	ContentItemRepository.shutdown()
+	// }
 
 	override implicit val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category], classOf[Tag]))) + FieldSerializer[Post]()  + FieldSerializer[Gallery]() + FieldSerializer[Image]()
 
 	def adminTemplateBase = "/WEB-INF/admin"
 
 	def layout(template: String) = {
-		templateAttributes("mediaRepository") = mediaRepository
+		// templateAttributes("mediaRepository") = mediaRepository
 		templateAttributes("layout") = (adminTemplateBase + "/layouts/admin.jade")
 		scaml(adminTemplateBase + "/" + template + ".scaml")	
 	}
 
 	def render(template: String) = {
-		templateAttributes("mediaRepository") = mediaRepository
+		// templateAttributes("mediaRepository") = mediaRepository
 		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> "") 
 	}
 
@@ -48,7 +48,7 @@ class Admin extends ScalatraServlet with RepositorySupport with ResourcesSupport
 
 	def sanitize() = {
 		// MediaManager.base = servletContext.getRealPath("/uploads")
-		MediaManager.base = "/tmp/foo"
+		// MediaManager.base = "/tmp/foo"
 	}
 
 	before() {
@@ -62,7 +62,7 @@ class Admin extends ScalatraServlet with RepositorySupport with ResourcesSupport
 	}
 
 	notFound {
-		<h1>Not found.  Bummer.</h1>
+		halt(404, <h1>Not found.  Bummer.</h1>)
 	}
 
 }

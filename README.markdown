@@ -5,7 +5,7 @@ sbt 0.11.2
 
 # Built with
 
-	scalatra, lift-json, neo4j, backbone.js, coffeejade
+	scalatra, lift-json, scalaquery, backbone.js, coffeejade
 
 # Running the sample app
 

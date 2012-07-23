@@ -1,7 +1,6 @@
 package fink.web
 
-import fink.data.User
-import fink.data.UserRepository
+import fink.data._
 
 import org.scalatra.auth.{ScentryConfig, ScentrySupport}
 import org.scalatra.ScalatraKernel
