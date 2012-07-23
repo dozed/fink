@@ -8,6 +8,7 @@ define [
 		defaults:
 			id: 0
 			date: 0
+			catId: 0
 			title: ""
 			author: ""
 			text: ""
@@ -18,6 +19,7 @@ define [
 			js = super
 			if (js.category != null && js.category.toJSON)
 				js.category = js.category.toJSON()
+				js.catId = js.category.id
 			js
 
 	Post

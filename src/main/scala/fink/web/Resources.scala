@@ -50,7 +50,7 @@ trait ResourcesSupport extends ScalatraServlet with RepositorySupport with LiftJ
     val post = jsread[Post](request.body)
 
     postRepository.update(post) match {
-      case Ok => jswrite(post)
+      case Ok => halt(204)
       case NotFound(message) => halt(404, message)
     }
   }
@@ -88,7 +88,7 @@ trait ResourcesSupport extends ScalatraServlet with RepositorySupport with LiftJ
     val id = JLong.parseLong(params("id"))
     val name = params("name")
 
-    postRepository.deleteTag(id, name) match {
+    postRepository.removeTag(id, name) match {
       case Ok => halt(204)
       case NotFound(message) => halt(404, message)
     }
@@ -98,7 +98,7 @@ trait ResourcesSupport extends ScalatraServlet with RepositorySupport with LiftJ
     val id = JLong.parseLong(params("id"))
     
     postRepository.byId(id) match {
-      case Some(post) => jswrite(post.category)
+      case Some(post) => post.category.map(jswrite(_)).getOrElse(halt(404))
       case None => halt(404)
     }
   }

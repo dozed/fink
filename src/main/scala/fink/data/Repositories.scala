@@ -93,8 +93,12 @@ class PostRepository extends RepositorySupport {
 
   def update(post: Post) = db withSession {
     byId(post.id) match {
-      case Some(post) =>
-        (for (post <- Posts if post.id === post.id) yield post.title ~ post.author ~ post.text).update(post.title, post.author, post.text)
+      case Some(p) =>
+        Posts.where(_.id === post.id).update(post)
+
+        (p.tags -- post.tags).foreach(tag => removeTag(post.id, tag.name))
+        (post.tags -- p.tags).foreach(tag => addTag(post.id, tag.name))
+
         Ok
       case None => NotFound("Could not find post: %s".format(post.id))
     }
@@ -117,7 +121,7 @@ class PostRepository extends RepositorySupport {
   }
 
   // TODO exists
-  def deleteTag(postId: Long, tagName: String) : DataResult = db withSession {
+  def removeTag(postId: Long, tagName: String) : DataResult = db withSession {
     byId(postId) match {
       case Some(post) =>
         val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
@@ -172,7 +176,7 @@ class TagRepository extends RepositorySupport {
 
   def update(tag: Tag) = db withSession {
     byId(tag.id) match {
-      case Some(tag) =>
+      case Some(t) =>
         Tags.where(_.id === tag.id).update(tag)
         Ok
       case None => NotFound("Could not find tag: %s".format(tag.id))
@@ -204,7 +208,7 @@ class CategoryRepository extends RepositorySupport {
 
   def update(category: Category) = db withSession {
     byId(category.id) match {
-      case Some(category) =>
+      case Some(c) =>
         Categories.where(_.id === category.id).update(category)
         Ok
       case None => NotFound("Could not find category: %s".format(category.id))
