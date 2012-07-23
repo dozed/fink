@@ -86,3 +86,8 @@ object GalleriesImages extends Table[(Long, Long)]("galleries_images") {
   def * = galleryId ~ imageId
 }
 
+object GalleriesTags extends Table[(Long, Long)]("galleries_tags") {
+  def galleryId = column[Long]("galleryId")
+  def tagId = column[Long]("tagId")
+  def * = galleryId ~ tagId
+}

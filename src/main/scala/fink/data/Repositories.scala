@@ -22,7 +22,7 @@ object Repositories {
   val db = Database.forURL("jdbc:h2:mem:test1;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
 
   db withSession {
-    (Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl).create
+    (Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl ++ GalleriesTags.ddl).create
   }
 
   val postRepository = new PostRepository
@@ -230,8 +230,9 @@ class GalleryRepository extends RepositorySupport {
     DBUtil.insertId
   }
 
-  def mapGallery(gallery: Gallery) = {
+  def mapGallery(gallery: Gallery) = db withSession {
     gallery.images = galleriesImages(gallery.id).list
+    gallery.tags = galleriesTags(gallery.id).list
     gallery
   }
 
@@ -241,9 +242,24 @@ class GalleryRepository extends RepositorySupport {
     image <- Images if image.id === gi.imageId
   } yield image
 
+  val galleriesTags = for {
+    galleryId <- Parameters[Long]
+    gi <- GalleriesTags if gi.galleryId === galleryId
+    tag <- Tags if tag.id === gi.tagId
+  } yield tag
+
   def update(gallery: Gallery) = db withSession {
-    val updated = Galleries.where(_.id === gallery.id).update(gallery)
-    if (updated > 0) Ok else NotFound("Could not find gallery: %s".format(gallery.id))
+    byId(gallery.id) match {
+      case Some(g) =>
+        Galleries.where(_.id === gallery.id).update(gallery)
+
+        (g.tags -- gallery.tags).foreach(tag => removeTag(gallery.id, tag.name))
+        (gallery.tags -- g.tags).foreach(tag => addTag(gallery.id, tag.name))
+
+        Ok
+      case None =>
+        NotFound("Could not find gallery: %s".format(gallery.id))
+    }
   }
 
   def byId(id: Long) : Option[Gallery] = db withSession {
@@ -282,6 +298,38 @@ class GalleryRepository extends RepositorySupport {
             if (deleted > 0) Ok else NotFound("Could not find relation between gallery and image.")
           case None => NotFound("Could not find image: %s".format(imageId))
         }
+      case None => NotFound("Could not find gallery: %s".format(galleryId))
+    }
+  }
+
+  def addTag(galleryId: Long, tagName: String) : DataResult = db withSession {
+    byId(galleryId) match {
+      case Some(gallery) =>
+        val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
+        val gt = (for (gt <- GalleriesTags if gt.galleryId === galleryId && gt.tagId === tagId) yield gt).firstOption
+
+        if (gt.isEmpty) {
+          GalleriesTags.insert(galleryId, tagId)
+          Ok
+        } else {
+          AlreadyExists
+        }
+      case None => NotFound("Could not find gallery: %s".format(galleryId))
+    }
+  }
+
+  // TODO exists
+  def removeTag(galleryId: Long, tagName: String) : DataResult = db withSession {
+    byId(galleryId) match {
+      case Some(gallery) =>
+        val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
+        val gt = (for (gt <- GalleriesTags if gt.galleryId === galleryId && gt.tagId === tagId) yield gt).firstOption
+        
+        if (!gt.isEmpty) {
+          GalleriesTags.where(gt => gt.galleryId === galleryId && gt.tagId === tagId).delete
+        }
+
+        Ok
       case None => NotFound("Could not find gallery: %s".format(galleryId))
     }
   }
