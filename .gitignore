@@ -4,6 +4,9 @@
 target
 db
 
+.idea
+.idea_modules
+
 fink-*/.settings
 fink-*/.project
 fink-*/.classpath
