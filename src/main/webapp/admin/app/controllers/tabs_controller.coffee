@@ -4,7 +4,7 @@ define [
 	"frameworks"
 ], (app)->
 
-	class TabsController extends CoffeeBar.Controller
+	CoffeeBar.Controller.extend
 		initialize: ->
 			@state = new CoffeeBar.Model
 			@tabs = new CoffeeBar.Collection
@@ -65,5 +65,3 @@ define [
 
 				closure()
 			@
-
-	TabsController

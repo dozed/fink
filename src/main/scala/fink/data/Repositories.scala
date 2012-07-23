@@ -1,378 +1,310 @@
 package fink.data
 
-import fink.support.Config
+import org.scalaquery.session._
+import org.scalaquery.session.Database.threadLocalSession
+import org.scalaquery.ql._
+import org.scalaquery.ql.TypeMapper._
+import org.scalaquery.ql.extended.H2Driver.Implicit._
+import org.scalaquery.ql.extended.{ExtendedTable => Table}
 
-import scala.collection.mutable.Set
-import scala.sys.ShutdownHookThread
-import scala.util.control.Breaks._
-import scala.collection.JavaConversions._
+case class DataResult
 
-import org.neo4j.graphdb.index.Index
-import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.Node
-import org.neo4j.graphdb.Relationship
-import org.neo4j.graphdb.PropertyContainer
-import org.neo4j.graphdb.NotFoundException
+case class Success extends DataResult
+case object Ok extends Success
+case class Created(id: Long) extends Success
 
-import org.neo4j.scala.GraphDatabaseServiceProvider
-import org.neo4j.scala.EmbeddedGraphDatabaseServiceProvider
-import org.neo4j.scala.Neo4jIndexProvider
-import org.neo4j.scala.Neo4jWrapper
-import org.neo4j.scala.Neo4jWrapperImplicits
-import org.neo4j.scala.TypedTraverser
-
-import org.joda.time.DateTime
-
-// 
-// trait Locator[T]
-// trait ConcreteRepository extends Locator[Post], Locator[Page]
-//
+case class Failure extends DataResult
+case object AlreadyExists extends Failure
+case class NotFound(message: String) extends Failure
+case class Error(message: String) extends Failure
 
 object Repositories {
-	val imageRepository = new ImageRepository
-	val tagRepository = new TagRepository
-	val postRepository = new PostRepository
-	val pageRepository = new PageRepository
-	val mediaRepository = new MediaRepository
-	val categoryRepository = new CategoryRepository
-	val galleryRepository = new GalleryRepository
+  val db = Database.forURL("jdbc:h2:mem:test1;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
+
+  db withSession {
+    (Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl).create
+  }
+
+  val postRepository = new PostRepository
+  val tagRepository = new TagRepository
+  val categoryRepository = new CategoryRepository
+  val imageRepository = new ImageRepository
+  val galleryRepository = new GalleryRepository
 }
 
 trait RepositorySupport {
-	def imageRepository = Repositories.imageRepository
-	def tagRepository = Repositories.tagRepository
-	def postRepository = Repositories.postRepository
-	def pageRepository = Repositories.pageRepository
-	def mediaRepository = Repositories.mediaRepository
-	def categoryRepository = Repositories.categoryRepository
-	def galleryRepository = Repositories.galleryRepository
+  def postRepository = Repositories.postRepository
+  def tagRepository = Repositories.tagRepository
+  def categoryRepository = Repositories.categoryRepository
+  def imageRepository = Repositories.imageRepository
+  def galleryRepository = Repositories.galleryRepository
+
+  def db = Repositories.db
 }
 
-trait Repository[T <: AnyRef] {
-	def save(t: T)(implicit m: Manifest[T]) : T
-	def update(t: T)(implicit m: Manifest[T]) : T
-	def byId(id: Long)(implicit m: Manifest[T]) : Option[T]
-	def findAll()(implicit m: Manifest[T]) : List[T]
-	def delete(id: Long)
-	def node(t: T) : Option[Node]
+object DBUtil {
+  def insertId = Query(SimpleFunction.nullary[Long]("scope_identity")).first
 }
 
-trait ContentItemRepository[T <: AnyRef] extends Repository[T] with GraphDatabaseServiceProvider with Neo4jWrapper with Neo4jIndexProvider {
+object UserRepository extends RepositorySupport {
+  def find(name: String) = {
+    Some(User(0, "name", "password"))
+  }
 
-	val ds = ContentItemRepository.ds
-
-	private def classTag(implicit m: Manifest[T]) = "__class_%s__".format(m.toString)
-
-	private var _superNode : Option[Node] = None
-
-	def superNode(implicit m: Manifest[T]) = {
-		if (_superNode.isEmpty) {
-			ds.gds.getReferenceNode.getSingleRelationship(classTag, Direction.OUTGOING) match {
-				case rel:Relationship =>
-					_superNode = Some(rel.getEndNode)
-				case null =>
-					withTx { implicit neo =>
-						val n = createNode(ds)
-						ds.gds.getReferenceNode --> classTag --> n
-						_superNode = Some(n)
-					}
-			}
-		}
-		_superNode.get
-	}
-
-	// creates a new node or updates an existing
-	def save(t: T)(implicit m: Manifest[T]) : T = {
-		getIdentity(t) match {
-			case 0L =>
-				withTx { implicit neo =>
-					val node = createNode(t)(ds)
-					superNode --> "sub" --> node
-					val tn = handleIdentity(t, node)	
-					persistRelationships(tn, node)
-					tn
-				}
-			case _ => // already saved, update
-				update(t)
-		}
-	}
-
-	def update(t: T)(implicit m: Manifest[T]) : T = {
-		withTx { implicit neo =>
-			for {
-				id <- Option(getIdentity(t))
-				node <- Option(ds.gds.getNodeById(id))
-			} yield {
-				serialize(t, node)
-				persistRelationships(t, node)
-			}
-
-			t
-		}
-	}
-
-	def byId(id: Long)(implicit m: Manifest[T]) : Option[T] = {
-		try {
-			for {
-				node <- Option(ds.gds.getNodeById(id))
-				post <- Neo4jWrapper.toCC[T](node)
-				postWithId <- Option(handleIdentity(post, node))
-			} yield {
-				loadRelationships(postWithId, node)
-				postWithId
-			}
-		} catch {
-			case e: NotFoundException => None
-		}
-	}
-
-	def findAll()(implicit m: Manifest[T]) : List[T] = {
-		superNode.getRelationships(Direction.OUTGOING).map(r => byId(r.getEndNode.getId)).toList.flatten
-	}
-
-	def node(t: T) : Option[Node] = getIdentity(t) match {
-		case 0L => None
-		case id:Long => Option(ds.gds.getNodeById(id))
-	}
-
-	def delete(id: Long) {
-		withTx { implicit neo =>
-			val node = ds.gds.getNodeById(id)
-			node.getRelationships().foreach(_.delete())
-			deleteRelationships(node)
-			node.delete()
-		}
-	}
-
-	protected def handleIdentity(t: T, node: Node) : T
-	protected def getIdentity(t: T) : Long
-	protected def persistRelationships(t: T, node: Node) : Unit = ()
-	protected def loadRelationships(t: T, node: Node) : Unit = ()
-	protected def deleteRelationships(node: Node) : Unit = ()
-
-}
- 
-object ContentItemRepository extends EmbeddedGraphDatabaseServiceProvider with Neo4jWrapper with Neo4jIndexProvider with TypedTraverser {
-	def neo4jStoreDir = Config.databaseDirectory
-
-	def clear() {
-		withTx { implicit neo =>
-			ds.gds.getAllNodes().foreach { n =>
-				if (n.getId != 0L) {
-					n.getRelationships(Direction.BOTH).foreach(_.delete())
-					n.delete()
-				}
-			}
-		}
-	}
-
-  def querySingle[T <: PropertyContainer](index: Index[T], key: String, query: Any): Option[T] = {
-		val hits = index.query(key, query)
-		if (hits.hasNext) Option(hits.next) else None
-	}
-
-	implicit def contentItem2Node[T](ci: ContentItem2Node[T]) : T = ci.item
-	implicit def node2ContentItem[T](ci: ContentItem2Node[T]) : Node = ci.node
-
-	def shutdown() {
-		shutdown(ds)
-	}
-
-	ShutdownHookThread {
-		shutdown()
-	}
+  def login(name: String, password: String) = Some(User(0, "name", "password"))
 }
 
-case class ContentItem2Node[T](item: T, node: Node)
+class PostRepository extends RepositorySupport {
 
-class CategoryRepository extends ContentItemRepository[Category] {
-	def handleIdentity(item: Category, node: Node) = item.copy(id = node.getId)
-	def getIdentity(item: Category) = item.id
-	def findByName(name: String) : Option[Category] = findAll().filter(_.name.equals(name)).headOption
-	def createIfNotExist(categories: List[String]) = categories.map(name => findByName(name).getOrElse(save(Category(name=name))))
-}
+  def findAll : Seq[Post] = db withSession {
+    (for (post <- Posts) yield post).list.map(mapPost)
+  }
 
-class ImageRepository extends ContentItemRepository[Image] {
-	def handleIdentity(item: Image, node: Node) = item.copy(id = node.getId)
-	def getIdentity(item: Image) = item.id
+  def byId(id: Long) : Option[Post] = db withSession {
+    Posts.byId(id).firstOption.map(mapPost)
+  }
 
-	def createImage(title: String, full: String, medium: String, thumb: String) = {
-		val image = Image(title = title, full = full, medium = medium, thumb = thumb)
-		save(image)
-	}
-}
+  def mapPost(post: Post) = {
+    post.tags = postTags(post.id).list
+    post.category = categoryRepository.byId(post.catId)
+    post
+  }
 
-class TagRepository extends ContentItemRepository[Tag] {
-	def handleIdentity(item: Tag, node: Node) = item.copy(id = node.getId)
-	def getIdentity(item: Tag) = item.id
+  val postTags = for {
+    postId <- Parameters[Long]
+    pt <- PostTag if pt.postId === postId
+    tag <- Tags if tag.id === pt.tagId
+  } yield tag
 
-	def findTag(name: String) : Option[Tag] = {
-		Some(Tag(name = "foo"))
-	}
+  def create(post: Post) : Long = db withSession {
+    val catId = post.category match {
+      case Some(cat) if cat.id == 0 => categoryRepository.create(cat.name) // ...
+      case Some(cat) => cat.id
+      case None => 0
+    }
 
-	def createTag(name: String) : Tag = {
-		val tag = Tag(name = name)
-		save(tag)
-	}
-}
+    Posts.withoutId.insert((post.date, catId, post.title, post.author, post.text))
+    val postId = DBUtil.insertId
 
-class PostRepository extends ContentItemRepository[Post] with RepositorySupport {
+    post.tags.foreach(tag => addTag(postId, tag.name))
 
-	def findPost(year: Int, month: Int, day: Int, title: String) : Option[Post] = None
+    postId
+  }
 
-	override def handleIdentity(item: Post, node: Node) = item.copy(id = node.getId).copyRelations(item)
-	override def getIdentity(item: Post) = item.id
+  def update(post: Post) = db withSession {
+    byId(post.id) match {
+      case Some(post) =>
+        (for (post <- Posts if post.id === post.id) yield post.title ~ post.author ~ post.text).update(post.title, post.author, post.text)
+        Ok
+      case None => NotFound("Could not find post: %s".format(post.id))
+    }
+  }
 
-	override def loadRelationships(post: Post, node: Node) : Unit = {
-		post.tags = node.getRelationships(Direction.OUTGOING, "tags").toList.map { rel =>
-			val tn = rel.getEndNode
-			val tag = Neo4jWrapper.toCC[Tag](tn).get
-			tagRepository.handleIdentity(tag, tn)
-		}
+  def addTag(postId: Long, tagName: String) : DataResult = db withSession {
+    byId(postId) match {
+      case Some(post) =>
+        val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
+        val pt = (for (pt <- PostTag if pt.postId === postId && pt.tagId === tagId) yield pt).firstOption
 
-		node.getRelationships(Direction.OUTGOING, "category").toList.map { rel =>
-			val tn = rel.getEndNode
-			val tag = Neo4jWrapper.toCC[Category](tn).get
-			categoryRepository.handleIdentity(tag, tn)
-		}.headOption match {
-			case Some(category) => post.category = Some(category)
-			case None => 
-		}
-	}
+        if (pt.isEmpty) {
+          PostTag.insert(postId, tagId)
+          Ok
+        } else {
+          AlreadyExists
+        }
+      case None => NotFound("Could not find post: %s".format(postId))
+    }
+  }
 
-	override def persistRelationships(post: Post, node: Node) : Unit = {
-		node.getRelationships(Direction.OUTGOING, "category").foreach { r =>
-			r.delete()
-		}
+  // TODO exists
+  def deleteTag(postId: Long, tagName: String) : DataResult = db withSession {
+    byId(postId) match {
+      case Some(post) =>
+        val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
+        val pt = (for (pt <- PostTag if pt.postId === postId && pt.tagId === tagId) yield pt).firstOption
+        
+        if (!pt.isEmpty) {
+          PostTag.where(pt => pt.postId === postId && pt.tagId === tagId).delete
+        }
 
-		node.getRelationships(Direction.OUTGOING, "tags").foreach { r =>
-			r.delete()
-		}
+        Ok
+      case None => NotFound("Could not find post: %s".format(postId))
+    }
+  }
 
-		// can be null due to lift-json mapping null to Some(null)
-		post.category = post.category.flatMap(Option(_))
+  def modifyCategory(postId: Long, categoryName: String) = db withSession {
+    byId(postId) match {
+      case Some(post) =>
+        categoryRepository.byName(categoryName) match {
+          case Some(category) => 
+            Posts.where(_.id === postId).map(_.catId).update(category.id)
+            Ok
+          case None => NotFound("Could not find category: %s".format(categoryName))
+        }
+      case None => NotFound("Could not find post: %s".format(postId))
+    }
+  }
 
-		// handle 1:1 relationships
-		post.category match {
-			case Some(c) =>
-				val category = categoryRepository.save(c)
-				val categoryNode = categoryRepository.node(category)
-				node --> "category" --> categoryNode.get
-				post.category = Some(category)
-
-			case _ =>
-				val categories = categoryRepository.findAll()
-				val category = categories(0)
-				val categoryNode = categoryRepository.node(category)
-				node --> "category" --> categoryNode.get
-				post.category = Some(category)
-		}
-
-		// handle 1:n relationships
-		post.tags = post.tags.map { t =>
-			val tag = tagRepository.save(t)
-			val tagNode = tagRepository.node(tag).get
-			node --> "tags" --> tagNode
-			tag
-		}
-	}
-}
-
-class GalleryRepository extends ContentItemRepository[Gallery] with RepositorySupport {
-	def handleIdentity(item: Gallery, node: Node) = item.copy(id = node.getId).copyRelations(item)
-	def getIdentity(item: Gallery) = item.id
-
-	override def loadRelationships(gallery: Gallery, node: Node) : Unit = {
-		gallery.images = node.getRelationships(Direction.OUTGOING, "images").toList.map { rel =>
-			Neo4jWrapper.toCC[Image](rel.getEndNode).map(imageRepository.handleIdentity(_, rel.getEndNode))
-		}.flatten
-
-		gallery.tags = node.getRelationships(Direction.OUTGOING, "tags").toList.map { rel =>
-			Neo4jWrapper.toCC[Tag](rel.getEndNode).map(tagRepository.handleIdentity(_, rel.getEndNode))
-		}.flatten
-	}
-
-	override def persistRelationships(gallery: Gallery, node: Node) : Unit = {
-		node.getRelationships(Direction.OUTGOING, "images").foreach { r =>
-			r.delete()
-		}
-
-		node.getRelationships(Direction.OUTGOING, "tags").foreach { r =>
-			r.delete()
-		}
-
-		gallery.tags = gallery.tags.map { t =>
-			val tag = tagRepository.save(t)
-			val tagNode = tagRepository.node(tag).get
-			node --> "tags" --> tagNode
-			tag
-		}
-
-		gallery.images = gallery.images.map { i =>
-			val image = imageRepository.save(i)
-			val imageNode = imageRepository.node(i).get
-			node --> "images" --> imageNode
-			image
-		}
-	}
-}
-
-class PageRepository extends ContentItemRepository[Page] {
-	def handleIdentity(item: Page, node: Node) = item.copy(id = node.getId)
-	def getIdentity(item: Page) = item.id
-
-	def createPage(title: String, shortlink: String, author: String, parent: Option[Page]) : Page = {
-		val page = Page(id = 0L, date = 0L, title = title, author = author, shortlink = shortlink, text = "")
-		save(page)
-	}
-
-	def find(key: String, value: String) : Option[Page] = None
-
-	def findPageByUuid(uuid: String) : Option[Page] = None
-
-	def updatePage(uuid: String, parent: String, title: String, shortlink: String, author: String, text: String, tags: List[String]) {
-
-	}
+  def delete(postId: Long) = db withSession {
+    if (Posts.where(_.id === postId).delete > 0) Ok else NotFound("Could not find post: %s".format(postId))
+  }
 
 }
 
-class MediaRepository extends ContentItemRepository[MediaCollection] {
-	def handleIdentity(item: MediaCollection, node: Node) = item.copy(id = node.getId)
-	def getIdentity(item: MediaCollection) = item.id
+class TagRepository extends RepositorySupport {
+  def findAll : Seq[Tag] = db withSession {
+    (for (tag <- Tags) yield tag).list
+  }
 
-	def createCollection(title: String) : MediaCollection = {
-		val collection = MediaCollection(id = 0L, date = 0L, title = title, author = "", shortlink = "", cover= null)
-		collection
-	}
+  def byId(id: Long) : Option[Tag] = db withSession {
+    Tags.byId(id).firstOption
+  }
 
-	def findCollection(id: String) : Option[MediaCollection] = None
+  def byName(name: String) : Option[Tag] = db withSession {
+    Tags.byName(name).firstOption
+  }
 
-	def findCollections() : List[MediaCollection] = List[MediaCollection]()
+  def create(name: String) : Long = db withSession {
+    byName(name)
+    Tags.withoutId.insert(name)
+    DBUtil.insertId
+  }
 
-	def unlinkImage(collection: MediaCollection, image: Image) {
+  def update(tag: Tag) = db withSession {
+    byId(tag.id) match {
+      case Some(tag) =>
+        Tags.where(_.id === tag.id).update(tag)
+        Ok
+      case None => NotFound("Could not find tag: %s".format(tag.id))
+    }
+  }
 
-	}
-
-	def deleteImage(collection: MediaCollection, image: Image) {
-
-	}
-
-	def saveImage(image: Image) {
-
-	}
-
-	def sortImages(collection: MediaCollection, order: List[String]) {
-
-	}
-
+  def delete(tagId: Long) = db withSession {
+    if (Tags.where(_.id === tagId).delete > 0) Ok else NotFound("Could not find tag: %s".format(tagId))
+  }
 }
 
-object UserRepository extends ContentItemRepository[User] {
-	def handleIdentity(item: User, node: Node) = item.copy(id = node.getId)
-	def getIdentity(item: User) = item.id
+class CategoryRepository extends RepositorySupport {
+  def findAll : Seq[Category] = db withSession {
+    (for (category <- Categories) yield category).list
+  }
 
-	def find() : Option[User] = Some(User(0L, "admin", "admin"))
-	def find(username: String) : Option[User] = Some(User(0L, "admin", "admin"))
-	def login(username: String, password: String) = find()
+  def create(name: String) : Long = db withSession {
+    Categories.withoutId.insert(name)
+    DBUtil.insertId
+  }
+
+  def byId(id: Long) : Option[Category] = db withSession {
+    Categories.byId(id).firstOption
+  }
+
+  def byName(name: String) : Option[Category] = db withSession {
+    Categories.byName(name).firstOption
+  }
+
+  def update(category: Category) = db withSession {
+    byId(category.id) match {
+      case Some(category) =>
+        Categories.where(_.id === category.id).update(category)
+        Ok
+      case None => NotFound("Could not find category: %s".format(category.id))
+    }
+  }
+
+  def delete(categoryId: Long) = db withSession {
+    if (Categories.where(_.id === categoryId).delete > 0) Ok else NotFound("Could not find category: %s".format(categoryId))
+  }
 }
 
+class GalleryRepository extends RepositorySupport {
+  def findAll : Seq[Gallery] = db withSession {
+    (for (gallery <- Galleries) yield gallery).list.map(mapGallery)
+  }
+
+  def create(coverId: Long, date: Long, title: String, author: String, shortlink: String, text: String) : Long = db withSession {
+    Galleries.withoutId.insert((coverId, date, title, author, shortlink, text))
+    DBUtil.insertId
+  }
+
+  def mapGallery(gallery: Gallery) = {
+    gallery.images = galleriesImages(gallery.id).list
+    gallery
+  }
+
+  val galleriesImages = for {
+    galleryId <- Parameters[Long]
+    gi <- GalleriesImages if gi.galleryId === galleryId
+    image <- Images if image.id === gi.imageId
+  } yield image
+
+  def update(gallery: Gallery) = db withSession {
+    val updated = Galleries.where(_.id === gallery.id).update(gallery)
+    if (updated > 0) Ok else NotFound("Could not find gallery: %s".format(gallery.id))
+  }
+
+  def byId(id: Long) : Option[Gallery] = db withSession {
+    Galleries.byId(id).firstOption.map(mapGallery)
+  }
+
+  def delete(id: Long) : DataResult = db withSession {
+    val count = Galleries.where(_.id === id).delete
+    if (count > 0) Ok else NotFound("Could not find gallery: %s".format(id))
+  }
+
+  def addImage(galleryId: Long, imageId: Long) = db withSession {
+    byId(galleryId) match {
+      case Some(gallery) =>
+        imageRepository.byId(imageId) match {
+          case Some(image) =>
+            GalleriesImages.where(gi => gi.galleryId === galleryId && gi.imageId === imageId).firstOption match {
+              case Some(gi) =>
+                AlreadyExists
+              case None =>
+                GalleriesImages.insert(galleryId, imageId)
+                Ok
+            }
+          case None => NotFound("Could not find image: %s".format(imageId))
+        }
+      case None => NotFound("Could not find gallery: %s".format(galleryId))
+    }
+  }
+
+  def removeImage(galleryId: Long, imageId: Long) = db withSession {
+    byId(galleryId) match {
+      case Some(gallery) =>
+        imageRepository.byId(imageId) match {
+          case Some(image) =>
+            val deleted = GalleriesImages.where(gi => gi.galleryId === galleryId && gi.imageId === imageId).delete
+            if (deleted > 0) Ok else NotFound("Could not find relation between gallery and image.")
+          case None => NotFound("Could not find image: %s".format(imageId))
+        }
+      case None => NotFound("Could not find gallery: %s".format(galleryId))
+    }
+  }
+}
+
+class ImageRepository extends RepositorySupport {
+  def findAll : Seq[Image] = db withSession {
+    (for (image <- Images) yield image).list
+  }
+
+  def byId(id: Long) : Option[Image] = db withSession {
+    Images.byId(id).firstOption
+  }
+
+  def create(date: Long, title: String, author: String, hash: String) : Long = db withSession {
+    Images.withoutId.insert((date, title, author, hash))
+    DBUtil.insertId
+  }
+
+  def update(image: Image) = db withSession {
+    val updated = Images.where(_.id === image.id).update(image)
+    if (updated > 0) Ok else NotFound("Could not find image: %s".format(image.id))
+  }
+
+  // TODO gallery references: db constraints, error handling
+  def delete(id: Long) : DataResult = db withSession {
+    val count = Images.where(_.id === id).delete
+    if (count > 0) Ok else NotFound("Could not find image: %s".format(id))
+  }
+}

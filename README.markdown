@@ -5,21 +5,23 @@ sbt 0.11.2
 
 # Built with
 
-	scalatra, lift-json, neo4j, backbone.js, coffeejade
+	scalatra, lift-json, scalaquery, backbone.js, coffeejade
 
 # Running the sample app
 
 	$ git clone git@github.com:dozed/fink.git
 	$ cd fink
-	$ sbt
-	> container:start
-	> ~;compile;coffee
+	$ sbt container:start
 
 The sample application is running on: http://localhost:8080/
 
 The admin panel is reachable under: http://localhost:8080/admin
 
 # Development notes
+
+- Modify and recompile .coffee files
+
+	rake watch
 
 - Use JRebel to reload .class files
 

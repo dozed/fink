@@ -1,31 +1,12 @@
 define [
 	"controllers/collection_controller"
-	"controllers/tabs_controller"
 	"model/app"
 	"model/gallery"
 	"model/gallery_collection"
-	"model/image"
 	"views/jade"
-], (CollectionController, TabsController, app, Gallery, GalleryCollection, Image, jade) ->
+], (CollectionController, app, Gallery, GalleryCollection, jade) ->
 
-	class GalleryEditor extends CoffeeBar.TemplateController
-		template: jade["gallery/edit.jade"]
-
-		initialize: ->
-			super
-			tabs = [
-				{ a: "#", label: "Meta", page: new GalleryInfoEditor({ model: @model }) },
-				{ a: "#", label: "Images", page: new GalleryImagesEditor({ model: @model }) }
-			]
-			@tabs_controller = new TabsController
-				tabs: tabs
-
-		on_render: ->
-			el = @tabs_controller.render().el
-			@$(".editor").empty().append(el)
-
-
-	class GalleryInfoEditor extends CoffeeBar.TemplateController
+	class EditGalleryView extends CoffeeBar.TemplateController
 		events:
 			"click .btn-ok": "do_submit"
 			"click .btn-cancel": "do_cancel"
@@ -34,7 +15,7 @@ define [
 			super
 			@model.bind "change", @render, @
 
-		template: jade["gallery/edit_meta.jade"]
+		template: jade["gallery/edit.jade"]
 		template_data: ->
 			model: @model.toJSON()
 
@@ -71,32 +52,6 @@ define [
 
 			false
 
-	class GalleryImagesEditor extends CoffeeBar.TemplateController
-		template: jade["gallery/edit_images.jade"]
-
-		initialize: ->
-			super
-
-			@image_collection = new CoffeeBar.Collection()
-			@image_collection.reset([new Image(), new Image()])
-
-			@collection_controller = new CollectionController
-				collection: @image_collection
-				child_control: (model) ->
-					console.log "foo"
-					new ImageListItem({ model: model })
-
-		on_render: ->
-			el = @collection_controller.render().el
-			console.log el
-			@$(".images").empty().append(el)
-
-
-	class ImageListItem extends CoffeeBar.TemplateController
-		template: jade["gallery/image.jade"]
-
-
-	# main gallery list
 	class GalleriesPage extends CoffeeBar.TemplateController
 		template: jade["gallery/index.jade"]
 
@@ -106,13 +61,15 @@ define [
 
 			@collection_controller = new CollectionController
 				collection: app.galleries
-				child_control: (model) -> new GalleryListItem({ model: model })
+				child_control: (model) -> new GalleryItem({ model: model })
 
 		on_render: ->
 			el = @collection_controller.render().el
 			@$(".galleries").empty().append(el)
 
-	class GalleryListItem extends CoffeeBar.TemplateController
+		poll: -> @model.fetch()
+
+	class GalleryItem extends CoffeeBar.TemplateController
 		template: jade["gallery/item.jade"]
 		events:
 			"click a.btn-delete": "do_delete"
@@ -131,7 +88,7 @@ define [
 
 	app.router.route "/galleries/edit/:id", "galleries", (id) ->
 		gallery = new Gallery({id: id})
-		app.page new GalleryEditor({ model: gallery })
+		app.page new EditGalleryView({ model: gallery })
 		gallery.fetch()
 		
 	GalleriesPage

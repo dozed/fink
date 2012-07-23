@@ -27,11 +27,12 @@ class UserPasswordStrategy(protected val app: ScalatraKernel) extends ScentryStr
 	override def authenticate = {
 		println("Authenticating in UserPasswordStrategy with: %s, %s, %s".format(username, password, remoteAddress))
 		// perform authentication against database here
-		UserRepository.find("admin") match {
-			//case Some(user) => User.login(username.get, password.get)
-			case Some(user) => UserRepository.login(username.get, password.get)
-			case None => None
-		}
+		// UserRepository.find("admin") match {
+		// 	//case Some(user) => User.login(username.get, password.get)
+		// 	case Some(user) => UserRepository.login(username.get, password.get)
+		// 	case None => None
+		// }
+		Some(User(0, "name", "password"))
 	}
 
 	override def unauthenticated() = {

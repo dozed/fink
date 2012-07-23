@@ -1,11 +1,12 @@
 .settings
 .project
 .classpath
-target
-db
 
 .idea
 .idea_modules
+
+target
+db
 
 fink-*/.settings
 fink-*/.project
