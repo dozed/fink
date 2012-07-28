@@ -1,8 +1,0 @@
-
-ul.nav.secondary-nav
-	- if ! _.isEmpty(username)
-		li.menu
-			a.menu(href="#") #{username}
-			ul.menu-dropdown
-				li
-					a(href="#/signout") Sign out

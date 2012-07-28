@@ -36,10 +36,13 @@
 		<url-pattern>/assets/*</url-pattern>
 		<url-pattern>/themes/*</url-pattern>
 		<url-pattern>/admin/app/*</url-pattern>
+		<url-pattern>/admin/partials/*</url-pattern>
+		<url-pattern>/admin/lib/*</url-pattern>
 		<url-pattern>/admin/assets/*</url-pattern>
 		<url-pattern>/admin/css/*</url-pattern>
 		<url-pattern>/admin/app/*</url-pattern>
 		<url-pattern>/admin/images/*</url-pattern>
 		<url-pattern>/admin/js/*</url-pattern>
+		<url-pattern>/admin/angular-test/*</url-pattern>
 	</servlet-mapping>
 </web-app>

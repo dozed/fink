@@ -1,0 +1,18 @@
+
+<form name="myForm">
+<div>Title: <input type="text" ng-model="post.title" required></div>
+<div>Author: <input type="text" ng-model="post.author"></div>
+
+<div>
+Category: <select ng-model="selectedCategory" ng-options="c.id as c.name for c in categories"></select>
+</div>
+
+<div>
+<tag-list tags="post.tags" />
+</div>
+
+<div>Text: <textarea ng-model="post.text"></textarea></div>
+
+<button ng-click="save()" ng-disabled="isClean() || myForm.$invalid">Save</button>
+<button ng-click="cancel()">Cancel</button>
+</form>

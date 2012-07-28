@@ -6,6 +6,8 @@ import java.lang.{Long=>JLong}
 import fink.data._
 import fink.support._
 
+import javax.servlet.ServletConfig
+
 import org.scalatra.fileupload.FileUploadSupport
 import org.scalatra.scalate.ScalateSupport
 import org.scalatra.ScalatraServlet
@@ -14,26 +16,11 @@ import org.scalatra.servlet._
 import net.liftweb.json._
 import net.liftweb.json.Serialization.{read, write}
 
-class Admin extends ScalatraServlet with RepositorySupport with AuthenticationRoutes with ResourcesSupport with ScalateSupport with FileUploadSupport {
-
-	// override def destroy() {
-	// 	ContentItemRepository.shutdown()
-	// }
+class Admin extends ScalatraServlet with RepositorySupport with AuthenticationRoutes with ResourceRoutes with ScalateSupport with FileUploadSupport {
 
 	override implicit val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category], classOf[Tag]))) + FieldSerializer[Post]()  + FieldSerializer[Gallery]() + FieldSerializer[Image]()
 
 	def adminTemplateBase = "/WEB-INF/admin"
-
-	def layout(template: String) = {
-		// templateAttributes("mediaRepository") = mediaRepository
-		templateAttributes("layout") = (adminTemplateBase + "/layouts/admin.jade")
-		scaml(adminTemplateBase + "/" + template + ".scaml")	
-	}
-
-	def render(template: String) = {
-		// templateAttributes("mediaRepository") = mediaRepository
-		layoutTemplate(adminTemplateBase + "/" + template + ".scaml", "layout" -> "") 
-	}
 
 	def uri(uri: String) = {
 		if (uri.startsWith("/")) {
@@ -42,13 +29,10 @@ class Admin extends ScalatraServlet with RepositorySupport with AuthenticationRo
 			uri
 		}
 	}
- 
-	// wtf
-	sanitize()
 
-	def sanitize() = {
-		// MediaManager.base = servletContext.getRealPath("/uploads")
-		// MediaManager.base = "/tmp/foo"
+	override def init(config: ServletConfig) {
+		super.init(config)
+		MediaManager.base = config.getServletContext().getRealPath("/uploads")
 	}
 
 	before() {
@@ -57,8 +41,8 @@ class Admin extends ScalatraServlet with RepositorySupport with AuthenticationRo
 
 	get("/") {
 		if (request.getPathInfo == null) redirect("/admin/")
-		templateAttributes("layout") = (adminTemplateBase + "/layouts/coffee.jade")
-		jade(adminTemplateBase + "/index.jade")	
+		templateAttributes("layout") = ("/admin/layouts/default.jade")
+		jade("/admin/index.jade")	
 	}
 
 	notFound {

@@ -1,0 +1,7 @@
+<a href="#/galleries/create">create gallery</a>
+
+<ul class="galleries">
+  <li ng-repeat="gallery in galleries" class="item">
+    <p>{{gallery.title}} <a ng-click="delete(gallery.id)">delete</a> <a href="#/galleries/edit/{{gallery.id}}">edit</a></p>
+  </li>
+</ul>

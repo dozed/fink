@@ -64,6 +64,10 @@ class PostRepository extends RepositorySupport {
     Posts.byId(id).firstOption.map(mapPost)
   }
 
+  def byTitle(title: String) : Option[Post] = db withSession {
+    Posts.byTitle(title).firstOption.map(mapPost)
+  }
+
   def mapPost(post: Post) = {
     post.tags = postTags(post.id).list
     post.category = categoryRepository.byId(post.catId)
@@ -225,9 +229,11 @@ class GalleryRepository extends RepositorySupport {
     (for (gallery <- Galleries) yield gallery).list.map(mapGallery)
   }
 
-  def create(coverId: Long, date: Long, title: String, author: String, shortlink: String, text: String) : Long = db withSession {
+  def create(coverId: Long, date: Long, title: String, author: String, shortlink: String, text: String, tags: List[String]) : Long = db withSession {
     Galleries.withoutId.insert((coverId, date, title, author, shortlink, text))
-    DBUtil.insertId
+    val galleryId = DBUtil.insertId
+    tags.foreach(tag => addTag(galleryId, tag))
+    galleryId
   }
 
   def mapGallery(gallery: Gallery) = db withSession {
@@ -239,6 +245,7 @@ class GalleryRepository extends RepositorySupport {
   val galleriesImages = for {
     galleryId <- Parameters[Long]
     gi <- GalleriesImages if gi.galleryId === galleryId
+    _ <- Query orderBy gi.sort
     image <- Images if image.id === gi.imageId
   } yield image
 
@@ -262,8 +269,19 @@ class GalleryRepository extends RepositorySupport {
     }
   }
 
+  def updateImageOrder(id: Long, imageIds: List[Long]) = db withSession {
+    imageIds.zipWithIndex.foreach { case (imageId, index) =>
+      GalleriesImages.where(gi => gi.galleryId === id && gi.imageId === imageId).map(_.sort).update(index)
+    }
+    Ok
+  }
+
   def byId(id: Long) : Option[Gallery] = db withSession {
     Galleries.byId(id).firstOption.map(mapGallery)
+  }
+
+  def byShortlink(shortlink: String) : Option[Gallery] = db withSession {
+    Galleries.byShortlink(shortlink).firstOption.map(mapGallery)
   }
 
   def delete(id: Long) : DataResult = db withSession {
@@ -276,11 +294,12 @@ class GalleryRepository extends RepositorySupport {
       case Some(gallery) =>
         imageRepository.byId(imageId) match {
           case Some(image) =>
-            GalleriesImages.where(gi => gi.galleryId === galleryId && gi.imageId === imageId).firstOption match {
+            val gi = GalleriesImages.where(gi => gi.galleryId === galleryId).map(_.imageId).list
+            gi.filter(_ == imageId).headOption match {
               case Some(gi) =>
                 AlreadyExists
               case None =>
-                GalleriesImages.insert(galleryId, imageId)
+                GalleriesImages.insert(galleryId, imageId, gi.size.toLong)
                 Ok
             }
           case None => NotFound("Could not find image: %s".format(imageId))

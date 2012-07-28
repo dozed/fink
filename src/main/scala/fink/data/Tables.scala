@@ -22,6 +22,7 @@ object Posts extends Table[Post]("posts") {
   def tags = PostTag.where(_.postId === id)
 
   val byId = createFinderBy(_.id)
+  val byTitle = createFinderBy(_.title)
 }
 
 object PostTag extends Table[(Long, Long)]("post_tags") {
@@ -80,10 +81,11 @@ object Galleries extends Table[Gallery]("galleries") {
   val byShortlink = createFinderBy(_.shortlink)
 }
 
-object GalleriesImages extends Table[(Long, Long)]("galleries_images") {
+object GalleriesImages extends Table[(Long, Long, Long)]("galleries_images") {
   def galleryId = column[Long]("galleryId")
   def imageId = column[Long]("imageId")
-  def * = galleryId ~ imageId
+  def sort = column[Long]("sort")
+  def * = galleryId ~ imageId ~ sort
 }
 
 object GalleriesTags extends Table[(Long, Long)]("galleries_tags") {
