@@ -1,7 +1,15 @@
-<a href="#/galleries/create">create gallery</a>
 
-<ul class="galleries">
-  <li ng-repeat="gallery in galleries" class="item">
-    <p>{{gallery.title}} <a ng-click="delete(gallery.id)">delete</a> <a href="#/galleries/edit/{{gallery.id}}">edit</a></p>
-  </li>
-</ul>
+<div class="row-fluid first">
+  <a class="btn" onclick="location.href='#/galleries/create'">create gallery</a>
+</div>
+
+<div class="row-fluid">
+  <table class="table galleries table-bordered">
+    <tr>
+      <th>Name</th><th class="actions">Actions</th>
+    </tr>
+    <tr ng-repeat="gallery in galleries" class="item">
+      <td>{{gallery.title}}</td><td><a class="btn" ng-click="delete(gallery.id)">delete</a> <a class="btn" href="#/galleries/edit/{{gallery.id}}">edit</a></td>
+    </tr>
+  </table>
+</div>
