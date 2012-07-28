@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('fink-admin', ['fink.filters', 'fink.directives', 'fink.resources']).
+angular.module('fink-admin', ['fink.filters', 'fink.directives', 'fink.resources', 'bootstrap']).
   config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/posts', {templateUrl: 'partials/posts.html', controller: PostController});
     $routeProvider.when('/posts/create', {templateUrl: 'partials/posts-details.html', controller: CreatePostController});
@@ -9,7 +9,7 @@ angular.module('fink-admin', ['fink.filters', 'fink.directives', 'fink.resources
     $routeProvider.when('/pages/create', {templateUrl: 'partials/pages-details.html', controller: CreatePageController});
     $routeProvider.when('/pages/edit/:pageId', {templateUrl: 'partials/pages-details.html', controller: EditPageController});
     $routeProvider.when('/galleries', {templateUrl: 'partials/galleries.html', controller: GalleryController});
-    $routeProvider.when('/galleries/create', {templateUrl: 'partials/galleries-details.html', controller: CreateGalleryController});
+    $routeProvider.when('/galleries/create', {templateUrl: 'partials/galleries-create.html', controller: CreateGalleryController});
     $routeProvider.when('/galleries/edit/:galleryId', {templateUrl: 'partials/galleries-details.html', controller: EditGalleryController});
     $routeProvider.otherwise({redirectTo: '/posts'});
   }]);

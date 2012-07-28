@@ -1,7 +1,18 @@
-<a href="#/posts/create">create post</a>
+<div class="row-fluid first">
+  <div class="span12">
+    <a class="btn" href="#/posts/create">create post</a>
+  </div>
+</div>
 
-<ul class="posts">
-  <li ng-repeat="post in posts" class="item">
-    <p>{{post.title}} <a ng-click="delete(post.id)">delete</a> <a href="#/posts/edit/{{post.id}}">edit</a></p>
-  </li>
-</ul>
+<div class="row-fluid">
+  <div class="span12">
+    <table class="table table-bordered">
+      <tr>
+        <th>Name</th><th class="actions">Actions</th>
+      </tr>
+      <tr ng-repeat="post in posts" class="item">
+        <td>{{post.title}}</td><td><a class="btn" ng-click="delete(post.id)">delete</a> <a class="btn" href="#/posts/edit/{{post.id}}">edit</a></td>
+      </tr>
+    </table>
+  </div>
+</div>

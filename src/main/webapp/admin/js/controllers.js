@@ -124,6 +124,10 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag) {
           'fileObjName'   : 'file',
           'fileTypeExts'  : '*.jpg;*.jpeg;*.gif;*.png',
           'fileTypeDesc'  : 'Image Files (.JPG, .GIF, .PNG)',
+          'buttonClass'   : 'btn',
+          'height'        : 18,
+          'width'         : 42,
+          'buttonText'    : 'Upload',
           'onQueueComplete' : function() {
             Gallery.get({galleryId: $routeParams.galleryId}, function(gallery) {
               $scope.gallery = new Gallery(gallery);

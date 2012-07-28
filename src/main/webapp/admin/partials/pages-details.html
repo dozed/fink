@@ -1,11 +1,17 @@
 
-<form name="myForm">
-<div>Title: <input type="text" ng-model="page.title" required></div>
-<div>Author: <input type="text" ng-model="page.author"></div>
-<div>Shortlink: <input type="text" ng-model="page.shortlink"></div>
+<div class="row-fluid first album-details">
+  <div class="span12">
+    <h3>Details</h3>
+      <form class="well" name="myForm">
+      <div>Title: <input type="text" ng-model="page.title" required></div>
+      <div>Author: <input type="text" ng-model="page.author"></div>
+      <div>Shortlink: <input type="text" ng-model="page.shortlink"></div>
 
-<div>Text: <textarea ng-model="page.text"></textarea></div>
+      <div>Text: <textarea ng-model="page.text"></textarea></div>
 
-<button ng-click="save()" ng-disabled="isClean() || myForm.$invalid">Save</button>
-<button ng-click="cancel()">Cancel</button>
-</form>
+      <button class="btn" ng-click="save()" ng-disabled="isClean() || myForm.$invalid">Save</button>
+      <button class="btn" ng-click="cancel()">Cancel</button>
+      </form>
+    </div>
+  </div>
+</div>

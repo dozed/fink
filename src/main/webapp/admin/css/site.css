@@ -73,6 +73,10 @@
 
 /* content elements */
 
+.tagit {
+  width: 400px;
+  margin-bottom: 10px;
+}
 
 table.galleries {
   width: 500px;  
@@ -82,21 +86,21 @@ table.galleries th.actions {
   width: 200px;
 }
 
-.album .images .image {
+#album-images .image {
   float: left;
   margin: 5px;
   position: relative;
 }
 
-.album .images .image {
+#album-images {
 
 }
 
-.album .images .image .controls {
+#album-images .image .controls {
   display: none;
 }
 
-.album .images .image.selected .controls {
+#album-images .image.selected .controls {
   display: block;
   position: absolute;
   top: 0px;
