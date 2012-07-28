@@ -1,0 +1,39 @@
+
+<div class="album">
+
+	<form name="myForm">
+	<div>Title: <input type="text" ng-model="gallery.title" required></div>
+	<div>Author: <input type="text" ng-model="gallery.author"></div>
+	<div>Shortlink: <input type="text" ng-model="gallery.shortlink"></div>
+
+	<div>
+	Tags: <tag-list tags="gallery.tags" />
+	</div>
+
+	<div>Text: <textarea ng-model="gallery.text"></textarea></div>
+
+	<button ng-click="save()" ng-disabled="isClean() || myForm.$invalid">Create</button>
+	<button ng-click="cancel()">Cancel</button>
+	</form>
+
+	<input type="hidden" id="gallery-id" value="{{gallery.id}}" />
+
+
+	<div class="upload-box">
+		<input id="file_upload" type="file" id="file-upload">
+		<div id="status-message"></div>
+		<div id="custom-queue" class="uploadifyQueue"></div>
+	</div>
+
+
+	<h3>Images</h3>
+	<div class="images" id="albums-images">
+		<div class="image" id="image-{{image.id}}" ng-mouseenter="enterImage(image)" ng-mouseleave="leaveImage(image)" ng-repeat="image in gallery.images">
+			<div class="controls">
+				<a ng-click="removeImage(image)">delete</a>
+			</div>
+			<div><img src="/uploads/{{image.hash}}-medium.jpg" alt="{{image.title}}"></div>
+		</div>
+	</div>
+	
+</div>

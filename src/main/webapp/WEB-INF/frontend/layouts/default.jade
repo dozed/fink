@@ -1,6 +1,8 @@
 -@ var body: String
 -@ var title : String = "sample page"
 
+-@ val galleryRepository : fink.data.GalleryRepository
+
 !!! Basic
 html(lang="en")
 	head
@@ -19,6 +21,13 @@ html(lang="en")
 				ul
 					li
 						a(href={uri("/")}) home
+				.clear
+		#galleries
+			.wrapper
+				ul
+					-for (gallery <- galleryRepository.findAll)
+						li
+							a(href={uri("/media/"+gallery.shortlink)}) #{gallery.title}
 				.clear
 		#content
 			.wrapper

@@ -22,9 +22,10 @@ object Repositories {
   val db = Database.forURL("jdbc:h2:mem:test1;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
 
   db withSession {
-    (Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl ++ GalleriesTags.ddl).create
+    (Pages.ddl ++ Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl ++ GalleriesTags.ddl).create
   }
 
+  val pageRepository = new PageRepository
   val postRepository = new PostRepository
   val tagRepository = new TagRepository
   val categoryRepository = new CategoryRepository
@@ -33,6 +34,7 @@ object Repositories {
 }
 
 trait RepositorySupport {
+  def pageRepository = Repositories.pageRepository
   def postRepository = Repositories.postRepository
   def tagRepository = Repositories.tagRepository
   def categoryRepository = Repositories.categoryRepository
@@ -54,6 +56,40 @@ object UserRepository extends RepositorySupport {
   def login(name: String, password: String) = Some(User(0, "name", "password"))
 }
 
+class PageRepository extends RepositorySupport {
+
+  def findAll : Seq[Page] = db withSession {
+    (for (page <- Pages) yield page).list
+  }
+
+  def byId(id: Long) : Option[Page] = db withSession {
+    Pages.byId(id).firstOption
+  }
+
+  def byShortlink(shortlink: String) : Option[Page] = db withSession {
+    Pages.byShortlink(shortlink).firstOption
+  }
+
+  def create(date: Long, title: String, author: String, shortlink: String, text: String) : Long = db withSession {
+    Pages.withoutId.insert((date, title, author, shortlink, text))
+    DBUtil.insertId
+  }
+
+  def update(page: Page) = db withSession {
+    byId(page.id) match {
+      case Some(p) =>
+        Pages.where(_.id === page.id).update(page)
+        Ok
+      case None => NotFound("Could not find page: %s".format(page.id))
+    }
+  }
+
+  def delete(pageId: Long) = db withSession {
+    if (Pages.where(_.id === pageId).delete > 0) Ok else NotFound("Could not find page: %s".format(pageId))
+  }
+
+}
+
 class PostRepository extends RepositorySupport {
 
   def findAll : Seq[Post] = db withSession {
@@ -62,6 +98,10 @@ class PostRepository extends RepositorySupport {
 
   def byId(id: Long) : Option[Post] = db withSession {
     Posts.byId(id).firstOption.map(mapPost)
+  }
+
+  def byTitle(title: String) : Option[Post] = db withSession {
+    Posts.byTitle(title).firstOption.map(mapPost)
   }
 
   def mapPost(post: Post) = {
@@ -225,9 +265,11 @@ class GalleryRepository extends RepositorySupport {
     (for (gallery <- Galleries) yield gallery).list.map(mapGallery)
   }
 
-  def create(coverId: Long, date: Long, title: String, author: String, shortlink: String, text: String) : Long = db withSession {
+  def create(coverId: Long, date: Long, title: String, author: String, shortlink: String, text: String, tags: List[String]) : Long = db withSession {
     Galleries.withoutId.insert((coverId, date, title, author, shortlink, text))
-    DBUtil.insertId
+    val galleryId = DBUtil.insertId
+    tags.foreach(tag => addTag(galleryId, tag))
+    galleryId
   }
 
   def mapGallery(gallery: Gallery) = db withSession {
@@ -239,6 +281,7 @@ class GalleryRepository extends RepositorySupport {
   val galleriesImages = for {
     galleryId <- Parameters[Long]
     gi <- GalleriesImages if gi.galleryId === galleryId
+    _ <- Query orderBy gi.sort
     image <- Images if image.id === gi.imageId
   } yield image
 
@@ -262,8 +305,19 @@ class GalleryRepository extends RepositorySupport {
     }
   }
 
+  def updateImageOrder(id: Long, imageIds: List[Long]) = db withSession {
+    imageIds.zipWithIndex.foreach { case (imageId, index) =>
+      GalleriesImages.where(gi => gi.galleryId === id && gi.imageId === imageId).map(_.sort).update(index)
+    }
+    Ok
+  }
+
   def byId(id: Long) : Option[Gallery] = db withSession {
     Galleries.byId(id).firstOption.map(mapGallery)
+  }
+
+  def byShortlink(shortlink: String) : Option[Gallery] = db withSession {
+    Galleries.byShortlink(shortlink).firstOption.map(mapGallery)
   }
 
   def delete(id: Long) : DataResult = db withSession {
@@ -276,11 +330,12 @@ class GalleryRepository extends RepositorySupport {
       case Some(gallery) =>
         imageRepository.byId(imageId) match {
           case Some(image) =>
-            GalleriesImages.where(gi => gi.galleryId === galleryId && gi.imageId === imageId).firstOption match {
+            val gi = GalleriesImages.where(gi => gi.galleryId === galleryId).map(_.imageId).list
+            gi.filter(_ == imageId).headOption match {
               case Some(gi) =>
                 AlreadyExists
               case None =>
-                GalleriesImages.insert(galleryId, imageId)
+                GalleriesImages.insert(galleryId, imageId, gi.size.toLong)
                 Ok
             }
           case None => NotFound("Could not find image: %s".format(imageId))

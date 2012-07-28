@@ -7,6 +7,20 @@ import org.scalaquery.ql.TypeMapper._
 import org.scalaquery.ql.extended.H2Driver.Implicit._
 import org.scalaquery.ql.extended.{ExtendedTable => Table}
 
+object Pages extends Table[Page]("pages") {
+  def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
+  def date = column[Long]("date")
+  def title = column[String]("title")
+  def author = column[String]("author")
+  def shortlink = column[String]("shortlink")
+  def text = column[String]("text")
+  def withoutId = date ~ title ~ author ~ shortlink ~ text
+  def * = id ~ date ~ title ~ author ~ shortlink ~ text <> (Page, Page.unapply _)
+
+  val byId = createFinderBy(_.id)
+  val byShortlink = createFinderBy(_.shortlink)
+}
+
 object Posts extends Table[Post]("posts") {
   def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
   def catId = column[Long]("catId")
@@ -22,6 +36,7 @@ object Posts extends Table[Post]("posts") {
   def tags = PostTag.where(_.postId === id)
 
   val byId = createFinderBy(_.id)
+  val byTitle = createFinderBy(_.title)
 }
 
 object PostTag extends Table[(Long, Long)]("post_tags") {
@@ -80,10 +95,11 @@ object Galleries extends Table[Gallery]("galleries") {
   val byShortlink = createFinderBy(_.shortlink)
 }
 
-object GalleriesImages extends Table[(Long, Long)]("galleries_images") {
+object GalleriesImages extends Table[(Long, Long, Long)]("galleries_images") {
   def galleryId = column[Long]("galleryId")
   def imageId = column[Long]("imageId")
-  def * = galleryId ~ imageId
+  def sort = column[Long]("sort")
+  def * = galleryId ~ imageId ~ sort
 }
 
 object GalleriesTags extends Table[(Long, Long)]("galleries_tags") {

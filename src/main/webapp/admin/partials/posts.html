@@ -1,0 +1,7 @@
+<a href="#/posts/create">create post</a>
+
+<ul class="posts">
+  <li ng-repeat="post in posts" class="item">
+    <p>{{post.title}} <a ng-click="delete(post.id)">delete</a> <a href="#/posts/edit/{{post.id}}">edit</a></p>
+  </li>
+</ul>

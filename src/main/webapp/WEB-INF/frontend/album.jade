@@ -1,0 +1,25 @@
+-@ val gallery : fink.data.Gallery
+
+:!javascript
+  $(document).ready(function() {
+    $(".media-image").lightBox({
+      fixedNavigation:true,
+      txtImage:'Bild',
+      txtOf:'von',
+      imageLoading:"#{uri("/images/lightbox-ico-loading.gif")}",
+      imageBtnClose:"#{uri("/images/lightbox-btn-close.gif")}",
+      imageBtnNext:"#{uri("/images/lightbox-btn-next.gif")}",
+      imageBtnPrev:"#{uri("/images/lightbox-btn-prev.gif")}",
+      imageBlank:"#{uri("/images/lightbox-blank.gif")}"
+    });
+  });
+
+-#
+  h1 #{gallery.getTitle}
+  h1 #{gallery.title}
+
+#collection-images
+  -for (image <- gallery.images)
+    a(class="media-image" href={uri("/uploads/"+image.hash+"-full.jpg")} rel={uri("/uploads/"+image.hash+"-medium.jpg")} title={image.title})
+      img(src={uri("/uploads/"+image.hash+"-medium.jpg")})
+  .clear    
