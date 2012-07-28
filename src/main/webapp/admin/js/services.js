@@ -16,4 +16,6 @@ angular.module('fink.resources', ['ngResource']).factory('Tag', function($resour
   return $resource('/admin/api/categories/:categoryId', {categoryId:'@id'}, methods);
 }).factory('Gallery', function($resource){
   return $resource('/admin/api/galleries/:galleryId', {galleryId:'@id'}, methods);
+}).factory('Page', function($resource){
+  return $resource('/admin/api/pages/:pageId', {pageId:'@id'}, methods);
 }).value('version', '0.1');

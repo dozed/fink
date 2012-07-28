@@ -4,7 +4,7 @@
 -@ var body: String
 -@ var title : String = "fink admin"
 
-html(lang="en" ng-app="myApp")
+html(lang="en" ng-app="fink-admin")
   head
     meta(charset="utf-8")
     title
@@ -32,6 +32,8 @@ html(lang="en" ng-app="myApp")
 
   body
     ul(class="menu")
+    li
+      a(href="#/pages") pages
     li
       a(href="#/posts") posts
     li

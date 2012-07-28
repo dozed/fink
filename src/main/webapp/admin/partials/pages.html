@@ -1,0 +1,7 @@
+<a href="#/pages/create">create page</a>
+
+<ul class="pages">
+  <li ng-repeat="page in pages" class="item">
+    <p>{{page.title}} <a ng-click="delete(page.id)">delete</a> <a href="#/pages/edit/{{page.id}}">edit</a></p>
+  </li>
+</ul>

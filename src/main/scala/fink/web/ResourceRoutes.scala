@@ -20,7 +20,49 @@ import org.joda.time.DateTime
 
 trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUploadSupport with LiftJsonRequestBodyWithoutFormats {
 
-  implicit val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category], classOf[Tag]))) + FieldSerializer[Post]()  + FieldSerializer[Gallery]() + FieldSerializer[Image]()
+  implicit val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category], classOf[Tag]))) + FieldSerializer[Post]() + FieldSerializer[Page]() + FieldSerializer[Gallery]() + FieldSerializer[Image]()
+
+  get("/api/pages") {
+    jswrite(pageRepository.findAll)
+  }
+
+  post("/api/pages") {
+    val page = jsread[Page](request.body)
+    val id = pageRepository.create(page.date, page.title, page.author, page.shortlink, page.text)
+
+    pageRepository.byId(id) match {
+      case Some(page) => jswrite(page)
+      case None => halt(500)
+    }
+  }
+
+  get("/api/pages/:id") {
+    val id = JLong.parseLong(params("id"))
+
+    pageRepository.byId(id) match {
+      case Some(page) => jswrite(page)
+      case None => halt(404)
+    }
+  }
+
+  put("/api/pages/:id") {
+    val id = JLong.parseLong(params("id"))
+    val page = jsread[Page](request.body)
+
+    pageRepository.update(page) match {
+      case Ok => halt(204)
+      case NotFound(message) => halt(404, message)
+    }
+  }
+
+  delete("/api/pages/:id") {
+    val id = JLong.parseLong(params("id"))
+
+    pageRepository.delete(id) match {
+      case Ok => halt(204)
+      case NotFound(message) => halt(404)
+    }
+  }
 
   get("/api/posts") {
     jswrite(postRepository.findAll)

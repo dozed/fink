@@ -188,3 +188,55 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag) {
     });
   }
 }
+
+function PageController($scope, Page) {
+  $scope.pages = Page.query();
+
+  $scope.delete = function(id) {
+    Page.delete({pageId: id}, function() {
+      $scope.pages = Page.query();
+    })
+  }
+}
+
+function CreatePageController($scope, $location, Page) {
+  $scope.pages = Page.query();
+  $scope.page = new Page({tags: []});
+
+  $scope.save = function() {
+    $scope.page.id = 0;
+    $scope.page.date = new Date().getTime();
+
+    Page.save($scope.page, function(page) {
+      $location.path('/pages');
+    });
+  }
+
+  $scope.cancel = function() {
+    $location.path('/pages');
+  }
+}
+
+function EditPageController($scope, $location, $routeParams, Page) {
+  var self = this;
+  self.original = null;
+
+  Page.get({pageId: $routeParams.pageId}, function(page) {
+    self.original = page;
+    $scope.page = new Page(page);
+  })
+
+  $scope.isClean = function() {
+    return angular.equals(self.original, $scope.page);
+  }
+
+  $scope.cancel = function() {
+    $location.path('/pages');
+  }
+
+  $scope.save = function() {
+    Page.update($scope.page, function(page) {
+      $location.path('/pages');
+    });
+  }
+}
