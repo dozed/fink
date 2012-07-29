@@ -44,7 +44,8 @@
 }
 
 .sidebar h4 {
-  margin: 10px 10px;
+  margin: 12px 14px;
+  color: #eeeeee;
 }
 
 .sidebar ul {
@@ -54,17 +55,28 @@
 .sidebar li {
   list-style-image: none;
   list-style-type: none;
-  display: block;
-  padding: 8px 0px 8px 20px;
+}
+
+.sidebar li a {
+  color: #ffffff;
+  background-position: 16px 10px;
+  background-repeat: no-repeat;
+  padding: 8px 0px 8px 42px;
   color: #ffffff;
   display: block;
   font-weight: bold;
 }
 
-.sidebar li a {
-  color: #ffffff;
+.sidebar li.active {
+  background: rgb(74, 171, 239);
+  background: -moz-linear-gradient(left, rgba(0,0,0,0) 90%, rgba(0,0,0,0.1)),
+  -moz-linear-gradient(top, rgb(74, 171, 239) 0%, rgb(1,136,222) 80%);
 }
 
+
+.sidebar li a.albums { background-image: url(/admin/css/images/photo_icon&16.png); }
+.sidebar li a.posts { background-image: url(/admin/css/images/document_icon&16.png); }
+.sidebar li a.pages { background-image: url(/admin/css/images/page_layout_icon&16.png); }
 
 .header span.button {
   
