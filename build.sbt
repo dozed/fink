@@ -13,6 +13,8 @@ seq(webSettings :_*)
 
 scanInterval in Compile := 0
 
+port in container.Configuration := 8080
+
 // webappResources in Compile <+= (resourceManaged in Compile)(sd => sd / "coffee")
 
 // seq(coffeeSettings: _*)
