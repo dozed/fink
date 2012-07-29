@@ -15,12 +15,16 @@ function CreatePostController($scope, $location, Tag, Post, Category) {
   $scope.tags = Tag.query();
   $scope.posts = Post.query();
   $scope.categories = Category.query();
-  $scope.post = new Post({tags: []});
+  $scope.post = new Post({catId: 0, date: "", title: "", author: "", text: "", tags: []});
 
   $scope.save = function() {
     $scope.post.id = 0;
-    $scope.post.catId = parseInt($scope.selectedCategory);
-    $scope.post.category = _.find($scope.categories, function(c) { return c.id == $scope.post.catId });
+    if ($scope.selectedCategory != null) {
+      $scope.post.catId = parseInt($scope.selectedCategory);
+      $scope.post.category = _.find($scope.categories, function(c) { return c.id == $scope.post.catId });
+    } else {
+      $scope.post.catId = 0;
+    }
     $scope.post.date = new Date().getTime();
 
     Post.save($scope.post, function(post) {
@@ -79,8 +83,7 @@ function CreateGalleryController($scope, $location, Gallery, Tag) {
   $scope.tags = Tag.query();
   $scope.galleries = Gallery.query();
 
-  // TODO dummy object
-  $scope.gallery = new Gallery({tags: []});
+  $scope.gallery = new Gallery({date: 0, title: "", author: "", shortlink: "", text: "", tags: []});
 
   $scope.save = function() {
     $scope.gallery.id = 0;
@@ -222,7 +225,7 @@ function PageController($scope, Page) {
 
 function CreatePageController($scope, $location, Page) {
   $scope.pages = Page.query();
-  $scope.page = new Page({tags: []});
+  $scope.page = new Page({date: 0, title: "", author: "", shortlink: "", text: "", tags: []});
 
   $scope.save = function() {
     $scope.page.id = 0;
