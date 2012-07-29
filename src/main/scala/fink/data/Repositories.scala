@@ -29,7 +29,9 @@ object Repositories {
     db withSession {
       (Pages.ddl ++ Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl ++ GalleriesTags.ddl).create
     }
-  } catch {}
+  } catch {
+    case e:Exception =>
+  }
 
   val pageRepository = new PageRepository
   val postRepository = new PostRepository

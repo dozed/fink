@@ -82,6 +82,20 @@
   
 }
 
+.controls a {
+  display: inline-block;
+  float: right;
+  margin-left: 10px;
+  opacity: 0.6;
+}
+
+i.pencil {
+  background-image: url(/admin/css/images/pencil_icon&16.png);
+}
+
+i.tash {
+  background-image: url(/admin/css/images/trash_icon&16.png);
+}
 
 /* content elements */
 
@@ -109,7 +123,7 @@ table.galleries th.actions {
 }
 
 #album-images .image .controls {
-  display: none;
+  display: block;
 }
 
 #album-images .image.selected .controls {
@@ -122,3 +136,5 @@ table.galleries th.actions {
   background-color: #ffffff;
   opacity: 0.8;
 }
+
+

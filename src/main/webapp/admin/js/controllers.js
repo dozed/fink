@@ -178,6 +178,14 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag) {
     })
   }
 
+  $scope.enableTitleEditor = function(image) {
+    $scope.titleEditorEnabled = true;
+  }
+
+  $scope.saveTitle = function(image) {
+    console.log(image.title);
+  }
+
   $scope.isClean = function() {
     return angular.equals(self.original, $scope.gallery);
   }

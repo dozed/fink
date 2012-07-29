@@ -13,7 +13,7 @@ seq(webSettings :_*)
 
 scanInterval in Compile := 0
 
-webappResources in Compile <+= (resourceManaged in Compile)(sd => sd / "coffee")
+// webappResources in Compile <+= (resourceManaged in Compile)(sd => sd / "coffee")
 
 // seq(coffeeSettings: _*)
 

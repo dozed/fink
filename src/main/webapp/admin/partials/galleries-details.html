@@ -3,7 +3,7 @@
   <div class="span12">
 
     <div class="tabbable">
-      <div id="album-details" title="Details" class="tab-pane active">
+      <div id="album-details" title="Details" class="tab-pane">
         <form class="well" name="myForm">
         <div>Title:<br /><input type="text" class="input-xlarge" ng-model="gallery.title" required></div>
         <div>Author:<br /><input type="text" ng-model="gallery.author"></div>
@@ -18,7 +18,7 @@
         <input type="hidden" id="gallery-id" value="{{gallery.id}}" />
       </div>
 
-      <div id="album-images" title="Images" class="tab-pane">
+      <div id="album-images" title="Images" class="tab-pane active">
         <div class="upload-box">
           <input id="file_upload" type="file" id="file-upload">
           <div id="status-message"></div>
@@ -28,9 +28,20 @@
         <div class="images" id="albums-images">
           <div class="image" id="image-{{image.id}}" ng-mouseenter="enterImage(image)" ng-mouseleave="leaveImage(image)" ng-repeat="image in gallery.images">
             <div class="controls">
+<!--               <span ng-hide="titleEditorEnabled" ng-click="enableTitleEditor(image)">{{image.title}}</span>
+              <span ng-show="titleEditorEnabled">
+                <input type="text" class="input-small" ng:model="image.title" />
+                <a class="btn" ng-click="saveTitle(image)" />
+              </span>
               <a ng-click="removeImage(image)">delete</a>
+ -->
+                <a>
+                  <i class="icon-pencil"></i>
+                </a>
+              </div>
+            <div>
+              <img src="/uploads/{{image.hash}}-medium.jpg" alt="{{image.title}}">
             </div>
-            <div><img src="/uploads/{{image.hash}}-medium.jpg" alt="{{image.title}}"></div>
           </div>
         </div>
       </div>
