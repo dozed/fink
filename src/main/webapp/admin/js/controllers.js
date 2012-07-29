@@ -122,7 +122,7 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
           'multi'     : true,
           'method'    : 'POST',
           'debug'     : false,
-          'uploader'  : 'http://localhost:8080/admin/api/images',
+          'uploader'  : '/admin/api/images',
           'checkExisting' : false,
           'fileObjName'   : 'file',
           'fileTypeExts'  : '*.jpg;*.jpeg;*.gif;*.png',
