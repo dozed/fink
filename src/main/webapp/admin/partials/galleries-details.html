@@ -2,7 +2,7 @@
   <div class="span12">
 
     <div class="tabbable">
-      <div id="album-details" title="Details" class="tab-pane">
+      <div id="album-details" title="Details" class="tab-pane active">
         <form class="well" name="myForm">
           <div>Title:<br /><input type="text" class="input-xlarge" ng-model="gallery.title" required></div>
           <div>Author:<br /><input type="text" ng-model="gallery.author"></div>
@@ -16,7 +16,7 @@
         <input type="hidden" id="gallery-id" value="{{gallery.id}}" />
       </div>
 
-      <div id="album-images" title="Images" class="tab-pane active">
+      <div id="album-images" title="Images" class="tab-pane">
         <div ng-hide="imageEditing">
           <div class="upload-box">
             <input id="file_upload" type="file" id="file-upload">
