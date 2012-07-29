@@ -6,15 +6,5 @@
 .idea_modules
 
 target
-db
 
-fink-*/.settings
-fink-*/.project
-fink-*/.classpath
-fink-*/target
-
-fink-*/.externalToolBuilders
-fink-*/.scala_dependencies
-
-fink-sample/src/main/webapp/WEB-INF/classes/rebel.xml
-fink-sample/src/main/resources/fink.properties
+src/main/resources/fink.properties

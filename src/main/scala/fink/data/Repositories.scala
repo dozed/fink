@@ -21,11 +21,15 @@ case class NotFound(message: String) extends Failure
 case class Error(message: String) extends Failure
 
 object Repositories {
+
   val db = Database.forURL(Config.databaseLocation, driver = "org.h2.Driver")
 
-  db withSession {
-    (Pages.ddl ++ Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl ++ GalleriesTags.ddl).create
-  }
+  // TODO
+  try {
+    db withSession {
+      (Pages.ddl ++ Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl ++ GalleriesTags.ddl).create
+    }
+  } catch {}
 
   val pageRepository = new PageRepository
   val postRepository = new PostRepository
