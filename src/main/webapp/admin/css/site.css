@@ -89,6 +89,11 @@
   margin-bottom: 10px;
 }
 
+#file_upload, #file_upload object {
+  width: 64px !important;
+  height: 28px !important;
+}
+
 table.galleries {
   width: 500px;  
 }
