@@ -3,11 +3,11 @@
   <div class="span12">
     <h3>Details</h3>
       <form class="well" name="myForm">
-      <div>Title: <input type="text" ng-model="page.title" required></div>
-      <div>Author: <input type="text" ng-model="page.author"></div>
-      <div>Shortlink: <input type="text" ng-model="page.shortlink"></div>
+      <div>Title:<br /><input type="text" ng-model="page.title" required></div>
+      <div>Author:<br /><input type="text" ng-model="page.author"></div>
+      <div>Shortlink:<br /><input type="text" ng-model="page.shortlink"></div>
 
-      <div>Text: <textarea ng-model="page.text"></textarea></div>
+      <div>Text:<br /><textarea style="height: 227px; width: 748px" ng-model="page.text"></textarea></div>
 
       <button class="btn" ng-click="save()" ng-disabled="isClean() || myForm.$invalid">Save</button>
       <button class="btn" ng-click="cancel()">Cancel</button>

@@ -1,5 +1,7 @@
 package fink.data
 
+import fink.support._
+
 import org.scalaquery.session._
 import org.scalaquery.session.Database.threadLocalSession
 import org.scalaquery.ql._
@@ -19,7 +21,7 @@ case class NotFound(message: String) extends Failure
 case class Error(message: String) extends Failure
 
 object Repositories {
-  val db = Database.forURL("jdbc:h2:mem:test1;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
+  val db = Database.forURL(Config.databaseLocation, driver = "org.h2.Driver")
 
   db withSession {
     (Pages.ddl ++ Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl ++ GalleriesTags.ddl).create

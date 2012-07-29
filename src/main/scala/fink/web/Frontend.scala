@@ -64,7 +64,18 @@ class Frontend extends ScalatraServlet with ScalateSupport with RepositorySuppor
         // val fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
         // templateAttributes("date") = fmt.print(post.date)
         layout("post")
-      case None => halt(404)
+      case None => halt(404, "Not found.")
+    }
+  }
+
+  get("/pages/:shortlink") {
+    val shortlink = params("shortlink")
+
+    pageRepository.byShortlink(shortlink) match {
+      case Some(page) =>
+        templateAttributes("page") = page
+        layout("page")
+      case None => halt(404, "Not found.")
     }
   }
 
@@ -73,12 +84,12 @@ class Frontend extends ScalatraServlet with ScalateSupport with RepositorySuppor
       case Some(gallery) =>
         templateAttributes("gallery") = gallery
         layout("album")
-      case None => halt(404)
+      case None => halt(404, "Not found.")
     }
   }
 
   notFound {
-    halt(404, <h1>Not found.  Bummer.</h1>)
+    halt(404, "Not found.")
   }
 
 }

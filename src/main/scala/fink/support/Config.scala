@@ -17,7 +17,7 @@ object Config {
   
   val theme = properties.getProperty("fink.web.theme")
 
-  val databaseDirectory = properties.getProperty("fink.database.location")
+  val databaseLocation = properties.getProperty("fink.database.location")
 
   val mediaDirectory = properties.getProperty("fink.media.location")
 
