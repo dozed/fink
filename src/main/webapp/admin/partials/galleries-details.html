@@ -1,48 +1,47 @@
-
 <div class="row-fluid first album-details">
   <div class="span12">
 
     <div class="tabbable">
       <div id="album-details" title="Details" class="tab-pane">
         <form class="well" name="myForm">
-        <div>Title:<br /><input type="text" class="input-xlarge" ng-model="gallery.title" required></div>
-        <div>Author:<br /><input type="text" ng-model="gallery.author"></div>
-        <div>Shortlink:<br /><input type="text" ng-model="gallery.shortlink"></div>
-        <div>Tags:<br /><tag-list class="foo" tags="gallery.tags" /></div>
-        <div>Text:<br /><textarea ng-model="gallery.text"></textarea></div>
-
-        <button class="btn" ng-click="save()" ng-disabled="isClean() || myForm.$invalid">Create</button>
-        <button class="btn" ng-click="cancel()">Cancel</button>
+          <div>Title:<br /><input type="text" class="input-xlarge" ng-model="gallery.title" required></div>
+          <div>Author:<br /><input type="text" ng-model="gallery.author"></div>
+          <div>Shortlink:<br /><input type="text" ng-model="gallery.shortlink"></div>
+          <div>Tags:<br /><tag-list class="foo" tags="gallery.tags" /></div>
+          <div>Text:<br /><textarea ng-model="gallery.text"></textarea></div>
+          <button class="btn" ng-click="save()" ng-disabled="isClean() || myForm.$invalid">Create</button>
+          <button class="btn" ng-click="cancel()">Cancel</button>
         </form>
 
         <input type="hidden" id="gallery-id" value="{{gallery.id}}" />
       </div>
 
       <div id="album-images" title="Images" class="tab-pane active">
-        <div class="upload-box">
-          <input id="file_upload" type="file" id="file-upload">
-          <div id="status-message"></div>
-          <div id="custom-queue" class="uploadifyQueue"></div>
-        </div>
+        <div ng-hide="imageEditing">
+          <div class="upload-box">
+            <input id="file_upload" type="file" id="file-upload">
+            <div id="status-message"></div>
+            <div id="custom-queue" class="uploadifyQueue"></div>
+          </div>
 
-        <div class="images" id="albums-images">
-          <div class="image" id="image-{{image.id}}" ng-mouseenter="enterImage(image)" ng-mouseleave="leaveImage(image)" ng-repeat="image in gallery.images">
-            <div class="controls">
-<!--               <span ng-hide="titleEditorEnabled" ng-click="enableTitleEditor(image)">{{image.title}}</span>
-              <span ng-show="titleEditorEnabled">
-                <input type="text" class="input-small" ng:model="image.title" />
-                <a class="btn" ng-click="saveTitle(image)" />
-              </span>
-              <a ng-click="removeImage(image)">delete</a>
- -->
-                <a>
-                  <i class="icon-pencil"></i>
-                </a>
+          <div class="images" id="albums-images">
+            <div class="image" id="image-{{image.id}}" ng-mouseenter="enterImage(image)" ng-mouseleave="leaveImage(image)" ng-repeat="image in gallery.images">
+              <div class="controls">
+                <span>{{image.title}}</span>
+                <a ng-click="editImage(image)"><i class="pencil"></i></a>
+                <a ng-click="removeImage(image)"><i class="trash"></i></a>
               </div>
-            <div>
-              <img src="/uploads/{{image.hash}}-medium.jpg" alt="{{image.title}}">
+              <div>
+                <img src="/uploads/{{image.hash}}-medium.jpg" alt="{{image.title}}">
+              </div>
             </div>
           </div>
+        </div>
+
+        <div ng-show="imageEditing">
+          <div>Title:<br /><input type="text" class="input-xlarge" ng-model="image.title" required></div>
+
+          <a class="btn" ng-click="finishEditing()">Back</a>
         </div>
       </div>
     </div>

@@ -97,7 +97,7 @@ function CreateGalleryController($scope, $location, Gallery, Tag) {
   }
 }
 
-function EditGalleryController($scope, $location, $routeParams, Gallery, Tag) {
+function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Image) {
   var self = this;
   self.original = null;
 
@@ -178,12 +178,21 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag) {
     })
   }
 
-  $scope.enableTitleEditor = function(image) {
-    $scope.titleEditorEnabled = true;
+  $scope.editImage = function(image) {
+    $scope.image = image;
+    $scope.originalImage = new Image(image);
+    $scope.imageEditing = true;
   }
 
-  $scope.saveTitle = function(image) {
-    console.log(image.title);
+  $scope.finishEditing = function() {
+    if (!angular.equals($scope.originalImage, $scope.image)) {
+      Image.update($scope.image, function(data, status) {
+        $scope.image = null;
+        $scope.imageEditing = false;
+      })
+    } else {
+      $scope.imageEditing = false;
+    }
   }
 
   $scope.isClean = function() {

@@ -1,9 +1,9 @@
 'use strict';
 
 var methods = {
-	'get':    {method:'GET'},
+  'get':    {method:'GET'},
   'save':   {method:'POST'},
-	'update': {method:'PUT'},
+  'update': {method:'PUT'},
   'query':  {method:'GET', isArray:true},
   'remove': {method:'DELETE'},
   'delete': {method:'DELETE'}};
@@ -18,4 +18,6 @@ angular.module('fink.resources', ['ngResource']).factory('Tag', function($resour
   return $resource('/admin/api/galleries/:galleryId', {galleryId:'@id'}, methods);
 }).factory('Page', function($resource){
   return $resource('/admin/api/pages/:pageId', {pageId:'@id'}, methods);
+}).factory('Image', function($resource){
+  return $resource('/admin/api/images/:imageId', {imageId:'@id'}, methods);
 }).value('version', '0.1');

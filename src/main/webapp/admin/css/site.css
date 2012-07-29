@@ -82,21 +82,6 @@
   
 }
 
-.controls a {
-  display: inline-block;
-  float: right;
-  margin-left: 10px;
-  opacity: 0.6;
-}
-
-i.pencil {
-  background-image: url(/admin/css/images/pencil_icon&16.png);
-}
-
-i.tash {
-  background-image: url(/admin/css/images/trash_icon&16.png);
-}
-
 /* content elements */
 
 .tagit {
@@ -123,11 +108,7 @@ table.galleries th.actions {
 }
 
 #album-images .image .controls {
-  display: block;
-}
-
-#album-images .image.selected .controls {
-  display: block;
+  display: none;
   position: absolute;
   top: 0px;
   left: 0px;
@@ -137,4 +118,33 @@ table.galleries th.actions {
   opacity: 0.8;
 }
 
+#album-images .image.selected .controls {
+  display: block;
+}
 
+.controls span {
+  float: left;
+  display: block;
+  margin: 4px 0 0 5px;
+}
+
+.controls a {
+  display: block;
+  float: right;
+  margin: 5px 8px 0 0;
+  opacity: 0.8;
+}
+
+.controls a i {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+
+i.pencil {
+  background-image: url(/admin/css/images/pencil_icon&16.png);
+}
+
+i.trash {
+  background-image: url(/admin/css/images/trash_icon&16.png);
+}
