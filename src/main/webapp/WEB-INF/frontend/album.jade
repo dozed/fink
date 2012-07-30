@@ -14,10 +14,6 @@
     });
   });
 
--#
-  h1 #{gallery.getTitle}
-  h1 #{gallery.title}
-
 #collection-images
   -for (image <- gallery.images)
     a(class="media-image" href={uri("/uploads/"+image.hash+"-full.jpg")} rel={uri("/uploads/"+image.hash+"-medium.jpg")} title={image.title})
