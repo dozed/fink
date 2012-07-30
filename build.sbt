@@ -41,6 +41,7 @@ libraryDependencies ++= Seq(
 	"org.scalatra" %% "scalatra-lift-json" % "2.1.0.M1",
 	"org.scalatra" %% "scalatra-fileupload" % "2.1.0.M1",
 	"org.scalatra" %% "scalatra-specs2" % "2.1.0.M1" % "test",
+  "org.fusesource.scalamd" % "scalamd" % "1.5",
 	"org.codehaus.janino" % "janino" % "2.6.1",
 	"commons-io" % "commons-io" % "2.0.1",
 	"net.liftweb" %% "lift-json" % "2.4",
