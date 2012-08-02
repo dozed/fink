@@ -32,7 +32,6 @@
 		<url-pattern>/images/*</url-pattern>
 		<url-pattern>/css/*</url-pattern>
 		<url-pattern>/js/*</url-pattern>
-		<url-pattern>/uploads/*</url-pattern>
 		<url-pattern>/assets/*</url-pattern>
 		<url-pattern>/themes/*</url-pattern>
 		<url-pattern>/admin/app/*</url-pattern>

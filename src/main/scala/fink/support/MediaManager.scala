@@ -25,8 +25,7 @@ case class SquareImageSpec(override val name: String, width: Int) extends ImageS
 
 object MediaManager {
 
-  var base = "./uploads"
-  def baseDirectory = base
+  def baseDirectory = Config.mediaDirectory
 
   val specs = Array(
     FullImageSpec("full"),
@@ -34,11 +33,6 @@ object MediaManager {
     SquareImageSpec("thumb", 100),
     KeepRatioImageSpec("big", 700)
   )
-
-  // check if the base upload folder exists in the filesystem
-  protected def sanitizeEnv = {
-    checkDirectory(baseDirectory)
-  }
 
   protected def checkDirectory(dir: String) = {
     val target = new File(dir)
@@ -49,7 +43,8 @@ object MediaManager {
   protected def isImage(item: FileItem, name: String, ext: String): Boolean = true
 
   def processUpload(item: FileItem): Option[String] = {
-    sanitizeEnv
+    checkDirectory(baseDirectory)
+    
     val m = Pattern.compile("(.*)\\.(.*)$").matcher(item.getName)
     if (!m.matches) return None
 

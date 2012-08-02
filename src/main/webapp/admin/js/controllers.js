@@ -104,6 +104,7 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
   var self = this;
   self.original = null;
 
+  $scope.fink_base = fink_base
   $scope.tags = Tag.query();
   $scope.galleries = Gallery.query();
 
@@ -122,7 +123,7 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
           'multi'     : true,
           'method'    : 'POST',
           'debug'     : false,
-          'uploader'  : '/admin/api/images',
+          'uploader'  : fink_base+'/admin/api/images',
           'checkExisting' : false,
           'fileObjName'   : 'file',
           'fileTypeExts'  : '*.jpg;*.jpeg;*.gif;*.png',
@@ -138,7 +139,7 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
           },
           'onUploadSuccess' : function(file, data, response) {
             var imageId = data;
-            $.post("/admin/api/galleries/"+galleryId+"/images/"+imageId, function(data, status) {
+            $.post(fink_base+"/admin/api/galleries/"+galleryId+"/images/"+imageId, function(data, status) {
               console.log(data + " - " + status);
             })
           } 
@@ -153,7 +154,7 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
             //   console.log("done");
             // });
             var order = _.map($("#albums-images").sortable('toArray'), function(id) { return id.split('-')[1]; }).join(',');
-            $.post("/admin/api/galleries/"+$scope.gallery.id+"/images", {order: order}, function() {
+            $.post("fink_base+/admin/api/galleries/"+$scope.gallery.id+"/images", {order: order}, function() {
               console.log("done");
             });
           }
@@ -174,7 +175,7 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
   }
 
   $scope.removeImage = function(image) {
-    $.delete("/admin/api/galleries/"+$scope.gallery.id+"/images/"+image.id, function(data, status) {
+    $.delete(fink_base+"/admin/api/galleries/"+$scope.gallery.id+"/images/"+image.id, function(data, status) {
       Gallery.get({galleryId: $routeParams.galleryId}, function(gallery) {
         $scope.gallery = new Gallery(gallery);
       })

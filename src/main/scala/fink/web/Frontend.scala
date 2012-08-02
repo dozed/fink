@@ -11,6 +11,7 @@ import org.scalatra.ScalatraServlet
 import org.scalatra.servlet._
 
 import org.joda.time.format.DateTimeFormat
+import java.io.File
 
 class Frontend extends ScalatraServlet with ScalateSupport with RepositorySupport {
 
@@ -86,6 +87,12 @@ class Frontend extends ScalatraServlet with ScalateSupport with RepositorySuppor
         layout("album")
       case None => halt(404, "Not found.")
     }
+  }
+
+  get("/uploads/:file") {
+    println(1)
+    val filename = "%s/%s".format(Config.mediaDirectory, params("file"))
+    new File(filename)
   }
 
   notFound {

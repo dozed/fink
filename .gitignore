@@ -10,3 +10,4 @@ target
 src/main/resources/fink.properties
 src/main/webapp/uploads
 
+/.cache
