@@ -73,10 +73,10 @@ object MediaManager {
     for {
       FileName(name, ext) <- Option(item.getName)
       contentType <- inferContentType(item, ext)
-      filehash <- hashFilename(baseDirectory, name, ext)
+      hash <- hashFilename(baseDirectory, name, ext)
     } yield {
-      specs.foreach(spec => processImage(spec, item.getInputStream, hash, ext))
-      ImageUpload(contentType, filehash, item.getName)
+      imageSpecs.foreach(spec => processImage(spec, item.getInputStream, hash, ext))
+      ImageUpload(hash, contentType, item.getName)
     }
   }
 
