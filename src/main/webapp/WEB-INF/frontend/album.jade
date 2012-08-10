@@ -16,6 +16,6 @@
 
 #collection-images
   -for (image <- gallery.images)
-    a(class="media-image" href={uri("/uploads/"+image.hash+"-full.jpg")} rel={uri("/uploads/"+image.hash+"-medium.jpg")} title={image.title})
-      img(src={uri("/uploads/"+image.hash+"-medium.jpg")})
+    a(class="media-image" href={uri("/uploads/images/"+image.hash+"/full/"+image.filename)} rel={uri("/uploads/images/"+image.hash+"/medium/"+image.filename)} title={image.title})
+      img(src={uri("/uploads/images/"+image.hash+"/medium/"+image.filename)})
   .clear    
