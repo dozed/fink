@@ -71,9 +71,11 @@ object Images extends Table[Image]("images") {
   def title = column[String]("title")
   def author = column[String]("author")
   def hash = column[String]("hash")
+  def contentType = column[String]("contentType")
+  def filename = column[String]("filename")
 
-  def withoutId = date ~ title ~ author ~ hash
-  def * = id ~ date ~ title ~ author ~ hash <> (Image, Image.unapply _)
+  def withoutId = date ~ title ~ author ~ hash ~ contentType ~ filename
+  def * = id ~ date ~ title ~ author ~ hash ~ contentType ~ filename <> (Image, Image.unapply _)
 
   val byId = createFinderBy(_.id)
 }

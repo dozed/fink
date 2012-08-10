@@ -23,17 +23,37 @@ case class FullImageSpec(override val name: String) extends ImageSpec(name)
 case class KeepRatioImageSpec(override val name: String, max: Int) extends ImageSpec(name)
 case class SquareImageSpec(override val name: String, width: Int) extends ImageSpec(name)
 
+sealed abstract case class MediaUpload
+case class ImageUpload(hash: String, contentType: String, filename: String)
+case class DocumentUpload(hash: String, contentType: String, filename: String)
+
 object MediaManager {
 
   var base = "./uploads"
   def baseDirectory = base
 
-  val specs = Array(
+  val imageFormats: Map[String, String] = Map(
+    "jpg" -> "image/jpg",
+    "jpeg" -> "image/jpeg",
+    "png" -> "image/png",
+    "gif" -> "image/gif"
+  )
+
+  val imageExtensions: Map[String, String] = Map(
+    "image/jpg" -> "jpg",
+    "image/jpeg" -> "jpeg",
+    "image/png" -> "png",
+    "image/gif" -> "gif"
+  )
+
+  val imageSpecs : List[ImageSpec] = List(
     FullImageSpec("full"),
     KeepRatioImageSpec("medium", 300),
     SquareImageSpec("thumb", 100),
     KeepRatioImageSpec("big", 700)
   )
+
+  val FileName = """(.*)\.(.*)""".r
 
   // check if the base upload folder exists in the filesystem
   protected def sanitizeEnv = {
@@ -45,26 +65,20 @@ object MediaManager {
     if (!target.exists) target.mkdirs
   }
 
-  // TODO use a more sophisticated method to check for an image
-  protected def isImage(item: FileItem, name: String, ext: String): Boolean = true
+  protected def inferContentType(item: FileItem, ext: String) = {
+    imageFormats.get(ext)
+  }
 
-  def processUpload(item: FileItem): Option[String] = {
+  def processUpload(item: FileItem): Option[ImageUpload] = {
     sanitizeEnv
-    val m = Pattern.compile("(.*)\\.(.*)$").matcher(item.getName)
-    if (!m.matches) return None
-
-    val (name, ext) = (m.group(1), m.group(2))
-    
-    if (isImage(item, name, ext)) {
-      getFreeFilename(baseDirectory, name, ext) match {
-        case Some(hash) =>
-          specs.foreach(spec => processImage(spec, item.getInputStream, hash, ext))
-          return Some(hash)
-        case None =>
-          return None
-      }
+    for {
+      FileName(name, ext) <- Option(item.getName)
+      contentType <- inferContentType(item, ext)
+      filehash <- hashFilename(baseDirectory, name, ext)
+    } yield {
+      specs.foreach(spec => processImage(spec, item.getInputStream, hash, ext))
+      ImageUpload(contentType, filehash, item.getName)
     }
-    None
   }
 
   protected def processImage(spec: ImageSpec, upload: InputStream, hash: String, ext: String): File = {
@@ -90,7 +104,7 @@ object MediaManager {
   /**
    * Returns a free filename. TODO thread-safety
    */
-  protected def getFreeFilename(base: String, name: String, ext: String): Option[String] = {
+  protected def hashFilename(base: String, name: String, ext: String): Option[String] = {
     var hash = md5(java.util.UUID.randomUUID().toString)
     var temp = new File(base + "/" + hash + "." + ext)
 

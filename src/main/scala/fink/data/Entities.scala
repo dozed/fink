@@ -36,7 +36,9 @@ case class Image(
   date: Long,
   title: String,
   author: String,
-  hash: String
+  hash: String,
+  contentType: String,
+  filename: String
 )
 
 case class Gallery(
