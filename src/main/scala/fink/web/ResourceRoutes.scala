@@ -326,9 +326,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
   post("/api/images") {
     MediaManager.processUpload(fileParams("file")) match {
       case Some(ImageUpload(hash, contentType, filename)) =>
-        println(ImageUpload(hash, contentType, filename))
         imageRepository.create(0, filename, "", hash, contentType, filename)
-
       case None => halt(500)
     }
   }

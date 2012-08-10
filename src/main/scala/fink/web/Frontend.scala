@@ -89,10 +89,19 @@ class Frontend extends ScalatraServlet with ScalateSupport with RepositorySuppor
     }
   }
 
-  get("/uploads/:file") {
-    println(1)
-    val filename = "%s/%s".format(Config.mediaDirectory, params("file"))
-    new File(filename)
+  get("/uploads/images/:hash/:spec/:file") {
+    (for {
+      hash <- Option(params("hash"))
+      image <- imageRepository.byHash(hash)
+      ext <- MediaManager.imageExtensions.get(image.contentType)
+      spec <- MediaManager.imageSpecs.filter(_.name == params("spec")).headOption
+    } yield {
+      val file = new File("%s/%s-%s.%s".format(Config.mediaDirectory, image.hash, spec.name, ext))
+      if (!file.exists) halt(404)
+      response.addHeader("Content-Disposition", "inline;filename=\"%s\"".format(image.filename))
+      response.addHeader("Content-type", image.contentType)
+      file
+    }) getOrElse(halt(404))
   }
 
   notFound {

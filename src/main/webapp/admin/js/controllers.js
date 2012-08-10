@@ -139,9 +139,7 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
           },
           'onUploadSuccess' : function(file, data, response) {
             var imageId = data;
-            $.post(fink_base+"/admin/api/galleries/"+galleryId+"/images/"+imageId, function(data, status) {
-              console.log(data + " - " + status);
-            })
+            $.post(fink_base+"/admin/api/galleries/"+galleryId+"/images/"+imageId)
           } 
         });
 
@@ -154,9 +152,7 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
             //   console.log("done");
             // });
             var order = _.map($("#albums-images").sortable('toArray'), function(id) { return id.split('-')[1]; }).join(',');
-            $.post("fink_base+/admin/api/galleries/"+$scope.gallery.id+"/images", {order: order}, function() {
-              console.log("done");
-            });
+            $.post(fink_base+"/admin/api/galleries/"+$scope.gallery.id+"/images", {order: order});
           }
         });
 
