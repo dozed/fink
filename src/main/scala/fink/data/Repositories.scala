@@ -407,8 +407,8 @@ class ImageRepository extends RepositorySupport {
     Images.byId(id).firstOption
   }
 
-  def create(date: Long, title: String, author: String, hash: String) : Long = db withSession {
-    Images.withoutId.insert((date, title, author, hash))
+  def create(date: Long, title: String, author: String, hash: String, contentType: String, filename: String) : Long = db withSession {
+    Images.withoutId.insert((date, title, author, hash, contentType, filename))
     DBUtil.insertId
   }
 
