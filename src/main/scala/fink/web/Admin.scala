@@ -48,7 +48,7 @@ class Admin extends ScalatraServlet with RepositorySupport with AuthenticationRo
       ext <- MediaManager.imageExtensions.get(image.contentType)
       spec <- MediaManager.imageSpecs.filter(_.name == params("spec")).headOption
     } yield {
-      val file = new File("%s/%s-%s.%s".format(Config.mediaDirectory, hash, spec.name, ext))
+      val file = new File("%s/%s-%s.%s".format(Config.mediaDirectory, image.hash, spec.name, ext))
       if (!file.exists) halt(404)
       response.addHeader("Content-Disposition", "inline;filename=\"%s\"".format(image.filename))
       response.addHeader("Content-type", image.contentType)
