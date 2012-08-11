@@ -148,7 +148,6 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
 
     if (gallery.coverId != 0) {
       var cover = _.find(gallery.images, function(i) { return i.id == gallery.coverId });
-      console.log(cover);
       $scope.cover = fink_base+"/admin/uploads/images/"+cover.hash+"/thumb/"+cover.filename;
     } else {
       $scope.cover = fink_base+"/admin/images/noimage.png"
@@ -176,6 +175,12 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
     $.delete(fink_base+"/admin/api/galleries/"+$scope.gallery.id+"/images/"+image.id, function(data, status) {
       Gallery.get({galleryId: $routeParams.galleryId}, function(gallery) {
         $scope.gallery = new Gallery(gallery);
+        if (gallery.coverId != 0) {
+          var cover = _.find(gallery.images, function(i) { return i.id == gallery.coverId });
+          $scope.cover = fink_base+"/admin/uploads/images/"+cover.hash+"/thumb/"+cover.filename;
+        } else {
+          $scope.cover = fink_base+"/admin/images/noimage.png"
+        }
       })
     })
   }

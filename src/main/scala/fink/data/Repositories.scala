@@ -358,6 +358,9 @@ class GalleryRepository extends RepositorySupport {
         imageRepository.byId(imageId) match {
           case Some(image) =>
             val deleted = GalleriesImages.where(gi => gi.galleryId === galleryId && gi.imageId === imageId).delete
+            if (gallery.coverId == imageId) {
+              Galleries.where(_.id === galleryId).map(_.coverId).update(0)
+            }
             if (deleted > 0) Ok else NotFound("Could not find relation between gallery and image.")
           case None => NotFound("Could not find image: %s".format(imageId))
         }
