@@ -74,9 +74,9 @@
 }
 
 
-.sidebar li a.albums { background-image: url(/admin/css/images/photo_icon&16.png); }
-.sidebar li a.posts { background-image: url(/admin/css/images/document_icon&16.png); }
-.sidebar li a.pages { background-image: url(/admin/css/images/page_layout_icon&16.png); }
+.sidebar li a.albums { background-image: url(images/photo_icon&16.png); }
+.sidebar li a.posts { background-image: url(images/document_icon&16.png); }
+.sidebar li a.pages { background-image: url(images/page_layout_icon&16.png); }
 
 .header span.button {
   
@@ -151,11 +151,11 @@ table.galleries th.actions {
 }
 
 #album-images .image .controls a i.pencil {
-  background-image: url(/admin/css/images/pencil_icon&16.png);
+  background-image: url(images/pencil_icon&16.png);
 }
 
 #album-images .image .controls a i.trash {
-  background-image: url(/admin/css/images/trash_icon&16.png);
+  background-image: url(images/trash_icon&16.png);
 }
 
 .cover img {
