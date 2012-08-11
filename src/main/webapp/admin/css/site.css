@@ -108,10 +108,6 @@ table.galleries th.actions {
   position: relative;
 }
 
-#album-images {
-
-}
-
 #album-images .image .controls {
   display: none;
   position: absolute;
@@ -127,30 +123,38 @@ table.galleries th.actions {
   display: block;
 }
 
-.controls span {
-  float: left;
+#album-images .image .controls span {
   display: block;
   margin: 4px 0 0 5px;
 }
 
-.controls a {
+#album-images .image .controls .title {
+  position: absolute;
+  top: 0px; 
+  left: 0px; 
+  width: 100%;
+  height: 25px;
+  overflow: hidden;
+}
+
+#album-images .image .controls a {
   display: block;
   float: right;
   margin: 5px 8px 0 0;
   opacity: 0.8;
 }
 
-.controls a i {
+#album-images .image .controls a i {
   display: inline-block;
   width: 16px;
   height: 16px;
 }
 
-i.pencil {
+#album-images .image .controls a i.pencil {
   background-image: url(/admin/css/images/pencil_icon&16.png);
 }
 
-i.trash {
+#album-images .image .controls a i.trash {
   background-image: url(/admin/css/images/trash_icon&16.png);
 }
 

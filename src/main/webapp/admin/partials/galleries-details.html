@@ -57,9 +57,13 @@
           <div class="images" id="albums-images">
             <div class="image" id="image-{{image.id}}" ng-mouseenter="enterImage(image)" ng-mouseleave="leaveImage(image)" ng-repeat="image in gallery.images">
               <div class="controls">
-                <span>{{image.title}}</span>
-                <a ng-click="editImage(image)"><i class="pencil"></i></a>
-                <a ng-click="removeImage(image)"><i class="trash"></i></a>
+                <div class="title">
+                  <span>{{image.title}}</span>
+                </div>
+                <div class="actions">
+                  <a ng-click="editImage(image)"><i class="pencil"></i></a>
+                  <a ng-click="removeImage(image)"><i class="trash"></i></a>
+                </div>
               </div>
               <div>
                 <img src="{{fink_base}}/admin/uploads/images/{{image.hash}}/medium/{{image.filename}}" alt="{{image.title}}">
