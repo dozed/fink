@@ -6,7 +6,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="org.fusesource.scalate" level="DEBUG" />
+	<logger name="org.fusesource.scalate" level="INFO" />
 	<logger name="org.scalatra" level="INFO" />
 	<logger name="org.eclipse.jetty" level="INFO" />
 
