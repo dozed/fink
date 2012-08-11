@@ -147,14 +147,21 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
     });
 
     if (gallery.coverId != 0) {
-
+      var cover = _.find(gallery.images, function(i) { return i.id == gallery.coverId });
+      console.log(cover);
+      $scope.cover = fink_base+"/admin/uploads/images/"+cover.hash+"/thumb/"+cover.filename;
     } else {
       $scope.cover = fink_base+"/admin/images/noimage.png"
     }
   })
 
-  $scope.setCover = function() {
-    
+  $scope.setCover = function(image) {
+    $.post(fink_base+"/admin/api/galleries/"+$scope.gallery.id+"/cover", {coverId: image.id}, function() {
+      $scope.$apply(function() {
+        $scope.cover = fink_base+"/admin/uploads/images/"+image.hash+"/thumb/"+image.filename;      
+        $('#setCoverDialog').trigger('modalClose');
+      });
+    });
   }
 
   $scope.enterImage = function(image) {

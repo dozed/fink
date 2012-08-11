@@ -396,6 +396,16 @@ class GalleryRepository extends RepositorySupport {
       case None => NotFound("Could not find gallery: %s".format(galleryId))
     }
   }
+
+  def setCover(galleryId: Long, coverId: Long) : DataResult = db withSession {
+    (for {
+      gallery <- byId(galleryId)
+      image <- gallery.images.filter(_.id == coverId).headOption
+    } yield {
+      Galleries.where(_.id === galleryId).map(_.coverId).update(coverId)
+      Ok
+    }) getOrElse NotFound("Could not find gallery: %s".format(galleryId))
+  }
 }
 
 class ImageRepository extends RepositorySupport {

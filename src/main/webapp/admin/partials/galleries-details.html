@@ -23,9 +23,25 @@
             <h2>Cover</h2>
 
             <div class="cover">
-              <img ng-click="setCover()" src="{{cover}}" />
-              <a href="#" bs:popover="" class="btn danger" rel="popover" data-content="Hello!  It's working!" data-original-title="With Angular" data-placement="below">hover for popover</a> 
+              <img bootstrap-modal-open="setCoverDialog" src="{{cover}}" popover="" rel="popover" data-content="Click to change the cover." data-original-title="" data-placement="bottom" />
             </div>
+
+            <bootstrap-modal modal-id="setCoverDialog">
+                <div class="modal-header">
+                    <button class="close">x</button>
+                    <h3>Select a cover</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="gallery-covers">
+                      <a ng-click="setCover(image)" ng-repeat="image in gallery.images">
+                        <img src="{{fink_base}}/admin/uploads/images/{{image.hash}}/thumb/{{image.filename}}" alt="{{image.title}}">
+                      </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" onclick="return false;" class="btn btn-primary close">Close</a>
+                </div>
+            </bootstrap-modal>           
           </div>
         </div>
       </div>

@@ -153,3 +153,7 @@ i.pencil {
 i.trash {
   background-image: url(/admin/css/images/trash_icon&16.png);
 }
+
+.cover img {
+  cursor: pointer;
+}

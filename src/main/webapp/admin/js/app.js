@@ -2,7 +2,7 @@
 
 var fink_base = window.location.pathname.replace(/\/admin\/?$/, '');
 
-angular.module('fink-admin', ['fink.filters', 'fink.directives', 'fink.resources', 'bootstrap']).
+angular.module('fink-admin', ['fink.filters', 'fink.directives', 'fink.resources', 'bootstrap', 'angularBootstrap.modal']).
   config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/posts', {templateUrl: 'partials/posts.html', controller: PostController});
     $routeProvider.when('/posts/create', {templateUrl: 'partials/posts-details.html', controller: CreatePostController});

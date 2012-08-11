@@ -292,10 +292,8 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
 
   post("/api/galleries/:id/cover") {
     val id = JLong.parseLong(params("id"))
-    val coverId = params("coverId")
-
-    // TODO
-    // galleryRepository.setCover(id, coverId)
+    val coverId = JLong.parseLong(params("coverId"))
+    galleryRepository.setCover(id, coverId)
     halt(204)
   }
 
