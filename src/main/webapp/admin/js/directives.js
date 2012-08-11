@@ -150,4 +150,10 @@ directive.tabPane = function() {
 };
 
 
-angular.module('bootstrap', []).directive(directive);
+angular.module('bootstrap', [])
+  .directive(directive)
+  .directive('bs:popover', function(expression, compiledElement){
+    return function(linkElement) {
+        linkElement.popover();
+    };
+});

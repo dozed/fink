@@ -111,56 +111,51 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
   Gallery.get({galleryId: $routeParams.galleryId}, function(gallery) {
     self.original = gallery;
     $scope.gallery = new Gallery(gallery);
-  })
 
-  $scope.onRender = function(a) {
-    $scope.$watch("gallery.id", function(galleryId) {
-      if (galleryId != undefined) {
-        $('#file_upload').uploadify({
-          'swf' : 'lib/uploadify-3.1.1/uploadify.swf',
-          'folder'    : '/uploads',
-          'auto'      : true,
-          'multi'     : true,
-          'method'    : 'POST',
-          'debug'     : false,
-          'uploader'  : fink_base+'/admin/api/images',
-          'checkExisting' : false,
-          'fileObjName'   : 'file',
-          'fileTypeExts'  : '*.jpg;*.jpeg;*.gif;*.png',
-          'fileTypeDesc'  : 'Image Files (.JPG, .GIF, .PNG)',
-          'buttonClass'   : 'btn',
-          'height'        : 18,
-          'width'         : 42,
-          'buttonText'    : 'Upload',
-          'onQueueComplete' : function() {
-            Gallery.get({galleryId: $routeParams.galleryId}, function(gallery) {
-              $scope.gallery = new Gallery(gallery);
-            })
-          },
-          'onUploadSuccess' : function(file, data, response) {
-            var imageId = data;
-            $.post(fink_base+"/admin/api/galleries/"+galleryId+"/images/"+imageId)
-          } 
-        });
+    $('#file_upload').uploadify({
+      'swf' : 'lib/uploadify-3.1.1/uploadify.swf',
+      'folder'    : '/uploads',
+      'auto'      : true,
+      'multi'     : true,
+      'method'    : 'POST',
+      'debug'     : false,
+      'uploader'  : fink_base+'/admin/api/images',
+      'checkExisting' : false,
+      'fileObjName'   : 'file',
+      'fileTypeExts'  : '*.jpg;*.jpeg;*.gif;*.png',
+      'fileTypeDesc'  : 'Image Files (.JPG, .GIF, .PNG)',
+      'buttonClass'   : 'btn',
+      'height'        : 18,
+      'width'         : 42,
+      'buttonText'    : 'Upload',
+      'onQueueComplete' : function() {
+        Gallery.get({galleryId: $routeParams.galleryId}, function(gallery) {
+          $scope.gallery = new Gallery(gallery);
+        })
+      },
+      'onUploadSuccess' : function(file, data, response) {
+        var imageId = data;
+        $.post(fink_base+"/admin/api/galleries/"+gallery.id+"/images/"+imageId)
+      } 
+    });
 
-        $("#albums-images").sortable({
-          update: function(event, ui) {
-            // var order = $("#images-list").sortable('toArray').join(',');
-            // $.post("#{adminBase("/collections/edit/"+collection.getUuid+"/sort")}", {
-            //   order: order
-            // }, function() {
-            //   console.log("done");
-            // });
-            var order = _.map($("#albums-images").sortable('toArray'), function(id) { return id.split('-')[1]; }).join(',');
-            $.post(fink_base+"/admin/api/galleries/"+$scope.gallery.id+"/images", {order: order});
-          }
-        });
-
+    $("#albums-images").sortable({
+      update: function(event, ui) {
+        var order = _.map($("#albums-images").sortable('toArray'), function(id) { return id.split('-')[1]; }).join(',');
+        $.post(fink_base+"/admin/api/galleries/"+$scope.gallery.id+"/images", {order: order});
       }
     });
-  }
 
-  $scope.$on('$viewContentLoaded', $scope.onRender);
+    if (gallery.coverId != 0) {
+
+    } else {
+      $scope.cover = fink_base+"/admin/images/noimage.png"
+    }
+  })
+
+  $scope.setCover = function() {
+    
+  }
 
   $scope.enterImage = function(image) {
     $("#image-"+image.id).addClass('selected');

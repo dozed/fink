@@ -24,6 +24,8 @@ html(lang="en" ng-app="fink-admin")
     script(type="text/javascript" src="lib/jquery/jquery.tagit.js")
     script(type="text/javascript" src="lib/angular/angular.js")
     script(type="text/javascript" src="lib/angular/angular-resource.js")
+    script(type="text/javascript" src="lib/bootstrap/bootstrap.js")
+    script(type="text/javascript" src="lib/bootbox/bootbox.js")
 
     script(type="text/javascript" src="js/app.js")
     script(type="text/javascript" src="js/services.js")
@@ -44,6 +46,7 @@ html(lang="en" ng-app="fink-admin")
         a.albums(href="#/galleries") galleries
     .content-wrap
       .header
-      .content(ng-view)
+      .content
+        .container(ng-view)
 
 

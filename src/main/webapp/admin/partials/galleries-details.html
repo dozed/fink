@@ -1,19 +1,33 @@
-<div class="row-fluid first album-details">
+<div class="row first album-details">
   <div class="span12">
 
     <div class="tabbable">
       <div id="album-details" title="Details" class="tab-pane active">
-        <form class="well" name="myForm">
-          <div>Title:<br /><input type="text" class="input-xlarge" ng-model="gallery.title" required></div>
-          <div>Author:<br /><input type="text" ng-model="gallery.author"></div>
-          <div>Shortlink:<br /><input type="text" ng-model="gallery.shortlink"></div>
-          <div>Tags:<br /><tag-list class="foo" tags="gallery.tags" /></div>
-          <div>Text:<br /><textarea ng-model="gallery.text"></textarea></div>
-          <button class="btn" ng-click="save()" ng-disabled="isClean() || myForm.$invalid">Create</button>
-          <button class="btn" ng-click="cancel()">Cancel</button>
-        </form>
+        <div class="row-fluid well">
+          <div class="span6">
+            <h2>Details</h2>
 
-        <input type="hidden" id="gallery-id" value="{{gallery.id}}" />
+            <form name="myForm">
+              <div>Title:<br /><input type="text" class="input-xlarge" ng-model="gallery.title" required></div>
+              <div>Author:<br /><input type="text" ng-model="gallery.author"></div>
+              <div>Shortlink:<br /><input type="text" ng-model="gallery.shortlink"></div>
+              <div>Tags:<br /><tag-list class="foo" tags="gallery.tags" /></div>
+              <div>Text:<br /><textarea ng-model="gallery.text"></textarea></div>
+              <button class="btn" ng-click="save()" ng-disabled="isClean() || myForm.$invalid">Create</button>
+              <button class="btn" ng-click="cancel()">Cancel</button>
+            </form>
+
+            <input type="hidden" id="gallery-id" value="{{gallery.id}}" />
+          </div>
+          <div class="span4">
+            <h2>Cover</h2>
+
+            <div class="cover">
+              <img ng-click="setCover()" src="{{cover}}" />
+              <a href="#" bs:popover="" class="btn danger" rel="popover" data-content="Hello!  It's working!" data-original-title="With Angular" data-placement="below">hover for popover</a> 
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="album-images" title="Images" class="tab-pane">
