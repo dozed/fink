@@ -3,45 +3,48 @@
 
     <div class="tabbable">
       <div id="album-details" title="Details" class="tab-pane active">
-        <div class="row-fluid well">
-          <div class="span6">
-            <h2>Details</h2>
+        <div class="row-fluid">
+          <div class="well">
+            <div class="span6">
+              <h2>Details</h2>
 
-            <form name="myForm">
-              <div>Title:<br /><input type="text" class="input-xlarge" ng-model="gallery.title" required></div>
-              <div>Author:<br /><input type="text" ng-model="gallery.author"></div>
-              <div>Shortlink:<br /><input type="text" ng-model="gallery.shortlink"></div>
-              <div>Tags:<br /><tag-list class="foo" tags="gallery.tags" /></div>
-              <div>Text:<br /><textarea ng-model="gallery.text"></textarea></div>
-              <button class="btn" ng-click="save()" ng-disabled="isClean() || myForm.$invalid">Create</button>
-              <button class="btn" ng-click="cancel()">Cancel</button>
-            </form>
+              <form name="myForm">
+                <div>Title:<br /><input type="text" class="input-xlarge" ng-model="gallery.title" required></div>
+                <div>Author:<br /><input type="text" ng-model="gallery.author"></div>
+                <div>Shortlink:<br /><input type="text" ng-model="gallery.shortlink"></div>
+                <div>Tags:<br /><tag-list class="foo" tags="gallery.tags" /></div>
+                <div>Text:<br /><textarea ng-model="gallery.text"></textarea></div>
+                <button class="btn" ng-click="save()" ng-disabled="isClean() || myForm.$invalid">Create</button>
+                <button class="btn" ng-click="cancel()">Cancel</button>
+              </form>
 
-            <input type="hidden" id="gallery-id" value="{{gallery.id}}" />
-          </div>
-          <div class="span4">
-            <h2>Cover</h2>
-
-            <div class="cover">
-              <img bootstrap-modal-open="setCoverDialog" alt="" title="" src="{{cover}}" popover="" rel="popover" data-content="Click to change the cover." data-original-title="" data-placement="bottom" />
+              <input type="hidden" id="gallery-id" value="{{gallery.id}}" />
             </div>
+            <div class="span4">
+              <h2>Cover</h2>
 
-            <bootstrap-modal modal-id="setCoverDialog">
-                <div class="modal-header">
-                    <button class="close">x</button>
-                    <h3>Select a cover</h3>
-                </div>
-                <div class="modal-body">
-                    <div class="gallery-covers">
-                      <a ng-click="setCover(image)" ng-repeat="image in gallery.images">
-                        <img src="{{fink_base}}/admin/uploads/images/{{image.hash}}/thumb/{{image.filename}}" alt="{{image.title}}">
-                      </a>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <a href="#" onclick="return false;" class="btn btn-primary close">Close</a>
-                </div>
-            </bootstrap-modal>           
+              <div class="cover">
+                <img bootstrap-modal-open="setCoverDialog" alt="" title="" src="{{cover}}" popover="" rel="popover" data-content="Click to change the cover." data-original-title="" data-placement="bottom" />
+              </div>
+
+              <bootstrap-modal modal-id="setCoverDialog">
+                  <div class="modal-header">
+                      <button class="close">x</button>
+                      <h3>Select a cover</h3>
+                  </div>
+                  <div class="modal-body">
+                      <div class="gallery-covers">
+                        <a ng-click="setCover(image)" ng-repeat="image in gallery.images">
+                          <img src="{{fink_base}}/admin/uploads/images/{{image.hash}}/thumb/{{image.filename}}" alt="{{image.title}}">
+                        </a>
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                      <a href="#" onclick="return false;" class="btn btn-primary close">Close</a>
+                  </div>
+              </bootstrap-modal>           
+            </div>
+            <div style="clear: both"></div>
           </div>
         </div>
       </div>
