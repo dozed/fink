@@ -5,11 +5,12 @@ import fink.data.User
 import org.scalatra.util.RicherString._
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import net.iharder.Base64
-import org.scalatra.{ScalatraKernel}
+import org.scalatra.{ScalatraBase, ScalatraKernel}
 import org.scalatra.auth.strategy.{BasicAuthStrategy, BasicAuthSupport}
 import org.scalatra.auth.{ScentrySupport, ScentryConfig, ScentryStrategy}
+import org.scalatra.servlet.ServletBase
 
-class UserPasswordStrategy(protected val app: ScalatraKernel) extends ScentryStrategy[User] {
+class UserPasswordStrategy(protected val app: ScalatraBase) extends ScentryStrategy[User] {
 
 	private def username = app.params.get("username")
 	private def password = app.params.get("password")
@@ -39,9 +40,9 @@ class UserPasswordStrategy(protected val app: ScalatraKernel) extends ScentryStr
 		app.halt(401, "Unauthenticated")
 	}
 
-	override def afterAuthenticate(winningStrategy: Symbol, user: User) {
-		println("User has been authenticated")
-	}
+  override def afterAuthenticate(winningStrategy: String, user: User) {
+    println("User has been authenticated")
+  }
 }
 
 // trait UserPasswordMixin extends ScalatraServlet {

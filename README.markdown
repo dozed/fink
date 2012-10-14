@@ -1,7 +1,7 @@
 
 # Built with
 
-	scalatra, lift-json, scalaquery, angular.js
+	scalatra, json4s, scalaquery, angular.js
 
 # Running
 

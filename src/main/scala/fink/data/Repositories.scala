@@ -353,19 +353,30 @@ class GalleryRepository extends RepositorySupport {
   }
 
   def removeImage(galleryId: Long, imageId: Long) = db withSession {
-    byId(galleryId) match {
-      case Some(gallery) =>
-        imageRepository.byId(imageId) match {
-          case Some(image) =>
-            val deleted = GalleriesImages.where(gi => gi.galleryId === galleryId && gi.imageId === imageId).delete
-            if (gallery.coverId == imageId) {
-              Galleries.where(_.id === galleryId).map(_.coverId).update(0)
-            }
-            if (deleted > 0) Ok else NotFound("Could not find relation between gallery and image.")
-          case None => NotFound("Could not find image: %s".format(imageId))
-        }
-      case None => NotFound("Could not find gallery: %s".format(galleryId))
-    }
+    (for {
+      gallery <- byId(galleryId)
+      image <- imageRepository.byId(imageId)
+    } yield {
+      val deleted = GalleriesImages.where(gi => gi.galleryId === galleryId && gi.imageId === imageId).delete
+      if (gallery.coverId == imageId) {
+        Galleries.where(_.id === galleryId).map(_.coverId).update(0)
+      }
+      if (deleted > 0) Ok else NotFound("Could not find relation between gallery and image.")
+    }) getOrElse (NotFound("Could not find gallery or image."))
+
+    // byId(galleryId) match {
+    //   case Some(gallery) =>
+    //     imageRepository.byId(imageId) match {
+    //       case Some(image) =>
+    //         val deleted = GalleriesImages.where(gi => gi.galleryId === galleryId && gi.imageId === imageId).delete
+    //         if (gallery.coverId == imageId) {
+    //           Galleries.where(_.id === galleryId).map(_.coverId).update(0)
+    //         }
+    //         if (deleted > 0) Ok else NotFound("Could not find relation between gallery and image.")
+    //       case None => NotFound("Could not find image: %s".format(imageId))
+    //     }
+    //   case None => NotFound("Could not find gallery: %s".format(galleryId))
+    // }
   }
 
   def addTag(galleryId: Long, tagName: String) : DataResult = db withSession {

@@ -13,9 +13,9 @@ import org.scalatra.scalate.ScalateSupport
 import org.scalatra.ScalatraServlet
 import org.scalatra.servlet._
 
-import net.liftweb.json._
-import net.liftweb.json.Serialization.{read, write}
+import org.json4s._
 import java.io.File
+import org.json4s.native.Serialization
 
 class Admin extends ScalatraServlet with RepositorySupport with AuthenticationRoutes with ResourceRoutes with ScalateSupport with FileUploadSupport {
 
@@ -33,6 +33,10 @@ class Admin extends ScalatraServlet with RepositorySupport with AuthenticationRo
 
   before() {
     contentType = "text/html"
+  }
+
+  before("""/api/.+""".r) {
+    contentType = "application/json"
   }
 
   get("/") {

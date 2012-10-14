@@ -1,8 +1,8 @@
 package fink.data
 
-import net.liftweb.json._
-import net.liftweb.json.Serialization.{read => jsread, write => jswrite}
-import net.liftweb.json.JsonDSL._
+//import net.liftweb.json._
+//import net.liftweb.json.Serialization.{read => jsread, write => jswrite}
+//import net.liftweb.json.JsonDSL._
 
 // class PostSerializer extends Serializer[Post] {
 //   private val Class = classOf[Post]
