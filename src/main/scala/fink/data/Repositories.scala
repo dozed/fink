@@ -84,16 +84,14 @@ class PageRepository extends RepositorySupport {
   }
 
   def update(page: Page) = db withSession {
-    byId(page.id) match {
-      case Some(p) =>
-        Pages.where(_.id === page.id).update(page)
-        Ok
-      case None => NotFound("Could not find page: %s".format(page.id))
-    }
+    byId(page.id).map { page =>
+      Pages.where(_.id === page.id).update(page)
+      Ok
+    } getOrElse NotFound("Could not find page.")
   }
 
   def delete(pageId: Long) = db withSession {
-    if (Pages.where(_.id === pageId).delete > 0) Ok else NotFound("Could not find page: %s".format(pageId))
+    if (Pages.where(_.id === pageId).delete > 0) Ok else NotFound("Could not find page.")
   }
 
 }
@@ -140,65 +138,56 @@ class PostRepository extends RepositorySupport {
   }
 
   def update(post: Post) = db withSession {
-    byId(post.id) match {
-      case Some(p) =>
-        Posts.where(_.id === post.id).update(post)
+    byId(post.id) map { p =>
+      Posts.where(_.id === post.id).update(post)
 
-        (p.tags -- post.tags).foreach(tag => removeTag(post.id, tag.name))
-        (post.tags -- p.tags).foreach(tag => addTag(post.id, tag.name))
+      (p.tags -- post.tags).foreach(tag => removeTag(post.id, tag.name))
+      (post.tags -- p.tags).foreach(tag => addTag(post.id, tag.name))
 
-        Ok
-      case None => NotFound("Could not find post: %s".format(post.id))
-    }
+      Ok
+    } getOrElse NotFound("Could not find post.")
   }
 
   def addTag(postId: Long, tagName: String) : DataResult = db withSession {
-    byId(postId) match {
-      case Some(post) =>
-        val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
-        val pt = (for (pt <- PostTag if pt.postId === postId && pt.tagId === tagId) yield pt).firstOption
+    byId(postId) map { post =>
+      val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
+      val pt = (for (pt <- PostTag if pt.postId === postId && pt.tagId === tagId) yield pt).firstOption
 
-        if (pt.isEmpty) {
-          PostTag.insert(postId, tagId)
-          Ok
-        } else {
-          AlreadyExists
-        }
-      case None => NotFound("Could not find post: %s".format(postId))
-    }
+      if (pt.isEmpty) {
+        PostTag.insert(postId, tagId)
+        Ok
+      } else {
+        AlreadyExists
+      }
+    } getOrElse NotFound("Could not find post.")
   }
 
   // TODO exists
   def removeTag(postId: Long, tagName: String) : DataResult = db withSession {
-    byId(postId) match {
-      case Some(post) =>
-        val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
-        val pt = (for (pt <- PostTag if pt.postId === postId && pt.tagId === tagId) yield pt).firstOption
-        
-        if (!pt.isEmpty) {
-          PostTag.where(pt => pt.postId === postId && pt.tagId === tagId).delete
-        }
+    byId(postId) map { post =>
+      val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
+      val pt = (for (pt <- PostTag if pt.postId === postId && pt.tagId === tagId) yield pt).firstOption
 
-        Ok
-      case None => NotFound("Could not find post: %s".format(postId))
-    }
+      if (!pt.isEmpty) {
+        PostTag.where(pt => pt.postId === postId && pt.tagId === tagId).delete
+      }
+
+      Ok
+    } getOrElse NotFound("Could not find post.")
   }
 
   def modifyCategory(postId: Long, categoryName: String) = db withSession {
-    byId(postId) match {
-      case Some(post) =>
-        categoryRepository.byName(categoryName) match {
-          case Some(category) => 
-            Posts.where(_.id === postId).map(_.catId).update(category.id)
-            Ok
-          case None => NotFound("Could not find category: %s".format(categoryName))
-        }
-      case None => NotFound("Could not find post: %s".format(postId))
-    }
+    (for {
+      post <- byId(postId)
+      category <- categoryRepository.byName(categoryName)
+    } yield {
+      Posts.where(_.id === postId).map(_.catId).update(category.id)
+      Ok
+    }) getOrElse NotFound("Could not find post or category.")
   }
 
   def delete(postId: Long) = db withSession {
-    if (Posts.where(_.id === postId).delete > 0) Ok else NotFound("Could not find post: %s".format(postId))
+    if (Posts.where(_.id === postId).delete > 0) Ok else NotFound("Could not find post.")
   }
 
 }
@@ -223,16 +212,14 @@ class TagRepository extends RepositorySupport {
   }
 
   def update(tag: Tag) = db withSession {
-    byId(tag.id) match {
-      case Some(t) =>
-        Tags.where(_.id === tag.id).update(tag)
-        Ok
-      case None => NotFound("Could not find tag: %s".format(tag.id))
-    }
+    byId(tag.id) map { tag =>
+      Tags.where(_.id === tag.id).update(tag)
+      Ok
+    } getOrElse NotFound("Could not find tag.")
   }
 
   def delete(tagId: Long) = db withSession {
-    if (Tags.where(_.id === tagId).delete > 0) Ok else NotFound("Could not find tag: %s".format(tagId))
+    if (Tags.where(_.id === tagId).delete > 0) Ok else NotFound("Could not find tag.")
   }
 }
 
@@ -255,16 +242,14 @@ class CategoryRepository extends RepositorySupport {
   }
 
   def update(category: Category) = db withSession {
-    byId(category.id) match {
-      case Some(c) =>
-        Categories.where(_.id === category.id).update(category)
-        Ok
-      case None => NotFound("Could not find category: %s".format(category.id))
-    }
+    byId(category.id) map { c =>
+      Categories.where(_.id === category.id).update(category)
+      Ok
+    } getOrElse NotFound("Could not find category.")
   }
 
   def delete(categoryId: Long) = db withSession {
-    if (Categories.where(_.id === categoryId).delete > 0) Ok else NotFound("Could not find category: %s".format(categoryId))
+    if (Categories.where(_.id === categoryId).delete > 0) Ok else NotFound("Could not find category.")
   }
 }
 
@@ -300,17 +285,14 @@ class GalleryRepository extends RepositorySupport {
   } yield tag
 
   def update(gallery: Gallery) = db withSession {
-    byId(gallery.id) match {
-      case Some(g) =>
-        Galleries.where(_.id === gallery.id).update(gallery)
+    byId(gallery.id) map { g =>
+      Galleries.where(_.id === gallery.id).update(gallery)
 
-        (g.tags -- gallery.tags).foreach(tag => removeTag(gallery.id, tag.name))
-        (gallery.tags -- g.tags).foreach(tag => addTag(gallery.id, tag.name))
+      (g.tags -- gallery.tags).foreach(tag => removeTag(gallery.id, tag.name))
+      (gallery.tags -- g.tags).foreach(tag => addTag(gallery.id, tag.name))
 
-        Ok
-      case None =>
-        NotFound("Could not find gallery: %s".format(gallery.id))
-    }
+      Ok
+    } getOrElse NotFound("Could not find gallery.")
   }
 
   def updateImageOrder(id: Long, imageIds: List[Long]) = db withSession {
@@ -334,21 +316,17 @@ class GalleryRepository extends RepositorySupport {
   }
 
   def addImage(galleryId: Long, imageId: Long) = db withSession {
-    byId(galleryId) match {
-      case Some(gallery) =>
-        imageRepository.byId(imageId) match {
-          case Some(image) =>
-            val gi = GalleriesImages.where(gi => gi.galleryId === galleryId).map(_.imageId).list
-            gi.filter(_ == imageId).headOption match {
-              case Some(gi) =>
-                AlreadyExists
-              case None =>
-                GalleriesImages.insert(galleryId, imageId, gi.size.toLong)
-                Ok
-            }
-          case None => NotFound("Could not find image: %s".format(imageId))
-        }
-      case None => NotFound("Could not find gallery: %s".format(galleryId))
+    (for {
+      gallery <- byId(galleryId)
+      image <- imageRepository.byId(imageId)
+    } yield {
+      val gi = GalleriesImages.where(gi => gi.galleryId === galleryId).map(_.imageId).list
+      gi.filter(_ == imageId).headOption match {
+        case Some(gi) => AlreadyExists
+        case None => GalleriesImages.insert(galleryId, imageId, gi.size.toLong); Ok
+      }
+    }) getOrElse {
+      NotFound("Could not find gallery or image.")
     }
   }
 
@@ -362,53 +340,37 @@ class GalleryRepository extends RepositorySupport {
         Galleries.where(_.id === galleryId).map(_.coverId).update(0)
       }
       if (deleted > 0) Ok else NotFound("Could not find relation between gallery and image.")
-    }) getOrElse (NotFound("Could not find gallery or image."))
-
-    // byId(galleryId) match {
-    //   case Some(gallery) =>
-    //     imageRepository.byId(imageId) match {
-    //       case Some(image) =>
-    //         val deleted = GalleriesImages.where(gi => gi.galleryId === galleryId && gi.imageId === imageId).delete
-    //         if (gallery.coverId == imageId) {
-    //           Galleries.where(_.id === galleryId).map(_.coverId).update(0)
-    //         }
-    //         if (deleted > 0) Ok else NotFound("Could not find relation between gallery and image.")
-    //       case None => NotFound("Could not find image: %s".format(imageId))
-    //     }
-    //   case None => NotFound("Could not find gallery: %s".format(galleryId))
-    // }
+    }) getOrElse {
+      NotFound("Could not find gallery or image.")
+    }
   }
 
   def addTag(galleryId: Long, tagName: String) : DataResult = db withSession {
-    byId(galleryId) match {
-      case Some(gallery) =>
-        val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
-        val gt = (for (gt <- GalleriesTags if gt.galleryId === galleryId && gt.tagId === tagId) yield gt).firstOption
+    byId(galleryId) map { gallery =>
+      val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
+      val gt = (for (gt <- GalleriesTags if gt.galleryId === galleryId && gt.tagId === tagId) yield gt).firstOption
 
-        if (gt.isEmpty) {
-          GalleriesTags.insert(galleryId, tagId)
-          Ok
-        } else {
-          AlreadyExists
-        }
-      case None => NotFound("Could not find gallery: %s".format(galleryId))
-    }
+      if (gt.isEmpty) {
+        GalleriesTags.insert(galleryId, tagId)
+        Ok
+      } else {
+        AlreadyExists
+      }
+    } getOrElse NotFound("Could not find gallery.")
   }
 
   // TODO exists
   def removeTag(galleryId: Long, tagName: String) : DataResult = db withSession {
-    byId(galleryId) match {
-      case Some(gallery) =>
-        val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
-        val gt = (for (gt <- GalleriesTags if gt.galleryId === galleryId && gt.tagId === tagId) yield gt).firstOption
-        
-        if (!gt.isEmpty) {
-          GalleriesTags.where(gt => gt.galleryId === galleryId && gt.tagId === tagId).delete
-        }
+    byId(galleryId) map { gallery =>
+      val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
+      val gt = (for (gt <- GalleriesTags if gt.galleryId === galleryId && gt.tagId === tagId) yield gt).firstOption
 
-        Ok
-      case None => NotFound("Could not find gallery: %s".format(galleryId))
-    }
+      if (!gt.isEmpty) {
+        GalleriesTags.where(gt => gt.galleryId === galleryId && gt.tagId === tagId).delete
+      }
+
+      Ok
+    } getOrElse NotFound("Could not find gallery.")
   }
 
   def setCover(galleryId: Long, coverId: Long) : DataResult = db withSession {
@@ -418,7 +380,7 @@ class GalleryRepository extends RepositorySupport {
     } yield {
       Galleries.where(_.id === galleryId).map(_.coverId).update(coverId)
       Ok
-    }) getOrElse NotFound("Could not find gallery: %s".format(galleryId))
+    }) getOrElse NotFound("Could not find gallery.")
   }
 }
 
@@ -442,12 +404,12 @@ class ImageRepository extends RepositorySupport {
 
   def update(image: Image) = db withSession {
     val updated = Images.where(_.id === image.id).update(image)
-    if (updated > 0) Ok else NotFound("Could not find image: %s".format(image.id))
+    if (updated > 0) Ok else NotFound("Could not find image.")
   }
 
   // TODO gallery references: db constraints, error handling
   def delete(id: Long) : DataResult = db withSession {
     val count = Images.where(_.id === id).delete
-    if (count > 0) Ok else NotFound("Could not find image: %s".format(id))
+    if (count > 0) Ok else NotFound("Could not find image.")
   }
 }

@@ -4,12 +4,11 @@ import fink.data._
 import fink.support._
 
 import org.json4s._
-import org.json4s.native.Serialization
 
 import org.scalatra.fileupload.FileUploadSupport
 import org.scalatra.ScalatraServlet
 
-import org.scalatra.json.{NativeJsonSupport, NativeJsonOutput, JValueResult}
+import org.scalatra.json.{NativeJsonSupport, JValueResult}
 
 trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUploadSupport with NativeJsonSupport with JValueResult {
 
