@@ -1,25 +1,17 @@
 package fink.web
 
-import scala.collection.JavaConversions._
-import java.lang.{Long=>JLong}
-
 import fink.data._
 import fink.support._
-
-import javax.servlet.ServletConfig
 
 import org.scalatra.fileupload.FileUploadSupport
 import org.scalatra.scalate.ScalateSupport
 import org.scalatra.ScalatraServlet
-import org.scalatra.servlet._
 
-import org.json4s._
 import java.io.File
-import org.json4s.native.Serialization
 
 class Admin extends ScalatraServlet with RepositorySupport with AuthenticationRoutes with ResourceRoutes with ScalateSupport with FileUploadSupport {
 
-  override implicit val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category], classOf[Tag]))) + FieldSerializer[Post]()  + FieldSerializer[Gallery]() + FieldSerializer[Image]()
+  implicit val jsonFormats = FinkApiFormats()
 
   def adminTemplateBase = "/WEB-INF/admin"
 

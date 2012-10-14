@@ -11,11 +11,10 @@ import org.scalatra.ScalatraServlet
 
 import org.scalatra.json.{NativeJsonSupport, NativeJsonOutput, JValueResult}
 
-trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUploadSupport with NativeJsonSupport with NativeJsonOutput with JValueResult {
+trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUploadSupport with NativeJsonSupport with JValueResult {
 
-  def jsread[T: Manifest](s: String) = {
-    implicit val jsonFormats = Serialization.formats(ShortTypeHints(List(classOf[Page], classOf[Category], classOf[Tag]))) + FieldSerializer[Post]() + FieldSerializer[Page]() + FieldSerializer[Gallery]() + FieldSerializer[Image]()
-    parse(s).extract(jsonFormats, manifest[T])
+  def extract[T: Manifest](s: String) = {
+    parse(s).extract(FinkApiFormats(), manifest[T])
   }
 
   get("/api/pages") {
@@ -23,7 +22,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
   }
 
   post("/api/pages") {
-    val page = jsread[Page](request.body)
+    val page = extract[Page](request.body)
     val id = pageRepository.create(page.date, page.title, page.author, page.shortlink, page.text)
 
     pageRepository.byId(id) match {
@@ -42,7 +41,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
   }
 
   put("/api/pages/:id") {
-    val page = jsread[Page](request.body)
+    val page = extract[Page](request.body)
 
     pageRepository.update(page) match {
       case Ok => halt(204)
@@ -64,7 +63,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
   }
 
   post("/api/posts") {
-    val post = jsread[Post](request.body)
+    val post = extract[Post](request.body)
     val id = postRepository.create(post)
 
     postRepository.byId(id) match {
@@ -83,7 +82,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
   }
 
   put("/api/posts/:id") {
-    val post = jsread[Post](request.body)
+    val post = extract[Post](request.body)
 
     postRepository.update(post) match {
       case Ok => halt(204)
@@ -99,7 +98,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
       case NotFound(message) => halt(404)
     }
   }
- 
+
   get("/api/posts/:id/tags") {
     val id = params("id").toLong
 
@@ -132,7 +131,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
 
   get("/api/posts/:id/category") {
     val id = params("id").toLong
-    
+
     postRepository.byId(id) match {
       case Some(post) => post.category.getOrElse(halt(404))
       case None => halt(404)
@@ -142,7 +141,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
   put("/api/posts/:id/category/:name") {
     val id = params("id").toLong
     val name = params("name")
-    
+
     // alternative: retrieve post, retrieve category, clone post with new category, update post
     postRepository.modifyCategory(id, name) match {
       case Ok => halt(204)
@@ -156,7 +155,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
 
   get("/api/categories/:id") {
     val id = params("id").toLong
-    
+
     categoryRepository.byId(id) match {
       case Some(category) => category
       case None => halt(404)
@@ -164,9 +163,9 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
   }
 
   post("/api/categories") {
-    val category = jsread[Category](request.body)
+    val category = extract[Category](request.body)
     val id = categoryRepository.create(category.name) // unique constraint
-    
+
     categoryRepository.byId(id) match {
       case Some(category) => category
       case None => halt(500)
@@ -174,7 +173,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
   }
 
   put("/api/categories/:id") {
-    val category = jsread[Category](request.body)
+    val category = extract[Category](request.body)
     val id = params("id").toLong
 
     categoryRepository.update(category) match {
@@ -198,7 +197,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
 
   get("/api/tags/:id") {
     val id = params("id").toLong
-    
+
     tagRepository.byId(id) match {
       case Some(tag) => tag
       case None => halt(404)
@@ -206,9 +205,9 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
   }
 
   post("/api/tags") {
-    val tag = jsread[Tag](request.body)
+    val tag = extract[Tag](request.body)
     val id = tagRepository.create(tag.name) // unique constraint
-    
+
     tagRepository.byId(id) match {
       case Some(tag) => tag
       case None => halt(500)
@@ -216,7 +215,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
   }
 
   put("/api/tags/:id") {
-    val tag = jsread[Tag](request.body)
+    val tag = extract[Tag](request.body)
     val id = params("id").toLong
 
     tagRepository.update(tag) match {
@@ -239,7 +238,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
   }
 
   post("/api/galleries") {
-    val gallery = jsread[Gallery](request.body)
+    val gallery = extract[Gallery](request.body)
     val id = galleryRepository.create(gallery.coverId, gallery.date, gallery.title, gallery.author, gallery.shortlink, gallery.text, gallery.tags.map(_.name))
 
     galleryRepository.byId(id) match {
@@ -259,7 +258,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
 
   put("/api/galleries/:id") {
     val id = params("id").toLong
-    val gallery = jsread[Gallery](request.body)
+    val gallery = extract[Gallery](request.body)
 
     galleryRepository.update(gallery) match {
       case Ok => halt(204)
@@ -318,7 +317,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
       case NotFound(message) => halt(404, message)
     }
   }
- 
+
   delete("/api/galleries/:galleryId/images/:imageId") {
     val galleryId = params("galleryId").toLong
     val imageId = params("imageId").toLong
@@ -349,10 +348,10 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
       case None => halt(404, "Could not find image: %s".format(id))
     }
   }
- 
+
   put("/api/images/:id") {
     val id = params("id").toLong
-    val image = jsread[Image](request.body)
+    val image = extract[Image](request.body)
 
     imageRepository.update(image) match {
       case Ok => halt(204)
