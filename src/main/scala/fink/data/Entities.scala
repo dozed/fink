@@ -1,9 +1,5 @@
 package fink.data
 
-import scala.collection.mutable.HashSet
-
-import org.joda.time.DateTime;
-
 case class User(id: Long, name: String, password: String)
 
 case class Tag(id: Long, name: String)
