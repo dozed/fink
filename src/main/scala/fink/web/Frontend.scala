@@ -9,8 +9,6 @@ class Frontend extends ScalatraServlet with ApiFormats with ScalateSupport with 
 
   override def jade(template: String, attributes: (String, Any)*) = {
     templateAttributes("layout") = ("/frontend/layouts/default.jade")
-    templateAttributes("galleryRepository") = galleryRepository
-    templateAttributes("posts") = postRepository.findAll
     super.jade("/frontend/%s.jade".format(template), attributes:_*)
   }
   

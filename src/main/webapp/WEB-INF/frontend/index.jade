@@ -1,11 +1,8 @@
-- import org.joda.time.DateTime
-- import fink.support.TemplateHelper._
-
--@ val posts: List[fink.data.Post]
+-import fink.support.TemplateHelper._
 
 h1 Posts
 
-- for (post <- posts)
+-for (post <- postRepository.findAll)
 	h2
 		a(href={uri("/posts/" + post.title.toLowerCase.replaceAll(" ", "-"))}) #{post.title}
 	

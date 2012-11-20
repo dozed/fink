@@ -2,8 +2,9 @@ package fink.support
 
 import org.fusesource.scalate.servlet.ServletRenderContext._
 import org.joda.time.format.DateTimeFormat
+import fink.data.RepositorySupport
 
-object TemplateHelper {
+object TemplateHelper extends RepositorySupport {
 
   def base(path: String) = {
     Config.webBase + path
