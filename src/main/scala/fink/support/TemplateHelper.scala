@@ -2,12 +2,12 @@ package fink.support
 
 import org.fusesource.scalate.servlet.ServletRenderContext._
 
-object Theming {
+object TemplateHelper {
 
   def base(path: String) = {
     Config.webBase + path
   }
-    
+
   def themeBase(path: String) = {
     //renderContext.uri("/themes/" + themeName + (if (path.startsWith("/")) "") + path)
     Config.webBase + "/themes/" + Config.theme + path

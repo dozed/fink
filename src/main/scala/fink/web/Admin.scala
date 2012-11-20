@@ -5,36 +5,22 @@ import fink.support._
 
 import org.scalatra.fileupload.FileUploadSupport
 import org.scalatra.scalate.ScalateSupport
-import org.scalatra.ScalatraServlet
+import org.scalatra.{util, ScalatraServlet}
 
 import java.io.File
 
 class Admin extends ScalatraServlet with RepositorySupport with AuthenticationRoutes with ResourceRoutes with MediaSupport with ScalateSupport with FileUploadSupport {
 
-  implicit val jsonFormats = FinkApiFormats()
-
-  def adminTemplateBase = "/WEB-INF/admin"
-
-  def uri(uri: String) = {
-    if (uri.startsWith("/")) {
-      request.getContextPath + uri
-    } else {
-      uri
-    }
-  }
-
-  before() {
-    contentType = "text/html"
-  }
+  override implicit val jsonFormats = FinkApiFormats()
 
   before("""/api/.+""".r) {
-    contentType = "application/json"
+    contentType = formats("json")
   }
 
   get("/") {
-    if (request.getPathInfo == null) redirect("/admin/")
+    contentType = formats("html")
     templateAttributes("layout") = ("/admin/layouts/default.jade")
-    jade("/admin/index.jade") 
+    jade("/admin/index.jade")
   }
 
   notFound {

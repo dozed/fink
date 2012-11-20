@@ -3,8 +3,9 @@ package fink.web
 import org.scalatra.ScalatraBase
 import fink.support.{Config, MediaManager}
 import java.io.File
+import fink.data.RepositorySupport
 
-trait MediaSupport extends ScalatraBase {
+trait MediaSupport extends ScalatraBase with RepositorySupport {
 
   get("/uploads/images/:hash/:spec/:file") {
     (for {
