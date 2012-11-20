@@ -1,21 +1,17 @@
 package fink.support
 
-import scala.collection.JavaConversions._
-
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.regex.Pattern
 
-import org.apache.commons.fileupload.FileItem
 import org.apache.commons.io.IOUtils
-import fink.data._
 
 import javax.imageio.ImageIO
 import java.security.MessageDigest
+import org.scalatra.servlet.FileItem
 
 // Image specifications
 sealed abstract case class ImageSpec(name: String)

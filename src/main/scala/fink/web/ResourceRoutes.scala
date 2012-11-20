@@ -3,12 +3,10 @@ package fink.web
 import fink.data._
 import fink.support._
 
-import org.json4s._
-
-import org.scalatra.fileupload.FileUploadSupport
+import org.scalatra.servlet.FileUploadSupport
 import org.scalatra.ScalatraServlet
 
-import org.json4s.native.Serialization.{read, write}
+import org.json4s.native.Serialization.read
 
 import org.scalatra.json.{NativeJsonSupport, JValueResult}
 

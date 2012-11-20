@@ -1,17 +1,14 @@
 package fink.web
 
 import fink.data._
-import fink.support._
 
-import org.scalatra.fileupload.FileUploadSupport
+import org.scalatra.servlet.FileUploadSupport
 import org.scalatra.scalate.ScalateSupport
-import org.scalatra.{util, ScalatraServlet}
-
-import java.io.File
+import org.scalatra.ScalatraServlet
 
 class Admin extends ScalatraServlet with RepositorySupport with AuthenticationRoutes with ResourceRoutes with MediaSupport with ScalateSupport with FileUploadSupport {
 
-  override implicit val jsonFormats = FinkApiFormats()
+  override implicit protected val jsonFormats = FinkApiFormats()
 
   before("""/api/.+""".r) {
     contentType = formats("json")
