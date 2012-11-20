@@ -15,6 +15,10 @@ class Admin extends ScalatraServlet with ScalateSupport with RepositorySupport w
 
   get("/") {
     contentType = formats("html")
+    if (request.getPathInfo == null) {
+      response.redirect(url("/"))
+      halt()
+    }
     jade("/admin/index.jade", "layout" -> "/admin/layouts/default.jade")
   }
 
