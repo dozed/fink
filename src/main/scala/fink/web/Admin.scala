@@ -6,7 +6,7 @@ import org.scalatra.servlet.FileUploadSupport
 import org.scalatra.scalate.ScalateSupport
 import org.scalatra.ScalatraServlet
 
-class Admin extends ScalatraServlet with RepositorySupport with AuthenticationRoutes with ResourceRoutes with MediaSupport with ScalateSupport with FileUploadSupport {
+class Admin extends ScalatraServlet with ScalateSupport with RepositorySupport with MediaSupport with AuthenticationRoutes with ResourceRoutes {
 
   override implicit protected val jsonFormats = FinkApiFormats()
 
