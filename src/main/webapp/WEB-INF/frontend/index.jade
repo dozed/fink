@@ -1,4 +1,5 @@
 - import org.joda.time.DateTime
+- import fink.support.TemplateHelper._
 
 -@ val posts: List[fink.data.Post]
 
@@ -8,7 +9,7 @@ h1 Posts
 	h2
 		a(href={uri("/posts/" + post.title.toLowerCase.replaceAll(" ", "-"))}) #{post.title}
 	
-	p Date: #{new DateTime(post.date)}
+	p Date: #{formatDate(post.date)}
 	p Tags: #{post.tags.map(_.name).mkString(", ")}
 	p Category: #{post.category.map(_.name).getOrElse("")}
 	p Author: #{post.author}

@@ -1,6 +1,7 @@
 package fink.support
 
 import org.fusesource.scalate.servlet.ServletRenderContext._
+import org.joda.time.format.DateTimeFormat
 
 object TemplateHelper {
 
@@ -19,6 +20,12 @@ object TemplateHelper {
 
   def adminAssets(path: String) = {
     Config.webBase + "/admin" + path
+  }
+
+  private val fmt = DateTimeFormat.forPattern("yyyy-MM-dd")
+
+  def formatDate(date: Long) = {
+    fmt.print(date)
   }
 
 }
