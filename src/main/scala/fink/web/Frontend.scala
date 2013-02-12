@@ -33,6 +33,16 @@ class Frontend extends ScalatraServlet with ApiFormats with ScalateSupport with 
     }
   }
 
+  import scala.slick.driver.H2Driver.simple._
+  import Database.threadLocalSession
+
+  get("/tag/:tag/?") {
+    postRepository.byTag(params("tag")) match {
+      case Nil => halt(404, "Not found.")
+      case posts: List[_] => jade("archive", "posts" -> posts)
+    }
+  }
+
   get("/pages/:shortlink") {
     val shortlink = params("shortlink")
 

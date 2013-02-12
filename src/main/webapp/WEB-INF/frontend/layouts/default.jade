@@ -1,6 +1,7 @@
 -import fink.support.TemplateHelper._
 -@ var body: String
 -@ var title : String = "fink"
+-@ var classes : String = "layout-2cr"
 
 !!! Basic
 html(lang="en")
@@ -15,9 +16,9 @@ html(lang="en")
 
     title= title
   
-  body.archive.date.layout-2cr
+  body(class=classes)
     div#page.hfeed
-      #branding(role="banner" class="clearfix")
+      header#branding(role="banner" class="clearfix")
         hgroup
           h1#site-title
             span
@@ -58,3 +59,10 @@ html(lang="en")
             ul
               li
                 a(href={uri("/admin")}) Log in
+
+      footer#colophon(role="contentinfo")
+        #site-generator
+          | Powered by
+          a(rel="generator" title="Publishing Platform" href="https://github.com/dozed/fink") Fink
+          | and
+          a(rel="generator" title="Download the Foghorn Theme" href="http://wptheming.com/foghorn/") Foghorn

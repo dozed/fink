@@ -1,10 +1,13 @@
 -import fink.support.TemplateHelper._
+-import fink.data._
 
 -attributes("classes") = "archive date layout-2cr"
 
+-@ val posts : List[Post]
+
 h1 Posts
 
--for (post <- postRepository.findAll)
+-for (post <- posts)
   .content-wrap
     article.post.type-post.status-publish.format-standard.hentry
       div
@@ -12,7 +15,7 @@ h1 Posts
           h1.entry-title
             a(rel="bookmark" title={"Permalink to %s".format(post.title)} href={postUri(post)})= post.title
           .entry-meta
-            a(rel="bookmark" title={formatDate(post.date, "hh:mm a")} href={postUri(post)})
+            a(rel="bookmark" title={formatDate(post.date, "h:m a")} href={postUri(post)})
               time.entry-date(pubdate="" datetime={formatDate(post.date)})= formatDate(post.date)
 
         .entry-summary

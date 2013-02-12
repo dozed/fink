@@ -142,8 +142,12 @@ class PostRepository extends RepositorySupport {
     Posts.byId(id).firstOption.map(mapPost)
   }
 
+  def byTag(tag: String) : List[Post] = db withSession {
+    Posts.byTag(tag).list.map(mapPost)
+  }
+
   def byShortlink(shortlink: String) : Option[Post] = db withSession {
-    Posts.byShortlink(shortlink).firstOption
+    Posts.byShortlink(shortlink).firstOption.map(mapPost)
   }
 
   def create(date: Long, title: String, author: String, shortlink: String, text: String, tags: List[String], cat: Option[Category]) : Long = db withSession {

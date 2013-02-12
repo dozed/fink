@@ -34,6 +34,14 @@ object Posts extends Table[Post]("posts") {
 
   val byId = createFinderBy(_.id)
   val byShortlink = createFinderBy(_.shortlink)
+
+  val byTag = for {
+    tagName <- Parameters[String]
+    t <- Tags if (t.name === tagName)
+    pt <- PostTag if (pt.tagId === t.id)
+    p <- Posts if (pt.postId === p.id)
+  } yield p
+
 }
 
 object PostTag extends Table[(Long, Long)]("post_tags") {

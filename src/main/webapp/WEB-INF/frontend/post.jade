@@ -1,5 +1,9 @@
 -import fink.support.TemplateHelper._
--@ val post : fink.data.Post
+-import fink.data._
+
+-@ val post : Post
+
+-attributes("classes") = "single single-post single-format-aside layout-2cr"
 
 .content-wrap.clearfix
   article#post.type-post.status-publish.format-aside.hentry.category-uncategorized.tag-post-formats.clearfix
@@ -12,7 +16,8 @@
 
     .entry-content
       :!markdown
-        #{post.text}    
+        #{post.text}
+
 
   footer.entry-meta
     .post-date
@@ -23,10 +28,13 @@
         span.sep , 
         span.year= formatDate(post.date, "YYYY")
 
+    .categories
+      span Categorized:
+      a(rel="category tag" title="View all posts in Uncategorized" href={uri("/category/uncategorized/")}) Uncategorized
+
     - if (post.tags.size > 0)
       .tags
         span
           | Tagged:
           - for (tag <- post.tags)
             a(rel="tag" href={uri("/tag/" + tag.name)})= tag.name
-
