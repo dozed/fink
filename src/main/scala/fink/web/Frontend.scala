@@ -7,7 +7,7 @@ import org.scalatra.{ApiFormats, ScalatraServlet}
 
 class Frontend extends ScalatraServlet with ApiFormats with ScalateSupport with RepositorySupport with MediaSupport {
 
-  override def jade(template: String, attributes: (String, Any)*) = {
+  override def jade(template: String, attributes: (String, Any)*)(implicit request: javax.servlet.http.HttpServletRequest, response: javax.servlet.http.HttpServletResponse) = {
     templateAttributes("layout") = ("/frontend/layouts/default.jade")
     super.jade("/frontend/%s.jade".format(template), attributes:_*)
   }

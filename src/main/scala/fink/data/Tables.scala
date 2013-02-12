@@ -1,11 +1,7 @@
 package fink.data
 
-import org.scalaquery.session._
-import org.scalaquery.session.Database.threadLocalSession
-import org.scalaquery.ql._
-import org.scalaquery.ql.TypeMapper._
-import org.scalaquery.ql.extended.H2Driver.Implicit._
-import org.scalaquery.ql.extended.{ExtendedTable => Table}
+import scala.slick.driver.H2Driver.simple._
+import Database.threadLocalSession
 
 object Pages extends Table[Page]("pages") {
   def id = column[Long]("id", O.AutoInc, O.PrimaryKey)

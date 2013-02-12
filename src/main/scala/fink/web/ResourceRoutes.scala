@@ -5,11 +5,11 @@ import fink.support._
 
 import org.scalatra.servlet.FileUploadSupport
 import org.scalatra.ScalatraServlet
-import org.scalatra.json.{NativeJsonSupport, JValueResult}
+import org.scalatra.json.{JacksonJsonSupport, JValueResult}
 
-import org.json4s.native.Serialization.read
+import org.json4s.jackson.Serialization.read
 
-trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUploadSupport with NativeJsonSupport with JValueResult {
+trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUploadSupport with JacksonJsonSupport {
 
   get("/api/pages") {
     pageRepository.findAll

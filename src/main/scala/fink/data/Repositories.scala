@@ -2,21 +2,17 @@ package fink.data
 
 import fink.support._
 
-import org.scalaquery.session._
-import org.scalaquery.session.Database.threadLocalSession
-import org.scalaquery.ql._
-import org.scalaquery.ql.TypeMapper._
-import org.scalaquery.ql.extended.H2Driver.Implicit._
-import org.scalaquery.ql.extended.{ExtendedTable => Table}
+import scala.slick.driver.H2Driver.simple._
+import Database.threadLocalSession
 
-case class DataResult
+sealed trait DataResult
 
-case class Success extends DataResult
-case object Ok extends Success
+trait Success extends DataResult
+object Ok extends Success
 case class Created(id: Long) extends Success
 
-case class Failure extends DataResult
-case object AlreadyExists extends Failure
+trait Failure extends DataResult
+object AlreadyExists extends Failure
 case class NotFound(message: String) extends Failure
 case class Error(message: String) extends Failure
 
@@ -141,8 +137,8 @@ class PostRepository extends RepositorySupport {
     byId(post.id) map { p =>
       Posts.where(_.id === post.id).update(post)
 
-      (p.tags -- post.tags).foreach(tag => removeTag(post.id, tag.name))
-      (post.tags -- p.tags).foreach(tag => addTag(post.id, tag.name))
+      p.tags.filterNot(post.tags.contains).foreach(tag => removeTag(post.id, tag.name))
+      post.tags.filterNot(p.tags.contains).foreach(tag => addTag(post.id, tag.name))
 
       Ok
     } getOrElse NotFound("Could not find post.")
@@ -288,8 +284,8 @@ class GalleryRepository extends RepositorySupport {
     byId(gallery.id) map { g =>
       Galleries.where(_.id === gallery.id).update(gallery)
 
-      (g.tags -- gallery.tags).foreach(tag => removeTag(gallery.id, tag.name))
-      (gallery.tags -- g.tags).foreach(tag => addTag(gallery.id, tag.name))
+      g.tags.filterNot(gallery.tags.contains).foreach(tag => removeTag(gallery.id, tag.name))
+      gallery.tags.filterNot(g.tags.contains).foreach(tag => addTag(gallery.id, tag.name))
 
       Ok
     } getOrElse NotFound("Could not find gallery.")

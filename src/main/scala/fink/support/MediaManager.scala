@@ -14,12 +14,14 @@ import java.security.MessageDigest
 import org.scalatra.servlet.FileItem
 
 // Image specifications
-sealed abstract case class ImageSpec(name: String)
-case class FullImageSpec(override val name: String) extends ImageSpec(name)
-case class KeepRatioImageSpec(override val name: String, max: Int) extends ImageSpec(name)
-case class SquareImageSpec(override val name: String, width: Int) extends ImageSpec(name)
+sealed trait ImageSpec {
+  def name: String
+}
+case class FullImageSpec(name: String) extends ImageSpec
+case class KeepRatioImageSpec(name: String, max: Int) extends ImageSpec
+case class SquareImageSpec(name: String, width: Int) extends ImageSpec
 
-sealed abstract case class MediaUpload
+sealed trait MediaUpload
 case class ImageUpload(hash: String, contentType: String, filename: String)
 case class DocumentUpload(hash: String, contentType: String, filename: String)
 
