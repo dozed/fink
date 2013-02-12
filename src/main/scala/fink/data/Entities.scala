@@ -12,6 +12,7 @@ case class Post(
   date: Long,
   title: String,
   author: String,
+  shortlink: String,
   text: String) {
 
   var tags = List[Tag]()

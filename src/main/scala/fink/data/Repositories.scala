@@ -122,6 +122,18 @@ class PageRepository extends RepositorySupport {
 
 class PostRepository extends RepositorySupport {
 
+  private def mapPost(post: Post) = {
+    post.tags = postTags(post.id).list
+    post.category = categoryRepository.byId(post.catId)
+    post
+  }
+
+  private val postTags = for {
+    postId <- Parameters[Long]
+    pt <- PostTag if pt.postId === postId
+    tag <- Tags if tag.id === pt.tagId
+  } yield tag
+
   def findAll : Seq[Post] = db withSession {
     (for (post <- Posts) yield post).list.map(mapPost)
   }
@@ -130,33 +142,23 @@ class PostRepository extends RepositorySupport {
     Posts.byId(id).firstOption.map(mapPost)
   }
 
-  def byTitle(title: String) : Option[Post] = db withSession {
-    Posts.byTitle(title).firstOption.map(mapPost)
+  def byShortlink(shortlink: String) : Option[Post] = db withSession {
+    Posts.byShortlink(shortlink).firstOption
   }
 
-  def mapPost(post: Post) = {
-    post.tags = postTags(post.id).list
-    post.category = categoryRepository.byId(post.catId)
-    post
-  }
+  def create(date: Long, title: String, author: String, shortlink: String, text: String, tags: List[String], cat: Option[Category]) : Long = db withSession {
+    val sl = if (shortlink != "") shortlink else TemplateHelper.slug(title)
 
-  val postTags = for {
-    postId <- Parameters[Long]
-    pt <- PostTag if pt.postId === postId
-    tag <- Tags if tag.id === pt.tagId
-  } yield tag
-
-  def create(post: Post) : Long = db withSession {
-    val catId = post.category match {
-      case Some(cat) if cat.id == 0 => categoryRepository.create(cat.name) // ...
-      case Some(cat) => cat.id
+    val catId = cat match {
+      case Some(c) if c.id == 0 => categoryRepository.create(c.name) // ...
+      case Some(c) => c.id
       case None => 0
     }
 
-    Posts.withoutId.insert((post.date, catId, post.title, post.author, post.text))
+    Posts.withoutId.insert((date, catId, title, author, sl, text))
     val postId = DBUtil.insertId
 
-    post.tags.foreach(tag => addTag(postId, tag.name))
+    tags.foreach(tag => addTag(postId, tag))
 
     postId
   }

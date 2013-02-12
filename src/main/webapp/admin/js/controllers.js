@@ -15,7 +15,7 @@ function CreatePostController($scope, $location, Tag, Post, Category) {
   $scope.tags = Tag.query();
   $scope.posts = Post.query();
   $scope.categories = Category.query();
-  $scope.post = new Post({catId: 0, date: "", title: "", author: "", text: "", tags: []});
+  $scope.post = new Post({catId: 0, date: "", title: "", shortlink: "", author: "", text: "", tags: []});
 
   $scope.save = function() {
     $scope.post.id = 0;

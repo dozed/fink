@@ -3,10 +3,28 @@
 h1 Posts
 
 -for (post <- postRepository.findAll)
-	h2
-		a(href={uri("/posts/" + post.title.toLowerCase.replaceAll(" ", "-"))}) #{post.title}
-	
-	p Date: #{formatDate(post.date)}
-	p Tags: #{post.tags.map(_.name).mkString(", ")}
-	p Category: #{post.category.map(_.name).getOrElse("")}
-	p Author: #{post.author}
+  .content-wrap
+    article.post.type-post.status-publish.format-standard.hentry
+      div
+        header.entry-header
+          h1.entry-title
+            a(rel="bookmark" title="Permalink to Layout Test" href={postUri(post)})= post.title
+          .entry-meta
+            a(rel="bookmark" title="11:02 pm" href={postUri(post)})
+              time.entry-date(pubdate="" datetime={formatDate(post.date)})= formatDate(post.date)
+
+        .entry-summary
+          p
+            | “I never tried to prove nothing, just wanted to give a good show. My life has always been my music, it’s always come first, but the music ain’t worth nothing if you can’t lay it on the public. The main …
+            a(href={postUri(post)})
+              | Continue reading
+              span.meta-nav →
+
+        footer.entry-meta
+          span.entry-utility-prep.entry-utility-prep-cat-links Posted in
+          - if (post.tags.size > 0)
+            - for (tag <- post.tags)
+              a(rel="category tag" title={"View all posts in " + tag.name} href={uri("/category/" + tag.name)})= tag.name
+          - else
+            a(rel="category tag" title="View all posts in Uncategorized" href={uri("/category/uncategorized/")}) Uncategorized
+

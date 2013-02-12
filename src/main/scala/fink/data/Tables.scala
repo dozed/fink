@@ -25,14 +25,15 @@ object Posts extends Table[Post]("posts") {
   def title = column[String]("title")
   def author = column[String]("author")
   def text = column[String]("text")
-  def withoutId = date ~ catId ~ title ~ author ~ text
-  def * = id ~ catId ~ date ~ title ~ author ~ text <> (Post, Post.unapply _)
+  def shortlink = column[String]("shortlink")
+  def withoutId = date ~ catId ~ title ~ author ~ shortlink ~ text
+  def * = id ~ catId ~ date ~ title ~ author ~ shortlink ~ text <> (Post, Post.unapply _)
 
   def category = Categories.where(_.id === catId)
   def tags = PostTag.where(_.postId === id)
 
   val byId = createFinderBy(_.id)
-  val byTitle = createFinderBy(_.title)
+  val byShortlink = createFinderBy(_.shortlink)
 }
 
 object PostTag extends Table[(Long, Long)]("post_tags") {

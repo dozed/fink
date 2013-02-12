@@ -1,5 +1,32 @@
+-import fink.support.TemplateHelper._
 -@ val post : fink.data.Post
 
-.content
-  :!markdown
-    #{post.text}
+.content-wrap.clearfix
+  article#post.type-post.status-publish.format-aside.hentry.category-uncategorized.tag-post-formats.clearfix
+    header.entry-header
+      h1.entry-title= post.title
+      .entry-meta
+        span.sep Posted 
+        a(rel="bookmark" href={postUri(post)})
+          time.entry-date(pubdate="" datetime={formatDate(post.date)})= formatDate(post.date)
+
+    .entry-content
+      :!markdown
+        #{post.text}    
+
+  footer.entry-meta
+    .post-date
+      span.sep Posted 
+      time.entry-date(pubdate="" datetime={formatDate(post.date)})
+        span.month= formatDate(post.date, "MMM")
+        span.day= formatDate(post.date, "dd")
+        span.sep , 
+        span.year= formatDate(post.date, "YYYY")
+
+    - if (post.tags.size > 0)
+      .tags
+        span
+          | Tagged:
+          - for (tag <- post.tags)
+            a(rel="tag" href={uri("/tag/" + tag.name)})= tag.name
+

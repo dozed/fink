@@ -20,28 +20,16 @@ class Frontend extends ScalatraServlet with ApiFormats with ScalateSupport with 
     jade("index")
   }
 
-  get("/post/:year/:month/:day/:title") {
-    // val year = params("year").toInt
-    // val month = params("month").toInt
-    // val day = params("day").toInt
-    // val title = params("title")
+  get("/:year/:month/:day/:shortlink/?") {
+    val year = params("year").toInt
+    val month = params("month").toInt
+    val day = params("day").toInt
+    val shortlink = params("shortlink")
     
-    // postRepository.findPost(year, month, day, title) match {
-    //  case Some(post) =>
-    //    val fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-    //    templateAttributes("post") = post
-    //    templateAttributes("date") = fmt.print(post.date)
-    //    layout("post")
-    //  case None =>
-    // }
-  }
-
-  get("/posts/:title") {
-    val title = params("title")
-    
-    postRepository.byTitle(title) match {
-      case Some(post) => jade("post", "post" -> post)
-      case None => halt(404, "Not found.")
+    // postRepository.byShortlink(year, month, day, shortlink) match {
+    postRepository.byShortlink(shortlink) match {
+     case Some(post) => jade("post", "post" -> post)
+     case None => halt(404, "Not found.")
     }
   }
 
