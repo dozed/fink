@@ -102,7 +102,8 @@ class PageRepository extends RepositorySupport {
   }
 
   def create(date: Long, title: String, author: String, shortlink: String, text: String) : Long = db withSession {
-    Pages.withoutId.insert((date, title, author, shortlink, text))
+    val sl = if (!shortlink.isEmpty) shortlink else title
+    Pages.withoutId.insert((date, title, author, sl, text))
     DBUtil.insertId
   }
 

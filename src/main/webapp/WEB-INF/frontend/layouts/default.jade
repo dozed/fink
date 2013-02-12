@@ -1,34 +1,60 @@
 -import fink.support.TemplateHelper._
 -@ var body: String
--@ var title : String = "sample page"
+-@ var title : String = "fink"
 
 !!! Basic
 html(lang="en")
-	head
-		meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
+  head
+    meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
 
-		meta(name="description" content="description goes here")
-		meta(name="keywords" content="keywords,goes,here")
-		meta(name="author" content="Your Name")
+    meta(name="author" content="Mr Foo")
+    meta(name="description" content="this is my blog")
+    meta(name="keywords" content="cool,blog")
 
-		title
-			= title
-	
-	body
-		#navigation
-			.wrapper
-				ul
-					li
-						a(href={uri("/")}) home
-				.clear
-		#galleries
-			.wrapper
-				ul
-					-for (gallery <- galleryRepository.findAll)
-						li
-							a(href={uri("/media/"+gallery.shortlink)}) #{gallery.title}
-				.clear
-		#content
-			.wrapper
-				!~~ body
-		#footer
+    link(rel="stylesheet" type="text/css" href={uri("/frontend/site.css")})
+
+    title= title
+  
+  body.archive.date.layout-2cr
+    div#page.hfeed
+      #branding(role="banner" class="clearfix")
+        hgroup
+          h1#site-title
+            span
+              a(href={uri("/")} title="Fink" rel="home") Fink
+
+        nav#access(role="navigation")
+          h1.section-heading Main menu
+          .skip-link.screen-reader-text
+            a(href="#content" title="Skip to content") Skip to content
+          .menu-primary-container
+            ul#menu-primary.menu
+              - for (page <- pageRepository.findAll)
+                li.menu-item(id={"menu-item-" + page.id} class="menu-item-type-post_type menu-item-object-page")
+                  a(href={uri("/page/" + page.shortlink)})= page.title
+
+      #main.clearfix
+        #primary
+          #content(role="main")
+            !~~ body
+
+        #secondary.widget-area(role="complementary")
+          aside#archives.widget
+            h1.widget-title Archives
+            ul
+              li
+                a(href={uri("/posts/2008/09/")} title="September 2008") September 2008
+              li
+                a(href={uri("/posts/2008/06/")} title="June 2008") June 2008
+              li
+                a(href={uri("/posts/2008/05/")} title="May 2008") May 2008
+              li
+                a(href={uri("/posts/2008/04/")} title="April 2008") April 2008
+              li
+                a(href={uri("/posts/2008/03/")} title="March 2008") March 2008
+
+          aside#meta.widget
+            h1.widget-title Meta
+            ul
+              li
+                a(href={uri("/admin")}) Log in

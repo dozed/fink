@@ -13,14 +13,8 @@ object Config {
   val properties = new Properties
   properties.load(this.getClass().getResourceAsStream("/fink.properties"))
 
-  val webBase = properties.getProperty("fink.web.base")
-  
-  val theme = properties.getProperty("fink.web.theme")
-
-  val databaseLocation = properties.getProperty("fink.database.location")
+  val theme = properties.getProperty("fink.frontend.theme")
 
   val mediaDirectory = properties.getProperty("fink.media.location")
-
-  val postCategories : List[String] = properties.getProperty("fink.post.categories").split(",").toList
 
 }
