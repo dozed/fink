@@ -37,7 +37,7 @@ object ScalatralinkeddataBuild extends Build {
           "com.typesafe.slick" %% "slick" % "1.0.0",
           "com.h2database" % "h2" % "1.3.166",
           "c3p0" % "c3p0" % "0.9.1.2",
-          "org.fusesource.scalamd" % "scalamd" % "1.5",
+          "org.fusesource.scalamd" %% "scalamd" % "1.6",
           // "org.codehaus.janino" % "janino" % "2.6.1",
           "commons-io" % "commons-io" % "2.0.1",
           // "com.typesafe" % "config" % "0.5.0"
