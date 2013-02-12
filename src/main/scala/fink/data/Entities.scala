@@ -8,7 +8,7 @@ case class Category(id: Long, name: String)
 
 case class Post(
   id: Long,
-  catId: Long,
+  catId: Long = 0L,
   date: Long,
   title: String,
   author: String,
