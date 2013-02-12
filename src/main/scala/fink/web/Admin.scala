@@ -23,7 +23,8 @@ class Admin extends ScalatraServlet with ScalateSupport with RepositorySupport w
   }
 
   notFound {
-    halt(404, <h1>Not found.  Bummer.</h1>)
+    contentType = null
+    serveStaticResource() getOrElse halt(404, "Not found.")
   }
 
 }

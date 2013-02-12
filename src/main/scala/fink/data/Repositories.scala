@@ -2,8 +2,13 @@ package fink.data
 
 import fink.support._
 
+import org.scalatra.ScalatraServlet
+
 import scala.slick.driver.H2Driver.simple._
 import Database.threadLocalSession
+
+import com.mchange.v2.c3p0.ComboPooledDataSource
+import java.util.Properties
 
 sealed trait DataResult
 
@@ -14,19 +19,40 @@ case class Created(id: Long) extends Success
 trait Failure extends DataResult
 object AlreadyExists extends Failure
 case class NotFound(message: String) extends Failure
-case class Error(message: String) extends Failure
 
 object Repositories {
 
-  val db = Database.forURL(Config.databaseLocation, driver = "org.h2.Driver")
+  def init {
+    if (_db.isEmpty) {
+      val props = new Properties
+      props.load(getClass.getResourceAsStream("/c3p0.properties"))
 
-  // TODO
-  try {
-    db withSession {
-      (Pages.ddl ++ Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl ++ GalleriesTags.ddl).create
+      val cpds = new ComboPooledDataSource
+      cpds.setProperties(props)
+
+      _cpds = Some(cpds)
+      _db = Some(Database.forDataSource(cpds))
+
+      try {
+        db withSession {
+          (Pages.ddl ++ Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl ++ GalleriesTags.ddl).create
+        }
+      } catch {
+        case e:Exception =>
+      }
     }
-  } catch {
-    case e:Exception =>
+  }
+
+  private var _cpds : Option[ComboPooledDataSource] = None
+
+  private var _db : Option[Database] = None
+
+  def db = _db.getOrElse(throw new Error("Not initialized."))
+
+  def shutdown {
+    _cpds map (_.close)
+    _cpds = None
+    _db = None
   }
 
   val pageRepository = new PageRepository
@@ -38,6 +64,7 @@ object Repositories {
 }
 
 trait RepositorySupport {
+
   def pageRepository = Repositories.pageRepository
   def postRepository = Repositories.postRepository
   def tagRepository = Repositories.tagRepository

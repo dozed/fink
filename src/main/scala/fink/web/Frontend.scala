@@ -62,7 +62,8 @@ class Frontend extends ScalatraServlet with ApiFormats with ScalateSupport with 
   }
 
   notFound {
-    halt(404, "Not found.")
+    contentType = null
+    serveStaticResource() getOrElse halt(404, "Not found.")
   }
 
 }

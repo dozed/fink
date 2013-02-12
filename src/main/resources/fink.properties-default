@@ -1,4 +1,3 @@
-fink.database.location=jdbc:h2:/tmp/fink-db
 fink.media.location=/tmp/fink-media
 fink.web.base=http://192.168.2.88:8080
 fink.web.theme=simple
