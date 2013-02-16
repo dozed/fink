@@ -1,35 +1,16 @@
 -import fink.support.TemplateHelper._
+-import fink.support.DateHelper._
 -import fink.data._
 
 -attributes("classes") = "archive date layout-2cr"
 
 -@ val posts : List[Post]
 
-h1 Posts
+header.page-header
+  h1.page-title
+    | Monthly Archives:
+    span September 2008
 
 -for (post <- posts)
-  .content-wrap
-    article.post.type-post.status-publish.format-standard.hentry
-      div
-        header.entry-header
-          h1.entry-title
-            a(rel="bookmark" title={"Permalink to %s".format(post.title)} href={postUri(post)})= post.title
-          .entry-meta
-            a(rel="bookmark" title={formatDate(post.date, "h:m a")} href={postUri(post)})
-              time.entry-date(pubdate="" datetime={formatDate(post.date)})= formatDate(post.date)
-
-        .entry-summary
-          p
-            | “I never tried to prove nothing, just wanted to give a good show. My life has always been my music, it’s always come first, but the music ain’t worth nothing if you can’t lay it on the public. The main …
-            a(href={postUri(post)})
-              | Continue reading
-              span.meta-nav →
-
-        footer.entry-meta
-          span.entry-utility-prep.entry-utility-prep-cat-links Posted in
-          - if (post.tags.size > 0)
-            - for (tag <- post.tags)
-              a(rel="category tag" title={"View all posts in " + tag.name} href={uri("/category/" + tag.name)})= tag.name
-          - else
-            a(rel="category tag" title="View all posts in Uncategorized" href={uri("/category/uncategorized/")}) Uncategorized
-
+  -attributes("post") = post
+  =include("snippet.post.jade")

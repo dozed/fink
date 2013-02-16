@@ -4,14 +4,14 @@ import org.fusesource.scalate.servlet.ServletRenderContext._
 import org.joda.time.format._
 import fink.data._
 
-object TemplateHelper extends RepositorySupport {
+object DateHelper {
 
-  private val fmt = DateTimeFormat.forPattern("yyyy-MM-dd")
-  private val yearFormat = DateTimeFormat.forPattern("yyyy")
-  private val monthFormat = DateTimeFormat.forPattern("MM")
-  private val dayFormat = DateTimeFormat.forPattern("dd")
+  protected val fmt = DateTimeFormat.forPattern("yyyy-MM-dd")
+  protected val yearFormat = DateTimeFormat.forPattern("yyyy")
+  protected val monthFormat = DateTimeFormat.forPattern("MM")
+  protected val dayFormat = DateTimeFormat.forPattern("dd")
 
-  private val formats = collection.mutable.Map[String, DateTimeFormatter]()
+  protected val formats = collection.mutable.Map[String, DateTimeFormatter]()
 
   def formatDate(date: Long) = {
     fmt.print(date)
@@ -37,6 +37,12 @@ object TemplateHelper extends RepositorySupport {
   def year(date: Long) = {
     yearFormat.print(date)
   }
+
+}
+
+object TemplateHelper extends  RepositorySupport {
+
+  import DateHelper._
 
   def postUri(post: Post) = {
     renderContext.uri("/%s/%s/%s/%s/".format(year(post.date), month(post.date), day(post.date), post.shortlink))

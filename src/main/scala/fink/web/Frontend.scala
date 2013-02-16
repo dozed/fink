@@ -20,6 +20,19 @@ class Frontend extends ScalatraServlet with ApiFormats with ScalateSupport with 
     jade("index")
   }
 
+  // get("/:year/:month/?", params.getAs[Int]("year").isDefined && params.getAs[Int]("month").isDefined) {
+  get("/:year/:month/?") {
+    (for {
+      year <- params.getAs[Int]("year")
+      month <- params.getAs[Int]("month")
+    } yield {
+      postRepository.byMonth(month, year) match {
+       case Nil => halt(404, "Not found.")
+       case posts: List[_] => jade("archive", "posts" -> posts)
+      }
+    }) getOrElse pass()
+  }
+
   get("/:year/:month/:day/:shortlink/?") {
     val year = params("year").toInt
     val month = params("month").toInt
@@ -32,9 +45,6 @@ class Frontend extends ScalatraServlet with ApiFormats with ScalateSupport with 
      case None => halt(404, "Not found.")
     }
   }
-
-  import scala.slick.driver.H2Driver.simple._
-  import Database.threadLocalSession
 
   get("/tag/:tag/?") {
     postRepository.byTag(params("tag")) match {

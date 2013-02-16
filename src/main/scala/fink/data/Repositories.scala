@@ -9,6 +9,7 @@ import Database.threadLocalSession
 
 import com.mchange.v2.c3p0.ComboPooledDataSource
 import java.util.Properties
+import org.joda.time.DateTime
 
 sealed trait DataResult
 
@@ -122,6 +123,8 @@ class PageRepository extends RepositorySupport {
 
 class PostRepository extends RepositorySupport {
 
+  import DateHelper._
+
   private def mapPost(post: Post) = {
     post.tags = postTags(post.id).list
     post.category = categoryRepository.byId(post.catId)
@@ -133,6 +136,20 @@ class PostRepository extends RepositorySupport {
     pt <- PostTag if pt.postId === postId
     tag <- Tags if tag.id === pt.tagId
   } yield tag
+
+  def byMonth: Map[(Int, Int, String), Seq[Post]] = {
+    def postDateTuple(p: Post) = (formatDate(p.date, "Y").toInt, formatDate(p.date, "M").toInt, formatDate(p.date, "MMMM"))
+    findAll.map(p => (postDateTuple(p), p)).groupBy(_._1).mapValues(s => s.map(_._2)).toList.sortBy(_._1).toMap
+  }
+
+  def byMonth(month: Int, year: Int): Seq[Post] = db withSession {
+    val from = new DateTime(year, month, 1, 0, 0)
+    val to = from.plusMonths(1)
+    val query = for {
+      post <- Posts if post.date >= from.getMillis && post.date <= to.getMillis
+    } yield post
+    query.list
+  }
 
   def findAll : Seq[Post] = db withSession {
     (for (post <- Posts) yield post).list.map(mapPost)

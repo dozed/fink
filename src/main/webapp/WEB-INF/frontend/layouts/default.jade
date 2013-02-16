@@ -1,4 +1,5 @@
 -import fink.support.TemplateHelper._
+
 -@ var body: String
 -@ var title : String = "fink"
 -@ var classes : String = "layout-2cr"
@@ -43,16 +44,9 @@ html(lang="en")
           aside#archives.widget
             h1.widget-title Archives
             ul
-              li
-                a(href={uri("/posts/2008/09/")} title="September 2008") September 2008
-              li
-                a(href={uri("/posts/2008/06/")} title="June 2008") June 2008
-              li
-                a(href={uri("/posts/2008/05/")} title="May 2008") May 2008
-              li
-                a(href={uri("/posts/2008/04/")} title="April 2008") April 2008
-              li
-                a(href={uri("/posts/2008/03/")} title="March 2008") March 2008
+              - for (((year, month, monthName), posts) <- postRepository.byMonth)
+                li
+                  a(href={uri("/%s/%02d/".format(year, month))} title={"%s %s".format(monthName, year)})= "%s %s".format(monthName, year)
 
           aside#meta.widget
             h1.widget-title Meta
