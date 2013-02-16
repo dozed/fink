@@ -78,9 +78,8 @@ function EditPostController($scope, $location, $routeParams, Post, Tag, Category
     }
     $scope.post.tags = _.map($scope.tagNames, nameToTag);
 
-
     Post.update($scope.post, function(post) {
-      // $location.path('/posts');
+      $location.path('/posts');
     });
   }
 }

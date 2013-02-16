@@ -1,7 +1,7 @@
 
-<form class="well" name="myForm">
+<div class="well">
 
-  <div class="row-fluid first">
+  <div class="row-fluid">
     <div class="span12">
       <h3>Details</h3>
     </div>
@@ -9,16 +9,25 @@
 
   <div class="row-fluid">
     <div class="span3">
-      <div>Title:<br /><input type="text" ng-model="post.title" required></div>
+      <div>
+        Title:<br />
+        <input type="text" ng-model="post.title" required>
+      </div>
     </div>
     <div class="span3">
-      <div>Category:<br /><select ng-model="selectedCategory" ng-options="c.id as c.name for c in categories"></select></div>
+      <div>
+        Category:<br />
+        <select ng-model="selectedCategory" ng-options="c.id as c.name for c in categories"></select>
+      </div>
     </div>
   </div>
 
   <div class="row-fluid">
     <div class="span6">
-      <div>Author:<br /><input type="text" ng-model="post.author"></div>
+      <div>
+        Author:<br />
+        <input type="text" ng-model="post.author">
+      </div>
     </div>
   </div>
 
@@ -39,9 +48,7 @@
     <div class="span8">
       <div>
         Text: <br />
-        <!-- <pre id="editor-text" style="width: 100%; height: 200px"></pre> -->
         <text-editor mode="markdown" ng-model="post.text" width="100%" height="200px" />
-
       </div>
     </div>
   </div>

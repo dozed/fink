@@ -2,44 +2,6 @@
 
 var directive={};
 
-directive.tagList = function($parse) {
-  return {
-    restrict: 'E',
-    link: function(scope, element, attrs) {
-      var el = $('<input type="text" value="">')[0];
-
-      scope.$watch(attrs.tags, function() {
-        var tags = scope.$eval(attrs.tags);
-        if ($.isArray(tags)) {
-          _.map(tags, function(t) { $(el).tagit('createTag', t.name); });
-        }
-      })
-
-      element.html(el);
-
-      $(el).tagit({
-        onTagAdded: function(event, tag) {
-          var name = $(tag).find("span.tagit-label").html();
-          var tags = scope.$eval(attrs.tags);
-          if (!_.any(tags, function(t) { return t.name == name; })) {
-            scope.$apply(function() {
-              tags.push({ id: 0, name: name, jsonClass: "Tag" })
-            });
-          }
-        },
-        
-        onTagRemoved: function(event, tag) {
-          var name = $(tag).find("span.tagit-label").html();
-          scope.$apply(function() {
-            var tags2 = _.filter(scope.$eval(attrs.tags), function(t) { return t.name != name; })
-            $parse(attrs.tags).assign(scope, tags2)
-          });
-        }
-      });
-    }
-  }
-}
-
 directive.tabbable = function() {
   return {
     restrict: 'C',
@@ -252,11 +214,6 @@ directive.bootstrapModalOpen = function() {
   };
 }
 
-// var editor = ace.edit("editor-text");
-// editor.setTheme("ace/theme/textmate");
-// editor.getSession().setMode("ace/mode/markdown");
-
-
 directive.textEditor = function() {
 
   function loadAceEditor(element, mode) {
@@ -276,10 +233,6 @@ directive.textEditor = function() {
     require: '?ngModel',
 
     link: function(scope, element, attrs, ngModel) {
-      // var textarea = var el = $('<textarea></textarea>')[0];
-      // textarea.hide();
-      console.log("1");
-
       var pre = $("<pre></pre>")[0];
       $(pre).width(attrs.width);
       $(pre).height(attrs.height);
@@ -290,31 +243,27 @@ directive.textEditor = function() {
 
       scope.ace = editor;
 
-      if (!ngModel) return; // do nothing if no ngModel
+      if (!ngModel) return;
 
       ngModel.$render = function() {
         var value = ngModel.$viewValue || '';
         editor.getSession().setValue(value);
-        // textarea.val(value);
       };
 
-      // editor.getSession().on('changeAnnotation', function() {
-      //   if (valid(editor)) {
-      //     scope.$apply(read);
-      //   }
-      // });
+      editor.getSession().on('changeAnnotation', function() {
+        if (valid(editor)) {
+          scope.$apply(read);
+        }
+      });
 
       editor.getSession().on('change', function(e) {
         ngModel.$setViewValue(editor.getValue());
       });
 
-      // editor.getSession().setValue(textarea.val());
       read();
 
       function read() {
-        console.log(editor.getValue());
         ngModel.$setViewValue(editor.getValue());
-        // textarea.val(editor.getValue());
       }
     }
   }
