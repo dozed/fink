@@ -17,6 +17,12 @@ object Pages extends Table[Page]("pages") {
   val byShortlink = createFinderBy(_.shortlink)
 }
 
+object PagesTags extends Table[(Long, Long)]("pages_tags") {
+  def pageId = column[Long]("pageId")
+  def tagId = column[Long]("tagId")
+  def * = pageId ~ tagId
+}
+
 object Posts extends Table[Post]("posts") {
   def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
   def catId = column[Long]("catId")
