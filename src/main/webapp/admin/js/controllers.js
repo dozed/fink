@@ -243,9 +243,11 @@ function PageController($scope, Page) {
   }
 }
 
-function CreatePageController($scope, $location, Page) {
+function CreatePageController($scope, $location, Page, Tag) {
   $scope.pages = Page.query();
   $scope.page = new Page({date: 0, title: "", author: "", shortlink: "", text: "", tags: []});
+  $scope.tags = Tag.query();
+  $scope.tagNames = [];
 
   $scope.save = function() {
     $scope.page.id = 0;
@@ -261,13 +263,16 @@ function CreatePageController($scope, $location, Page) {
   }
 }
 
-function EditPageController($scope, $location, $routeParams, Page) {
+function EditPageController($scope, $location, $routeParams, Page, Tag) {
   var self = this;
   self.original = null;
+  $scope.tags = Tag.query();
+  $scope.tagNames = [];
 
   Page.get({pageId: $routeParams.pageId}, function(page) {
     self.original = page;
     $scope.page = new Page(page);
+    $scope.tagNames = _.pluck($scope.page.tags, "name");
   })
 
   $scope.isClean = function() {
