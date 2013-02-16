@@ -2,7 +2,7 @@
 
 var fink_base = window.location.pathname.replace(/\/admin\/?$/, '');
 
-angular.module('fink-admin', ['fink.filters', 'fink.directives', 'fink.resources', 'bootstrap', 'angularBootstrap.modal']).
+angular.module('fink-admin', ['fink.filters', 'fink.directives', 'fink.resources']).
   config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/posts', {templateUrl: 'partials/posts.html', controller: PostController});
     $routeProvider.when('/posts/create', {templateUrl: 'partials/posts-details.html', controller: CreatePostController});
@@ -18,24 +18,24 @@ angular.module('fink-admin', ['fink.filters', 'fink.directives', 'fink.resources
 
 
 function _ajax_request(url, data, callback, type, method) {
-    if (jQuery.isFunction(data)) {
-        callback = data;
-        data = {};
-    }
-    return jQuery.ajax({
-        type: method,
-        url: url,
-        data: data,
-        success: callback,
-        dataType: type
-        });
+  if (jQuery.isFunction(data)) {
+    callback = data;
+    data = {};
+  }
+  return jQuery.ajax({
+    type: method,
+    url: url,
+    data: data,
+    success: callback,
+    dataType: type
+  });
 }
 
 jQuery.extend({
-    put: function(url, data, callback, type) {
-        return _ajax_request(url, data, callback, type, 'PUT');
-    },
-    delete: function(url, data, callback, type) {
-        return _ajax_request(url, data, callback, type, 'DELETE');
-    }
+  put: function(url, data, callback, type) {
+    return _ajax_request(url, data, callback, type, 'PUT');
+  },
+  delete: function(url, data, callback, type) {
+    return _ajax_request(url, data, callback, type, 'DELETE');
+  }
 });

@@ -5,6 +5,9 @@ import fink.data._
 import org.scalatra.scalate.ScalateSupport
 import org.scalatra.{ApiFormats, ScalatraServlet}
 
+import org.joda.time._
+import org.joda.time.format._
+
 class Frontend extends ScalatraServlet with ApiFormats with ScalateSupport with RepositorySupport with MediaSupport {
 
   override def jade(template: String, attributes: (String, Any)*)(implicit request: javax.servlet.http.HttpServletRequest, response: javax.servlet.http.HttpServletResponse) = {
@@ -20,19 +23,6 @@ class Frontend extends ScalatraServlet with ApiFormats with ScalateSupport with 
     jade("index")
   }
 
-  // get("/:year/:month/?", params.getAs[Int]("year").isDefined && params.getAs[Int]("month").isDefined) {
-  get("/:year/:month/?") {
-    (for {
-      year <- params.getAs[Int]("year")
-      month <- params.getAs[Int]("month")
-    } yield {
-      postRepository.byMonth(month, year) match {
-       case Nil => halt(404, "Not found.")
-       case posts: List[_] => jade("archive", "posts" -> posts)
-      }
-    }) getOrElse pass()
-  }
-
   get("/:year/:month/:day/:shortlink/?") {
     val year = params("year").toInt
     val month = params("month").toInt
@@ -44,6 +34,23 @@ class Frontend extends ScalatraServlet with ApiFormats with ScalateSupport with 
      case Some(post) => jade("post", "post" -> post)
      case None => halt(404, "Not found.")
     }
+  }
+
+  // get("/:year/:month/?", params.getAs[Int]("year").isDefined && params.getAs[Int]("month").isDefined) {
+  get("/:year/:month/?") {
+    (for {
+      year <- params.getAs[Int]("year")
+      month <- params.getAs[Int]("month")
+    } yield {
+      postRepository.byMonth(month, year) match {
+        case Nil => halt(404, "Not found.")
+        case posts: List[_] =>
+          val date = new LocalDate(year, month, 1)
+          val formatter = DateTimeFormat.forPattern("MMMM")
+
+          jade("archive", "posts" -> posts, "year" -> year, "monthName" -> formatter.print(date))
+      }
+    }) getOrElse pass()
   }
 
   get("/tag/:tag/?") {

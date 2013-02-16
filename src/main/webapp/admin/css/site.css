@@ -14,14 +14,14 @@
   border-bottom:1px solid rgb(150,150,150);
   position:relative;
   height:42px;  
-  margin-left: 300px;
+  margin-left: 200px;
 }
 
 .sidebar {
   position: fixed;
   top: 0px;
   height: 100%;
-  width: 300px;
+  width: 200px;
   background-color: #53535b;
 }
 
@@ -31,16 +31,8 @@
 }
 
 .content {
-  margin-left: 300px;
+  margin-left: 200px;
   padding: 20px;
-}
-
-.content .row-fluid.first {
-  margin-top: 0px;
-}
-
-.content .row-fluid {
-  margin-top: 30px;
 }
 
 .sidebar h4 {
@@ -82,12 +74,14 @@
   
 }
 
-/* content elements */
+/* editor elements */
 
 .tagit {
   width: 400px;
-  margin-bottom: 10px;
 }
+
+
+/* content elements */
 
 #file_upload, #file_upload object {
   width: 64px !important;
@@ -160,4 +154,10 @@ table.galleries th.actions {
 
 .cover img {
   cursor: pointer;
+}
+
+pre.ace_editor {
+  padding: 0;
+  margin: 0;
+  border: 0;
 }

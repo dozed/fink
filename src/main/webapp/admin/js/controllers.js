@@ -16,6 +16,7 @@ function CreatePostController($scope, $location, Tag, Post, Category) {
   $scope.posts = Post.query();
   $scope.categories = Category.query();
   $scope.post = new Post({catId: 0, date: "", title: "", shortlink: "", author: "", text: "", tags: []});
+  $scope.tagNames = [];
 
   $scope.save = function() {
     $scope.post.id = 0;
@@ -47,11 +48,14 @@ function EditPostController($scope, $location, $routeParams, Post, Tag, Category
   Post.get({postId: $routeParams.postId}, function(post) {
     self.original = post;
     $scope.post = new Post(post);
-    $scope.selectedCategory = $scope.post.category.id;
+    $scope.selectedCategory = $scope.post.catId;
+    $scope.tagNames = _.pluck($scope.post.tags, "name");
   })
 
   $scope.isClean = function() {
-    return angular.equals(self.original, $scope.post) && (self.original != null && self.original.catId == $scope.selectedCategory.id);
+    return angular.equals(self.original, $scope.post) &&
+        self.original != null &&
+        self.original.catId == $scope.selectedCategory.id;
   }
 
   $scope.cancel = function() {
@@ -61,9 +65,22 @@ function EditPostController($scope, $location, $routeParams, Post, Tag, Category
   $scope.save = function() {
     $scope.post.catId = parseInt($scope.selectedCategory);
     $scope.post.category = _.find($scope.categories, function(c) { return c.id == $scope.post.catId });
+    var nameToTag = function(n) {
+      var tag = _.findWhere($scope.tags, { "name": n });
+      if (_.isEmpty(tag)) {
+        return new Tag({
+          "id": 0,
+          "name": n
+        });
+      } else {
+        return tag;
+      }
+    }
+    $scope.post.tags = _.map($scope.tagNames, nameToTag);
+
 
     Post.update($scope.post, function(post) {
-      $location.path('/posts');
+      // $location.path('/posts');
     });
   }
 }
