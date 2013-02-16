@@ -36,7 +36,7 @@ object Repositories {
 
       try {
         db withSession {
-          (Pages.ddl ++ Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl ++ GalleriesTags.ddl).create
+          (Pages.ddl ++ Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl ++ GalleriesTags.ddl ++ PagesTags.ddl).create
         }
       } catch {
         case e:Exception =>
@@ -101,26 +101,34 @@ class PageRepository extends RepositorySupport {
   }
 
   def findAll : Seq[Page] = db withSession {
-    (for (page <- Pages) yield page).list
+    (for (page <- Pages) yield page).list map load
   }
 
   def byId(id: Long) : Option[Page] = db withSession {
-    Pages.byId(id).firstOption
+    Pages.byId(id).firstOption map load
   }
 
   def byShortlink(shortlink: String) : Option[Page] = db withSession {
-    Pages.byShortlink(shortlink).firstOption
+    Pages.byShortlink(shortlink).firstOption map load
   }
 
-  def create(date: Long, title: String, author: String, shortlink: String, text: String) : Long = db withSession {
+  def create(date: Long, title: String, author: String, shortlink: String, text: String, tags: List[String]) : Long = db withSession {
     val sl = if (!shortlink.isEmpty) shortlink else title
     Pages.withoutId.insert((date, title, author, sl, text))
-    DBUtil.insertId
+    val pageId = DBUtil.insertId
+
+    tags.foreach(tag => addTag(pageId, tag))
+
+    pageId
   }
 
-  def update(page: Page) = db withSession {
-    byId(page.id).map { page =>
+  def update(p: Page) = db withSession {
+    byId(p.id).map { page =>
       Pages.where(_.id === page.id).update(page)
+
+      p.tags.filterNot(page.tags.contains).foreach(tag => removeTag(page.id, tag.name))
+      page.tags.filterNot(p.tags.contains).foreach(tag => addTag(page.id, tag.name))
+
       Ok
     } getOrElse NotFound("Could not find page.")
   }
@@ -129,6 +137,33 @@ class PageRepository extends RepositorySupport {
     if (Pages.where(_.id === pageId).delete > 0) Ok else NotFound("Could not find page.")
   }
 
+  def addTag(pageId: Long, tagName: String) : DataResult = db withSession {
+    byId(pageId) map { page =>
+      val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
+      val pt = (for (pt <- PagesTags if pt.pageId === pageId && pt.tagId === tagId) yield pt).firstOption
+
+      if (pt.isEmpty) {
+        PagesTags.insert(pageId, tagId)
+        Ok
+      } else {
+        AlreadyExists
+      }
+    } getOrElse NotFound("Could not find page.")
+  }
+
+  // TODO exists
+  def removeTag(pageId: Long, tagName: String) : DataResult = db withSession {
+    byId(pageId) map { page =>
+      val tagId = tagRepository.byName(tagName).map(_.id).getOrElse(tagRepository.create(tagName))
+      val pt = (for (pt <- PagesTags if pt.pageId === pageId && pt.tagId === tagId) yield pt).firstOption
+
+      if (!pt.isEmpty) {
+        PagesTags.where(pt => pt.pageId === pageId && pt.tagId === tagId).delete
+      }
+
+      Ok
+    } getOrElse NotFound("Could not find page.")
+  }
 }
 
 class PostRepository extends RepositorySupport {

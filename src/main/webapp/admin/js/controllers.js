@@ -1,5 +1,20 @@
 'use strict';
 
+var helpers = {};
+helpers.nameToTag = function(tags) {
+  return function(n) {
+    var tag = _.findWhere(tags, { "name": n });
+    if (_.isEmpty(tag)) {
+      return {
+        "id": 0,
+        "name": n
+      };
+    } else {
+      return tag;
+    }
+  }
+}
+
 function PostController($scope, Tag, Post) {
   $scope.tags = Tag.query();
   $scope.posts = Post.query();
@@ -27,6 +42,7 @@ function CreatePostController($scope, $location, Tag, Post, Category) {
       $scope.post.catId = 0;
     }
     $scope.post.date = new Date().getTime();
+    $scope.post.tags = _.map($scope.tagNames, helpers.nameToTag($scope.tags));
 
     Post.save($scope.post, function(post) {
       $location.path('/posts');
@@ -41,7 +57,6 @@ function CreatePostController($scope, $location, Tag, Post, Category) {
 function EditPostController($scope, $location, $routeParams, Post, Tag, Category) {
   var self = this;
   self.original = null;
-
   $scope.tags = Tag.query();
   $scope.categories = Category.query();
 
@@ -65,24 +80,73 @@ function EditPostController($scope, $location, $routeParams, Post, Tag, Category
   $scope.save = function() {
     $scope.post.catId = parseInt($scope.selectedCategory);
     $scope.post.category = _.find($scope.categories, function(c) { return c.id == $scope.post.catId });
-    var nameToTag = function(n) {
-      var tag = _.findWhere($scope.tags, { "name": n });
-      if (_.isEmpty(tag)) {
-        return new Tag({
-          "id": 0,
-          "name": n
-        });
-      } else {
-        return tag;
-      }
-    }
-    $scope.post.tags = _.map($scope.tagNames, nameToTag);
+    $scope.post.tags = _.map($scope.tagNames, helpers.nameToTag($scope.tags));
 
     Post.update($scope.post, function(post) {
       $location.path('/posts');
     });
   }
 }
+
+function PageController($scope, Page) {
+  $scope.pages = Page.query();
+
+  $scope.delete = function(id) {
+    Page.delete({pageId: id}, function() {
+      $scope.pages = Page.query();
+    })
+  }
+}
+
+function CreatePageController($scope, $location, Page, Tag) {
+  $scope.pages = Page.query();
+  $scope.page = new Page({date: 0, title: "", author: "", shortlink: "", text: "", tags: []});
+  $scope.tags = Tag.query();
+  $scope.tagNames = [];
+
+  $scope.save = function() {
+    $scope.page.id = 0;
+    $scope.page.date = new Date().getTime();
+    $scope.page.tags = _.map($scope.tagNames, helpers.nameToTag($scope.tags));
+
+    Page.save($scope.page, function(page) {
+      $location.path('/pages');
+    });
+  }
+
+  $scope.cancel = function() {
+    $location.path('/pages');
+  }
+}
+
+function EditPageController($scope, $location, $routeParams, Page, Tag) {
+  var self = this;
+  self.original = null;
+  $scope.tags = Tag.query();
+  $scope.tagNames = [];
+
+  Page.get({pageId: $routeParams.pageId}, function(page) {
+    self.original = page;
+    $scope.page = new Page(page);
+    $scope.tagNames = _.pluck($scope.page.tags, "name");
+  })
+
+  $scope.isClean = function() {
+    return angular.equals(self.original, $scope.page);
+  }
+
+  $scope.cancel = function() {
+    $location.path('/pages');
+  }
+
+  $scope.save = function() {
+    $scope.page.tags = _.map($scope.tagNames, helpers.nameToTag($scope.tags));
+    Page.update($scope.page, function(page) {
+      $location.path('/pages');
+    });
+  }
+}
+
 
 function GalleryController($scope, Gallery, Tag) {
   $scope.tags = Tag.query();
@@ -233,59 +297,3 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
   }
 }
 
-function PageController($scope, Page) {
-  $scope.pages = Page.query();
-
-  $scope.delete = function(id) {
-    Page.delete({pageId: id}, function() {
-      $scope.pages = Page.query();
-    })
-  }
-}
-
-function CreatePageController($scope, $location, Page, Tag) {
-  $scope.pages = Page.query();
-  $scope.page = new Page({date: 0, title: "", author: "", shortlink: "", text: "", tags: []});
-  $scope.tags = Tag.query();
-  $scope.tagNames = [];
-
-  $scope.save = function() {
-    $scope.page.id = 0;
-    $scope.page.date = new Date().getTime();
-
-    Page.save($scope.page, function(page) {
-      $location.path('/pages');
-    });
-  }
-
-  $scope.cancel = function() {
-    $location.path('/pages');
-  }
-}
-
-function EditPageController($scope, $location, $routeParams, Page, Tag) {
-  var self = this;
-  self.original = null;
-  $scope.tags = Tag.query();
-  $scope.tagNames = [];
-
-  Page.get({pageId: $routeParams.pageId}, function(page) {
-    self.original = page;
-    $scope.page = new Page(page);
-    $scope.tagNames = _.pluck($scope.page.tags, "name");
-  })
-
-  $scope.isClean = function() {
-    return angular.equals(self.original, $scope.page);
-  }
-
-  $scope.cancel = function() {
-    $location.path('/pages');
-  }
-
-  $scope.save = function() {
-    Page.update($scope.page, function(page) {
-      $location.path('/pages');
-    });
-  }
-}
