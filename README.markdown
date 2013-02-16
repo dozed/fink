@@ -9,6 +9,8 @@ At the moment the following content elements are supported:
   * Pages for static content
   * Galleries
 
+<img src="fink-demo.png" />
+
 # Running the demo
 
     $ git clone git@github.com:dozed/fink.git
