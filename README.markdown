@@ -9,7 +9,13 @@ At the moment the following content elements are supported:
   * Pages for static content
   * Galleries
 
+## Frontend
+
 <img src="fink-demo.png" />
+
+## Backend
+
+<img src="fink-admin.png" />
 
 # Running the demo
 

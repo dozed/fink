@@ -16,8 +16,8 @@
       - if (post.text.length > 200)
         .entry-summary
           p
-            = post.text.take(200)
-            | …
+            :!markdown
+              #{post.text.take(200) + "…"}
             a(href={postUri(post)})
               | Continue reading
               span.meta-nav →
