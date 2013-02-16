@@ -23,12 +23,16 @@ At the moment the following content elements are supported:
     $ cd fink
     $ vi src/main/resources/fink.properties
     $ vi src/main/resources/c3p0.properties
-    $ bin/sbt
+    $ bin/sbt.sh
     > container:start
 
 The sample application is running on: [http://localhost:8080/](http://localhost:8080/)
 
 The admin panel is reachable under: [http://localhost:8080/admin](http://localhost:8080/admin)
+
+You can load some sample data by running:
+
+    $ bin/sample-data.sh
 
 # Built with
 

@@ -1,3 +1,0 @@
-#!/bin/sh
-
-java -Xmx512M -XX:MaxPermSize=200m -jar lib/sbt-launch.jar "$@"
