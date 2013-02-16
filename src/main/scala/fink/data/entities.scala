@@ -26,7 +26,9 @@ case class Page(
   author: String,
   shortlink: String,
   text: String
-)
+) {
+  var tags = List[Tag]()
+}
 
 case class Image(
   id: Long,

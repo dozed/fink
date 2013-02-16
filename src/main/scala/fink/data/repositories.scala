@@ -90,6 +90,16 @@ object UserRepository extends RepositorySupport {
 
 class PageRepository extends RepositorySupport {
 
+  private def load(page: Page) = {
+    val tags = for {
+      pageId <- Parameters[Long]
+      pt <- PagesTags if pt.pageId === pageId
+      tag <- Tags if tag.id === pt.tagId
+    } yield tag
+    page.tags = tags(page.id).list
+    page
+  }
+
   def findAll : Seq[Page] = db withSession {
     (for (page <- Pages) yield page).list
   }
