@@ -1,5 +1,12 @@
 -@ val page : fink.data.Page
 
-.content
-  :!markdown
-    #{page.text}
+-attributes("classes") = "page page-template-default layout-2cr"
+
+.content-wrap.clearfix
+  article.page.type-page.status-publish.hentry
+    header.entry-header
+      h1.entry-title= page.title
+
+    .entry-content
+      :!markdown
+        #{page.text}
