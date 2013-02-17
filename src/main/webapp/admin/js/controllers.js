@@ -122,17 +122,19 @@ function CreatePageController($scope, $location, Page, Tag) {
 function EditPageController($scope, $location, $routeParams, Page, Tag) {
   var self = this;
   self.original = null;
+  self.originalTagNames = [];
   $scope.tags = Tag.query();
   $scope.tagNames = [];
 
   Page.get({pageId: $routeParams.pageId}, function(page) {
-    self.original = page;
     $scope.page = new Page(page);
     $scope.tagNames = _.pluck($scope.page.tags, "name");
+    self.original = page;
+    self.originalTagNames = _.pluck($scope.page.tags, "name");
   })
 
   $scope.isClean = function() {
-    return angular.equals(self.original, $scope.page);
+    return angular.equals(self.original, $scope.page) && angular.equals(self.originalTagNames, $scope.tagNames);
   }
 
   $scope.cancel = function() {

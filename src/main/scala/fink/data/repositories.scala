@@ -122,8 +122,8 @@ class PageRepository extends RepositorySupport {
     pageId
   }
 
-  def update(p: Page) = db withSession {
-    byId(p.id).map { page =>
+  def update(page: Page) = db withSession {
+    byId(page.id).map { p =>
       Pages.where(_.id === page.id).update(page)
 
       p.tags.filterNot(page.tags.contains).foreach(tag => removeTag(page.id, tag.name))
