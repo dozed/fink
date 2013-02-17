@@ -48,15 +48,16 @@ class Frontend extends ScalatraServlet with ApiFormats with ScalateSupport with 
           val date = new LocalDate(year, month, 1)
           val formatter = DateTimeFormat.forPattern("MMMM")
 
-          jade("archive", "posts" -> posts, "year" -> year, "monthName" -> formatter.print(date))
+          jade("archive-month", "posts" -> posts, "year" -> year, "month" -> formatter.print(date))
       }
     }) getOrElse pass()
   }
 
   get("/tag/:tag/?") {
-    postRepository.byTag(params("tag")) match {
+    val tag = params("tag")
+    postRepository.byTag(tag) match {
       case Nil => halt(404, "Not found.")
-      case posts: List[_] => jade("archive", "posts" -> posts)
+      case posts: List[_] => jade("archive-tag", "posts" -> posts, "tag" -> tag)
     }
   }
 

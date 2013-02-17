@@ -1,0 +1,18 @@
+-import fink.support.TemplateHelper._
+-import fink.support.DateHelper._
+-import fink.data._
+-import fink.web.ArchiveType
+
+-attributes("classes") = "archive tag layout-2cr"
+
+-@ val posts : List[Post]
+-@ val tag : String
+
+header.page-header
+  h1.page-title
+    | Tag Archives:
+    span= tag
+
+-for (post <- posts)
+  -attributes("post") = post
+  =include("snippet.post.jade")

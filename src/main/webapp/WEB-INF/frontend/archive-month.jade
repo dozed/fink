@@ -1,15 +1,18 @@
 -import fink.support.TemplateHelper._
 -import fink.support.DateHelper._
 -import fink.data._
+-import fink.web.ArchiveType
 
 -attributes("classes") = "archive date layout-2cr"
 
 -@ val posts : List[Post]
+-@ val year : Int
+-@ val month : String
 
 header.page-header
   h1.page-title
     | Monthly Archives:
-    span September 2008
+    span #{month} #{year.toString}
 
 -for (post <- posts)
   -attributes("post") = post
