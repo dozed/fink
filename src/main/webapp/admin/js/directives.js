@@ -257,7 +257,9 @@ directive.textEditor = function() {
       });
 
       editor.getSession().on('change', function(e) {
-        scope.$apply(read);
+        if(!scope.$$phase) {
+          scope.$apply(read);
+        }
       });
 
       read();
