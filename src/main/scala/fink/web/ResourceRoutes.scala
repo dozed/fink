@@ -17,7 +17,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
 
   post("/api/pages") {
     val page = read[Page](request.body)
-    val id = pageRepository.create(page.date, page.title, page.author, page.shortlink, page.text, page.tags.map(_.name))
+    val id = pageRepository.create(page.date, page.title, page.author, page.text, page.tags.map(_.name))
 
     pageRepository.byId(id) match {
       case Some(page) => page
@@ -58,7 +58,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
 
   post("/api/posts") {
     val post = read[Post](request.body)
-    val id = postRepository.create(post.date, post.title, post.author, post.shortlink, post.text, post.tags.map(_.name), post.category)
+    val id = postRepository.create(post.date, post.title, post.author, post.text, post.tags.map(_.name), post.category)
 
     postRepository.byId(id) match {
       case Some(post) => post

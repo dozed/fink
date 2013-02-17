@@ -257,7 +257,7 @@ directive.textEditor = function() {
       });
 
       editor.getSession().on('change', function(e) {
-        ngModel.$setViewValue(editor.getValue());
+        scope.$apply(read);
       });
 
       read();

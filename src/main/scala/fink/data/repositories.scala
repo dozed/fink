@@ -112,9 +112,9 @@ class PageRepository extends RepositorySupport {
     Pages.byShortlink(shortlink).firstOption map load
   }
 
-  def create(date: Long, title: String, author: String, shortlink: String, text: String, tags: List[String]) : Long = db withSession {
-    val sl = if (!shortlink.isEmpty) shortlink else title
-    Pages.withoutId.insert((date, title, author, sl, text))
+  def create(date: Long, title: String, author: String, text: String, tags: List[String]) : Long = db withSession {
+    val shortlink = TemplateHelper.slug(title)
+    Pages.withoutId.insert((date, title, author, shortlink, text))
     val pageId = DBUtil.insertId
 
     tags.foreach(tag => addTag(pageId, tag))
@@ -124,7 +124,7 @@ class PageRepository extends RepositorySupport {
 
   def update(page: Page) = db withSession {
     byId(page.id).map { p =>
-      Pages.where(_.id === page.id).update(page)
+      Pages.where(_.id === page.id).update(page.copy(shortlink = TemplateHelper.slug(page.title)))
 
       p.tags.filterNot(page.tags.contains).foreach(tag => removeTag(page.id, tag.name))
       page.tags.filterNot(p.tags.contains).foreach(tag => addTag(page.id, tag.name))
@@ -212,8 +212,8 @@ class PostRepository extends RepositorySupport {
     Posts.byShortlink(shortlink).firstOption.map(mapPost)
   }
 
-  def create(date: Long, title: String, author: String, shortlink: String, text: String, tags: List[String], cat: Option[Category]) : Long = db withSession {
-    val sl = if (shortlink != "") shortlink else TemplateHelper.slug(title)
+  def create(date: Long, title: String, author: String, text: String, tags: List[String], cat: Option[Category]) : Long = db withSession {
+    val shortlink = TemplateHelper.slug(title)
 
     val catId = cat match {
       case Some(c) if c.id == 0 => categoryRepository.create(c.name) // ...
@@ -221,7 +221,7 @@ class PostRepository extends RepositorySupport {
       case None => 0
     }
 
-    Posts.withoutId.insert((date, catId, title, author, sl, text))
+    Posts.withoutId.insert((date, catId, title, author, shortlink, text))
     val postId = DBUtil.insertId
 
     tags.foreach(tag => addTag(postId, tag))
@@ -231,7 +231,7 @@ class PostRepository extends RepositorySupport {
 
   def update(post: Post) = db withSession {
     byId(post.id) map { p =>
-      Posts.where(_.id === post.id).update(post)
+      Posts.where(_.id === post.id).update(post.copy(shortlink = TemplateHelper.slug(post.title)))
 
       p.tags.filterNot(post.tags.contains).foreach(tag => removeTag(post.id, tag.name))
       post.tags.filterNot(p.tags.contains).foreach(tag => addTag(post.id, tag.name))

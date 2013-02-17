@@ -60,7 +60,7 @@ class Frontend extends ScalatraServlet with ApiFormats with ScalateSupport with 
     }
   }
 
-  get("/pages/:shortlink") {
+  get("/page/:shortlink") {
     val shortlink = params("shortlink")
 
     pageRepository.byShortlink(shortlink) match {
