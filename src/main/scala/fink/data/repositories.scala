@@ -36,6 +36,10 @@ object Repositories {
 
       try {
         db withSession {
+          SettingsTable.ddl.create
+        }
+
+        db withSession {
           (Pages.ddl ++ Posts.ddl ++ Tags.ddl ++ Categories.ddl ++ Images.ddl ++ PostTag.ddl ++ Galleries.ddl ++ GalleriesImages.ddl ++ GalleriesTags.ddl ++ PagesTags.ddl).create
         }
       } catch {
@@ -86,6 +90,16 @@ object UserRepository extends RepositorySupport {
   }
 
   def login(name: String, password: String) = Some(User(0, "name", "password"))
+}
+
+object SettingsRepository {
+
+  def db = Repositories.db
+
+  def get = db withSession {
+
+  }
+
 }
 
 class PageRepository extends RepositorySupport {

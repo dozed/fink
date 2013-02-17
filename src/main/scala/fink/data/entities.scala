@@ -54,3 +54,12 @@ case class Gallery(
   var tags = List[Tag]()
   var cover: Option[Image] = None
 }
+
+case class Settings(
+  title: String,
+  description: String,
+  keywords: List[String],
+  frontend: String,
+  categories: List[String],
+  uploadDirectory: String
+)

@@ -121,3 +121,22 @@ object GalleriesTags extends Table[(Long, Long)]("galleries_tags") {
   def tagId = column[Long]("tagId")
   def * = galleryId ~ tagId
 }
+
+object SettingsTable extends Table[Settings]("settings") {
+  def title = column[String]("title")
+  def description = column[String]("description")
+  def keywords = column[String]("keywords")
+  def frontend = column[String]("frontend")
+  def categories = column[String]("categories")
+  def uploadDirectory = column[String]("uploadDirectory")
+
+  def to(title: String, description: String, keywords: String, frontend: String, categories: String, uploadDirectory: String): Settings = {
+    Settings(title, description, keywords.split(",").toList, frontend, categories.split(",").toList, uploadDirectory)
+  }
+
+  def from(s: Settings) = {
+    Some((s.title, s.description, s.keywords.mkString(","), s.frontend, s.categories.mkString(","), s.uploadDirectory))
+  }
+
+  def * = title ~ description ~ keywords ~ frontend ~ categories ~ uploadDirectory <> (to _, from _)
+}

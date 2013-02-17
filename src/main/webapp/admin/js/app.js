@@ -13,6 +13,7 @@ angular.module('fink-admin', ['fink.filters', 'fink.directives', 'fink.resources
     $routeProvider.when('/galleries', {templateUrl: 'partials/galleries.html', controller: GalleryController});
     $routeProvider.when('/galleries/create', {templateUrl: 'partials/galleries-create.html', controller: CreateGalleryController});
     $routeProvider.when('/galleries/edit/:galleryId', {templateUrl: 'partials/galleries-details.html', controller: EditGalleryController});
+    $routeProvider.when('/settings', {templateUrl: 'partials/settings.html', controller: SettingsController});
     $routeProvider.otherwise({redirectTo: '/posts'});
   }]);
 

@@ -9,7 +9,20 @@ import org.scalatra.json.{JacksonJsonSupport, JValueResult}
 
 import org.json4s.jackson.Serialization.read
 
+import scala.slick.driver.H2Driver.simple._
+import Database.threadLocalSession
+
 trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUploadSupport with JacksonJsonSupport {
+
+  get("/api/settings") {
+    db withSession {
+      Query(SettingsTable).firstOption getOrElse {
+        val t = Settings("", "", List.empty, "", List.empty, "")
+        SettingsTable.insert(t)
+        t
+      }
+    }
+  }
 
   get("/api/pages") {
     pageRepository.findAll

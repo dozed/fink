@@ -299,3 +299,6 @@ function EditGalleryController($scope, $location, $routeParams, Gallery, Tag, Im
   }
 }
 
+function SettingsController($scope) {
+
+}

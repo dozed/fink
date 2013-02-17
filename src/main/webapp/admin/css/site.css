@@ -69,6 +69,7 @@
 .sidebar li a.albums { background-image: url(images/photo_icon&16.png); }
 .sidebar li a.posts { background-image: url(images/document_icon&16.png); }
 .sidebar li a.pages { background-image: url(images/page_layout_icon&16.png); }
+.sidebar li a.settings { background-image: url(images/cog_icon&16.png); }
 
 .header span.button {
   
