@@ -347,4 +347,4 @@ directive.tagManager = function() {
   }
 }
 
-angular.module('fink.directives', ['ng', 'fink.resources']).directive(directive)
+angular.module('fink.directives', ['ng']).directive(directive)
