@@ -5,6 +5,6 @@
         "cool", "blog"
     ], 
     "frontend": "frontend", 
-    "uploadDirectory": "",
+    "uploadDirectory": "/tmp/fink-media",
     "categories": []
 }
