@@ -6,7 +6,5 @@
     ], 
     "frontend": "frontend", 
     "uploadDirectory": "",
-    "categories": [
-        ""
-    ]
+    "categories": []
 }
