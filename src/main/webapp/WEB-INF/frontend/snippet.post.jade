@@ -30,7 +30,7 @@
         span.entry-utility-prep.entry-utility-prep-cat-links Posted in
         - if (post.tags.size > 0)
           - for (tag <- post.tags)
-            a(rel="category tag" title={"View all posts in " + tag.name} href={uri("/category/" + tag.name)})= tag.name
+            a(rel="tag" title={"View all posts in " + tag.name} href={uri("/tag/" + tag.name)})= tag.name
         - else
           a(rel="category tag" title="View all posts in Uncategorized" href={uri("/category/uncategorized/")}) Uncategorized
 

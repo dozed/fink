@@ -303,7 +303,6 @@ function SettingsController($scope, $location, Settings) {
   $scope.settings = Settings.get();
 
   $scope.save = function() {
-    console.log(Settings.save);
     Settings.save($scope.settings, function() {
       $location.path('/settings');
     });
