@@ -21,7 +21,6 @@ At the moment the following content elements are supported:
 
     $ git clone git@github.com:dozed/fink.git
     $ cd fink
-    $ vi src/main/resources/fink.properties
     $ vi src/main/resources/c3p0.properties
     $ bin/sbt.sh
     > container:start
