@@ -16,11 +16,17 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
 
   get("/api/settings") {
     db withSession {
-      Query(SettingsTable).firstOption getOrElse {
-        val t = Settings("", "", List.empty, "", List.empty, "")
-        SettingsTable.insert(t)
-        t
+      Query(SettingsTable).firstOption match {
+        case Some(s) => s
+        case None => halt(500, "Internal error.")
       }
+    }
+  }
+
+  post("/api/settings") {
+    db withSession {
+      val settings = read[Settings](request.body)
+      val updated = Query(SettingsTable).update(settings)
     }
   }
 

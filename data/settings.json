@@ -1,0 +1,12 @@
+{
+    "title": "Fink", 
+    "description": "this is my blog", 
+    "keywords": [
+        "cool", "blog"
+    ], 
+    "frontend": "frontend", 
+    "uploadDirectory": "",
+    "categories": [
+        ""
+    ]
+}
