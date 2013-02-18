@@ -131,7 +131,9 @@ object SettingsTable extends Table[Settings]("settings") {
   def uploadDirectory = column[String]("uploadDirectory")
 
   def to(title: String, description: String, keywords: String, frontend: String, categories: String, uploadDirectory: String): Settings = {
-    Settings(title, description, keywords.split(",").toList, frontend, categories.split(",").toList, uploadDirectory)
+    val k = if (keywords.isEmpty) List.empty else keywords.split(",").toList
+    val c = if (categories.isEmpty) List.empty else categories.split(",").toList
+    Settings(title, description, k, frontend, c, uploadDirectory)
   }
 
   def from(s: Settings) = {

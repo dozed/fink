@@ -23,7 +23,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
     }
   }
 
-  post("/api/settings") {
+  put("/api/settings") {
     db withSession {
       val settings = read[Settings](request.body)
       val updated = Query(SettingsTable).update(settings)

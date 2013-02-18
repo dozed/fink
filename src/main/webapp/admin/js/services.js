@@ -20,4 +20,10 @@ angular.module('fink.resources', ['ngResource']).factory('Tag', function($resour
   return $resource(fink_base+'/admin/api/pages/:pageId', {pageId:'@id'}, methods);
 }).factory('Image', function($resource){
   return $resource(fink_base+'/admin/api/images/:imageId', {imageId:'@id'}, methods);
+}).factory('Settings', function($resource){
+  return $resource(fink_base+'/admin/api/settings', {}, {
+    'get' : { method: 'GET' },
+    'save': { method: 'PUT' }
+  });
 }).value('version', '0.1');
+
