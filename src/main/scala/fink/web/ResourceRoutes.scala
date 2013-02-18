@@ -27,6 +27,7 @@ trait ResourceRoutes extends ScalatraServlet with RepositorySupport with FileUpl
     db withSession {
       val settings = read[Settings](request.body)
       val updated = Query(SettingsTable).update(settings)
+      Config.init(settings)
     }
   }
 

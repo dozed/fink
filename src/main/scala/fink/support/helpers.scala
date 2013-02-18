@@ -40,7 +40,23 @@ object DateHelper {
 
 }
 
-object TemplateHelper extends  RepositorySupport {
+object Config {
+  
+  private var _settings: Settings = null
+
+  def init(s: Settings) = {
+    _settings = s
+  }
+
+  def settings: Settings = _settings
+
+  def mediaDirectory = {
+    settings.uploadDirectory
+  }
+
+}
+
+object TemplateHelper extends RepositorySupport {
 
   import DateHelper._
 
@@ -53,5 +69,7 @@ object TemplateHelper extends  RepositorySupport {
       .replaceAll("""[\s-]+""", " ").trim
       .replaceAll("""\s""", "-")
   }
+
+  def settings = Config.settings
 
 }
